@@ -1,7 +1,6 @@
 import json
 from pathlib import Path
-from typing import TypedDict, cast
-from dataclasses import dataclass
+from typing import TypedDict, cast, NamedTuple
 
 import numpy as np
 
@@ -16,16 +15,8 @@ class RawPuzzle(TypedDict):
     test: list[RawPair]
 
 
-@dataclass(frozen=True)
-class Pair:
-    input: np.ndarray
-    output: np.ndarray
-
-
-@dataclass(frozen=True)
-class Puzzle:
-    train: list[Pair]
-    test: list[Pair]
+Pair = NamedTuple("Pair", [("input", np.ndarray), ("output", np.ndarray)])
+Puzzle = NamedTuple("Puzzle", [("train", list[Pair]), ("test", list[Pair])])
 
 
 def load_puzzle(puzzle_file: Path) -> Puzzle:
