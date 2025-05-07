@@ -1,0 +1,23 @@
+[project]
+name = "arc_puzzle_generator"
+version = "0.0.1"
+authors = [
+    { name = "Lennard Berger", email = "3730888+Fohlen@users.noreply.github.com" },
+]
+description = "A generator for ARC-AGI 2 type puzzles"
+readme = "README.md"
+requires-python = ">=3.9"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Operating System :: OS Independent",
+]
+license = "MIT"
+license-files = ["LICEN[CS]E*"]
+
+[build-system]
+requires = ["setuptools >= 77.0.3"]
+build-backend = "setuptools.build_meta"
+
+#[project.urls]
+#Homepage = "https://github.com/pypa/sampleproject"
+#Issues = "https://github.com/pypa/sampleproject/issues"
