@@ -18,8 +18,29 @@ class EntityTestCase(unittest.TestCase):
 
     def test_find_connected_objects(self):
         target_mask = self.puzzle.train[0].input == 2
-        label_mask, object_count = find_connected_objects(target_mask)
+        label_mask, bounding_boxes, object_count = find_connected_objects(target_mask)
         self.assertEqual(object_count, 2)
+
+        # Check that we have the correct number of bounding boxes
+        self.assertEqual(bounding_boxes.shape, (2, 4, 2))
+
+        # Check that each bounding box has 4 points (bottom-left, top-left, top-right, bottom-right)
+        for i in range(object_count):
+            # Verify bottom-left and top-left have same column
+            self.assertEqual(bounding_boxes[i, 0, 1], bounding_boxes[i, 1, 1])
+
+            # Verify top-left and top-right have same row
+            self.assertEqual(bounding_boxes[i, 1, 0], bounding_boxes[i, 2, 0])
+
+            # Verify top-right and bottom-right have same column
+            self.assertEqual(bounding_boxes[i, 2, 1], bounding_boxes[i, 3, 1])
+
+            # Verify bottom-right and bottom-left have same row
+            self.assertEqual(bounding_boxes[i, 3, 0], bounding_boxes[i, 0, 0])
+
+        # Manually verify red L-shape in example puzzle
+        bbox = np.array([[4, 4], [3, 4], [3, 5], [4, 5]])
+        self.assertTrue(np.array_equal(bounding_boxes[0], bbox))
 
     def test_is_l_shape(self):
         # Example usage:
@@ -33,6 +54,8 @@ class EntityTestCase(unittest.TestCase):
         array8 = np.array([[1, 1, 0], [1, 0, 0], [1, 0, 0]])
         array9 = np.array([[1, 1], [1, 1]])  # Not an L-shape
         array10 = np.array([[1, 0, 1], [1, 1, 1]])  # Not an L-shape
+        array11 = np.array([[1, 1, 1]])  # Not an L-shape
+        array12 = np.array([[1]])  # Not an L-shape
 
         self.assertEqual(is_l_shape(array1), "bottom_right")
         self.assertEqual(is_l_shape(array2), "bottom_left")
@@ -44,3 +67,5 @@ class EntityTestCase(unittest.TestCase):
         self.assertEqual(is_l_shape(array8), "top_left")
         self.assertEqual(is_l_shape(array9), None)
         self.assertEqual(is_l_shape(array10), None)
+        self.assertEqual(is_l_shape(array11), None)
+        self.assertEqual(is_l_shape(array12), None)

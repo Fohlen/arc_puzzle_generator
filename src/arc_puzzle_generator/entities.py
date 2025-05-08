@@ -12,15 +12,21 @@ def find_num_colors(grid: np.ndarray):
     return np.unique(grid).size
 
 
-def find_connected_objects(mask):
+def find_connected_objects(mask) -> tuple[np.ndarray, np.ndarray, int]:
     """
     Find connected objects in a binary mask.
     :param mask: The input binary mask.
-    :return: The labeled mask and the number of objects.
+    :return: A tuple containing:
+             - The labeled mask
+             - A 2D array of bounding boxes (one per object) with coordinates in order:
+               bottom-left, top-left, top-right, bottom-right
+             - The number of objects
     """
     rows, cols = mask.shape
     labeled_mask = np.zeros_like(mask, dtype=int)
     object_count = 0
+    # Dictionary to store min/max coordinates for each object
+    object_bounds = {}
 
     def is_valid(r, c):
         return 0 <= r < rows and 0 <= c < cols and mask[r, c] and labeled_mask[r, c] == 0
@@ -28,8 +34,17 @@ def find_connected_objects(mask):
     def bfs(r, c, label):
         queue = [(r, c)]
         labeled_mask[r, c] = label
+        # Initialize min/max coordinates for this object
+        object_bounds[label] = {'min_row': r, 'max_row': r, 'min_col': c, 'max_col': c}
+
         while queue:
             row, col = queue.pop(0)
+            # Update min/max coordinates
+            object_bounds[label]['min_row'] = min(object_bounds[label]['min_row'], row)
+            object_bounds[label]['max_row'] = max(object_bounds[label]['max_row'], row)
+            object_bounds[label]['min_col'] = min(object_bounds[label]['min_col'], col)
+            object_bounds[label]['max_col'] = max(object_bounds[label]['max_col'], col)
+
             # Explore neighbors (4-connectivity: up, down, left, right)
             neighbors = [(row - 1, col), (row + 1, col), (row, col - 1), (row, col + 1)]
             for nr, nc in neighbors:
@@ -43,7 +58,25 @@ def find_connected_objects(mask):
                 object_count += 1
                 bfs(i, j, object_count)
 
-    return labeled_mask, object_count
+    # Create bounding boxes array
+    if object_count > 0:
+        bounding_boxes = np.zeros((object_count, 4, 2), dtype=int)
+        for label in range(1, object_count + 1):
+            bounds = object_bounds[label]
+            min_row, max_row = bounds['min_row'], bounds['max_row']
+            min_col, max_col = bounds['min_col'], bounds['max_col']
+
+            # Order: bottom-left, top-left, top-right, bottom-right
+            bounding_boxes[label - 1] = np.array([
+                [max_row, min_col],  # bottom-left
+                [min_row, min_col],  # top-left
+                [min_row, max_col],  # top-right
+                [max_row, max_col]  # bottom-right
+            ])
+    else:
+        bounding_boxes = np.zeros((0, 4, 2), dtype=int)
+
+    return labeled_mask, bounding_boxes, object_count
 
 
 Orientation = Literal["top_left", "top_right", "bottom_left", "bottom_right"]
@@ -56,7 +89,11 @@ def is_l_shape(arr: np.ndarray) -> Optional[Orientation]:
     :param arr: The 2D NumPy array to check.
     :return: The orientation of the L-shape (e.g., "bottom right", "top left", etc. if it's an L-shape, otherwise None.
     """
-    rows, cols = arr.shape
+
+    # L-shape's cannot be straight lines
+    if arr.shape[0] == 1:
+        return None
+
     non_zero_indices = np.argwhere(arr != 0)
     num_non_zero = len(non_zero_indices)
 
