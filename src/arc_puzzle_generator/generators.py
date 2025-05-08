@@ -101,10 +101,10 @@ def check_collision_with_blocks(step: np.ndarray, bboxes: np.ndarray) -> Optiona
     """
 
     # adjacent to the corners of the bounding box
-    left_touch = (step[0] == (bboxes[:, 0][0] - 1)) & (step[1] == bboxes[:, 0][1])
-    top_touch = (step[0] == bboxes[:, 1][0]) & (step[1] == (bboxes[:, 1][1] - 1))
-    right_touch = (step[0] == (bboxes[:, 2][0] + 1)) & (step[1] == bboxes[:, 2][1])
-    bottom_touch = (step[0] == bboxes[:, 3][0]) & (step[1] == (bboxes[:, 3][1] + 1))
+    left_touch = (step[0] == (bboxes[:, 0, 0] - 1)) & (step[1] == bboxes[:, 0, 1])
+    top_touch = (step[0] == bboxes[:, 1, 0]) & (step[1] == (bboxes[:, 1, 1] - 1))
+    right_touch = (step[0] == (bboxes[:, 2, 0] + 1)) & (step[1] == bboxes[:, 2, 1])
+    bottom_touch = (step[0] == bboxes[:, 3, 0]) & (step[1] == (bboxes[:, 3, 1] + 1))
 
     # Get indices of touching blocks
     touching_indices = np.where(left_touch | top_touch | right_touch | bottom_touch)[0].tolist()
