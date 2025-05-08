@@ -91,31 +91,34 @@ def make_smallest_square_from_mask(original_matrix: np.ndarray, binary_mask: np.
     return squared_array
 
 
-def check_collision_with_blocks(step: np.ndarray, bboxes: np.ndarray) -> Optional[list[int]]:
+def is_point_adjacent(point: np.ndarray, bboxes: np.ndarray) -> Optional[np.ndarray] | None:
     """
-    Checks if a step touches (adjacent to or overlaps) any of the blocks using vectorized operations.
+    Check if a point is adjacent to any of the bounding boxes
 
-    :param step: The point to check as [x, y]
-    :param bboxes: The bounding boxes used for performing the check, in the format [[x1, y1, x2, y2], ...] where x1, y1 is the bottom-left corner and x2, y2 is the top-right corner.
-    :return: Tuple of (bool, list[int]) where bool indicates if there was a touch/collision and list contains the indices of touching blocks
+    :param point: containing integer coordinates [x, y]
+    :param bboxes: containing integer coordinates of N bounding boxes, each with 4 corners in order [bottom_left, top_left, top_right, bottom_right]
+    :returns: numpy array of indices where adjacency was found, or None if no adjacency found
     """
+    # Get min and max coordinates of bounding boxes
+    bbox_min_x = np.min(bboxes[:, :, 0], axis=1)
+    bbox_max_x = np.max(bboxes[:, :, 0], axis=1)
+    bbox_min_y = np.min(bboxes[:, :, 1], axis=1)
+    bbox_max_y = np.max(bboxes[:, :, 1], axis=1)
 
-    # handle the left side (X stays the same, Y - 1)
-    left_edge = (step[0] in bboxes[:, 0:2, 0]) & (step[1] == bboxes[:, 1, 1] - 1)
-    # handle the top side (X - 1, Y stays the same)
-    top_edge = (step[0] == (bboxes[:, 1, 0] - 1)) & (step[1] >= bboxes[:, 1, 1]) & (step[1] <= bboxes[:, 2, 1])
-    # handle the right side (X stays the same, Y + 1)
-    right_edge = (step[0] in bboxes[:, 1:3, 0]) & (step[1] == bboxes[:, 3, 1] + 1)
-    # handle the bottom side (X + 1, Y stays the same)
-    bottom_edge = (step[0] == (bboxes[:, 0, 0] + 1)) & (step[1] >= bboxes[:, 1, 1]) & (step[1] <= bboxes[:, 3, 1])
+    x, y = point
 
-    # Get indices of touching blocks
-    touching_indices = np.where(left_edge | top_edge | right_edge | bottom_edge)[0].tolist()
+    # Check x-adjacency (point is one unit away horizontally and within vertical bounds)
+    x_adjacent = ((x == bbox_max_x + 1) | (x == bbox_min_x - 1)) & \
+                 (y >= bbox_min_y) & (y <= bbox_max_y)
 
-    if len(touching_indices) > 0:
-        return touching_indices
+    # Check y-adjacency (point is one unit away vertically and within horizontal bounds)
+    y_adjacent = ((y == bbox_max_y + 1) | (y == bbox_min_y - 1)) & \
+                 (x >= bbox_min_x) & (x <= bbox_max_x)
 
-    return None
+    adjacent = x_adjacent | y_adjacent
+    matching_indices = np.where(adjacent)[0]
+
+    return matching_indices if matching_indices.size > 0 else None
 
 
 def generate_48d8fb45(input_grid: np.ndarray) -> np.ndarray:
@@ -145,7 +148,7 @@ def generate_48d8fb45(input_grid: np.ndarray) -> np.ndarray:
         step = orientation_to_unit_vector(orientation) + starting_point(bbox, orientation)
 
         while input_grid.shape[0] > step[0] > -1 < step[1] < input_grid.shape[1]:
-            colliding_blocks = check_collision_with_blocks(step, bboxes)
+            colliding_blocks = is_point_adjacent(step, bboxes)
 
             if colliding_blocks is not None:
                 current_color = blocks[colliding_blocks[0]][0]

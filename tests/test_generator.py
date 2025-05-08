@@ -4,7 +4,7 @@ import numpy as np
 
 from src.arc_puzzle_generator.data_loader import load_puzzle
 from src.arc_puzzle_generator.generators import generate_48d8fb45, orientation_to_unit_vector, \
-    check_collision_with_blocks
+    is_point_adjacent
 from tests.utils import test_dir
 
 
@@ -34,35 +34,34 @@ class GeneratorTestCase(unittest.TestCase):
         ]])
 
         # handle collisions on the left side
-        self.assertIsNotNone(check_collision_with_blocks(np.array([4, 3]), bboxes))
-        self.assertIsNone(check_collision_with_blocks(np.array([4, 2]), bboxes))
+        self.assertIsNotNone(is_point_adjacent(np.array([4, 3]), bboxes))
+        self.assertIsNone(is_point_adjacent(np.array([4, 2]), bboxes))
 
         # handle collision on the top
-        self.assertIsNotNone(check_collision_with_blocks(np.array([3, 4]), bboxes))
-        self.assertIsNotNone(check_collision_with_blocks(np.array([3, 5]), bboxes))
-        self.assertIsNotNone(check_collision_with_blocks(np.array([3, 6]), bboxes))
-        self.assertIsNone(check_collision_with_blocks(np.array([2, 5]), bboxes))
+        self.assertIsNotNone(is_point_adjacent(np.array([3, 4]), bboxes))
+        self.assertIsNotNone(is_point_adjacent(np.array([3, 5]), bboxes))
+        self.assertIsNotNone(is_point_adjacent(np.array([3, 6]), bboxes))
+        self.assertIsNone(is_point_adjacent(np.array([2, 5]), bboxes))
 
         # handle collisions on the right side
-        self.assertIsNotNone(check_collision_with_blocks(np.array([4, 7]), bboxes))
-        self.assertIsNone(check_collision_with_blocks(np.array([4, 8]), bboxes))
+        self.assertIsNotNone(is_point_adjacent(np.array([4, 7]), bboxes))
+        self.assertIsNone(is_point_adjacent(np.array([4, 8]), bboxes))
 
         # handle collisions on the bottom side
-        self.assertIsNotNone(check_collision_with_blocks(np.array([5, 4]), bboxes))
-        self.assertIsNotNone(check_collision_with_blocks(np.array([5, 5]), bboxes))
-        self.assertIsNotNone(check_collision_with_blocks(np.array([5, 6]), bboxes))
-        self.assertIsNone(check_collision_with_blocks(np.array([6, 4]), bboxes))
+        self.assertIsNotNone(is_point_adjacent(np.array([5, 4]), bboxes))
+        self.assertIsNotNone(is_point_adjacent(np.array([5, 5]), bboxes))
+        self.assertIsNotNone(is_point_adjacent(np.array([5, 6]), bboxes))
+        self.assertIsNone(is_point_adjacent(np.array([6, 4]), bboxes))
 
     def test_collisions_left_right(self):
         arr = np.array([[
             [4, 4], [3, 4], [3, 4], [4, 4]
         ]])
 
-        self.assertIsNotNone(check_collision_with_blocks(np.array([3, 3]), arr))
-        self.assertIsNone(check_collision_with_blocks(np.array([4, 2]), arr))
-        self.assertIsNotNone(check_collision_with_blocks(np.array([3, 5]), arr))
-        self.assertIsNone(check_collision_with_blocks(np.array([4, 6]), arr))
-
+        self.assertIsNotNone(is_point_adjacent(np.array([3, 3]), arr))
+        self.assertIsNone(is_point_adjacent(np.array([4, 2]), arr))
+        self.assertIsNotNone(is_point_adjacent(np.array([3, 5]), arr))
+        self.assertIsNone(is_point_adjacent(np.array([4, 6]), arr))
 
     def test_generate_48d8fb45(self):
         output_grid = generate_48d8fb45(self.puzzle.train[0].input)
