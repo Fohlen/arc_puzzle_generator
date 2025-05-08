@@ -13,11 +13,11 @@ def orientation_to_unit_vector(orientation: Orientation) -> np.ndarray:
     :return: A unit vector for the given orientation.
     """
     if orientation == "bottom_left":
-        return np.array([-1, -1])
-    elif orientation == "top_left":
-        return np.array([-1, 1])
-    elif orientation == "top_right":
         return np.array([1, -1])
+    elif orientation == "top_left":
+        return np.array([-1, -1])
+    elif orientation == "top_right":
+        return np.array([-1, 1])
 
     return np.array([1, 1])
 
@@ -30,13 +30,13 @@ def orthogonal_orientation(orientation: Orientation) -> Orientation:
     """
 
     if orientation == "bottom_left":
+        return "top_left"
+    elif orientation == "bottom_right":
         return "top_right"
     elif orientation == "top_left":
-        return "bottom_right"
-    elif orientation == "top_right":
         return "bottom_left"
 
-    return "top_left"
+    return "bottom_right"
 
 
 def starting_point(bounding_box: np.ndarray, orientation: Orientation) -> np.ndarray:
