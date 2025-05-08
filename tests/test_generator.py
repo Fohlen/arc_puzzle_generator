@@ -1,5 +1,7 @@
 import unittest
 
+import numpy as np
+
 from src.arc_puzzle_generator.data_loader import load_puzzle
 from src.arc_puzzle_generator.generators import generate_48d8fb45
 from tests.utils import test_dir
@@ -12,4 +14,4 @@ class GeneratorTestCase(unittest.TestCase):
 
     def test_generate_48d8fb45(self):
         output_grid = generate_48d8fb45(self.puzzle.train[0].input)
-        print("HI")
+        self.assertTrue(np.array_equal(output_grid, self.puzzle.train[0].output))
