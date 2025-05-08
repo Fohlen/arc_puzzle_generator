@@ -101,11 +101,11 @@ def check_collision_with_blocks(step: np.ndarray, bboxes: np.ndarray) -> Optiona
     """
 
     # handle the left side (X stays the same, Y - 1)
-    left_edge = (step[0] == (bboxes[:, 0, 0])) & (step[1] == bboxes[:, 1, 1] - 1)
+    left_edge = (step[0] in bboxes[:, 0:2, 0]) & (step[1] == bboxes[:, 1, 1] - 1)
     # handle the top side (X - 1, Y stays the same)
     top_edge = (step[0] == (bboxes[:, 1, 0] - 1)) & (step[1] >= bboxes[:, 1, 1]) & (step[1] <= bboxes[:, 2, 1])
     # handle the right side (X stays the same, Y + 1)
-    right_edge = (step[0] == (bboxes[:, 2, 0])) & (step[1] == bboxes[:, 3, 1] + 1)
+    right_edge = (step[0] in bboxes[:, 1:3, 0]) & (step[1] == bboxes[:, 3, 1] + 1)
     # handle the bottom side (X + 1, Y stays the same)
     bottom_edge = (step[0] == (bboxes[:, 0, 0] + 1)) & (step[1] >= bboxes[:, 1, 1]) & (step[1] <= bboxes[:, 3, 1])
 

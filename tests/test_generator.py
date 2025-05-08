@@ -53,6 +53,17 @@ class GeneratorTestCase(unittest.TestCase):
         self.assertIsNotNone(check_collision_with_blocks(np.array([5, 6]), bboxes))
         self.assertIsNone(check_collision_with_blocks(np.array([6, 4]), bboxes))
 
+    def test_collisions_left_right(self):
+        arr = np.array([[
+            [4, 4], [3, 4], [3, 4], [4, 4]
+        ]])
+
+        self.assertIsNotNone(check_collision_with_blocks(np.array([3, 3]), arr))
+        self.assertIsNone(check_collision_with_blocks(np.array([4, 2]), arr))
+        self.assertIsNotNone(check_collision_with_blocks(np.array([3, 5]), arr))
+        self.assertIsNone(check_collision_with_blocks(np.array([4, 6]), arr))
+
+
     def test_generate_48d8fb45(self):
         output_grid = generate_48d8fb45(self.puzzle.train[0].input)
         self.assertTrue(np.array_equal(output_grid, self.puzzle.train[0].output))
