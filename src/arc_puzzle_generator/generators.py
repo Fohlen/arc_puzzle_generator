@@ -22,21 +22,31 @@ def orientation_to_unit_vector(orientation: Orientation) -> np.ndarray:
     return np.array([1, 1])
 
 
-def orthogonal_orientation(orientation: Orientation) -> Orientation:
+def orthogonal_orientation(orientation: Orientation, is_horizontal_collision: bool) -> Orientation:
     """
-    Returns the orthogonal orientation of the given orientation.
+    Returns the orthogonal orientation of the given orientation based on collision direction.
     :param orientation: The orientation to convert.
+    :param is_horizontal_collision: True if the beam hits horizontally, False if vertically.
     :return: The orthogonal orientation of the given orientation.
     """
-
-    if orientation == "bottom_left":
+    if is_horizontal_collision:
+        # For horizontal collisions (hitting vertical walls)
+        if orientation == "bottom_left":
+            return "bottom_right"
+        elif orientation == "bottom_right":
+            return "bottom_left"
+        elif orientation == "top_left":
+            return "top_right"
         return "top_left"
-    elif orientation == "bottom_right":
-        return "top_right"
-    elif orientation == "top_left":
-        return "bottom_left"
-
-    return "bottom_right"
+    else:
+        # For vertical collisions (hitting horizontal walls)
+        if orientation == "bottom_left":
+            return "top_left"
+        elif orientation == "bottom_right":
+            return "top_right"
+        elif orientation == "top_left":
+            return "bottom_left"
+        return "bottom_right"
 
 
 def starting_point(bounding_box: np.ndarray, orientation: Orientation) -> np.ndarray:
@@ -99,6 +109,11 @@ def is_point_adjacent(point: np.ndarray, bboxes: np.ndarray) -> Optional[np.ndar
     :param bboxes: containing integer coordinates of N bounding boxes, each with 4 corners in order [bottom_left, top_left, top_right, bottom_right]
     :returns: numpy array of indices where adjacency was found, or None if no adjacency found
     """
+
+    # Ignore empty boxes
+    if bboxes.size == 0:
+        return None
+
     # Get min and max coordinates of bounding boxes
     bbox_min_x = np.min(bboxes[:, :, 0], axis=1)
     bbox_max_x = np.max(bboxes[:, :, 0], axis=1)
@@ -151,11 +166,15 @@ def generate_48d8fb45(input_grid: np.ndarray) -> np.ndarray:
             colliding_blocks = is_point_adjacent(step, bboxes)
 
             if colliding_blocks is not None:
+                # Determine if collision is horizontal by checking if the beam's x-coordinate
+                # is adjacent to the block's vertical sides
+                block_bbox = bboxes[colliding_blocks[0]]
+                is_horizontal = (np.min(block_bbox[:, 0]) <= step[0] <= np.max(block_bbox[:, 0]))
+
                 current_color = blocks[colliding_blocks[0]][0]
-                orientation = orthogonal_orientation(orientation)
+                orientation = orthogonal_orientation(orientation, is_horizontal)
 
             output_grid[step[0], step[1]] = current_color
-
             step += orientation_to_unit_vector(orientation)
 
     return output_grid
