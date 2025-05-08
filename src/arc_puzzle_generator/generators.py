@@ -100,14 +100,17 @@ def check_collision_with_blocks(step: np.ndarray, bboxes: np.ndarray) -> Optiona
     :return: Tuple of (bool, list[int]) where bool indicates if there was a touch/collision and list contains the indices of touching blocks
     """
 
-    # adjacent to the corners of the bounding box
-    left_touch = (step[0] == (bboxes[:, 0, 0] - 1)) & (step[1] == bboxes[:, 0, 1])
-    top_touch = (step[0] == bboxes[:, 1, 0]) & (step[1] == (bboxes[:, 1, 1] - 1))
-    right_touch = (step[0] == (bboxes[:, 2, 0] + 1)) & (step[1] == bboxes[:, 2, 1])
-    bottom_touch = (step[0] == bboxes[:, 3, 0]) & (step[1] == (bboxes[:, 3, 1] + 1))
+    # handle the left side (X stays the same, Y - 1)
+    left_edge = (step[0] == (bboxes[:, 0, 0])) & (step[1] == bboxes[:, 1, 1] - 1)
+    # handle the top side (X - 1, Y stays the same)
+    top_edge = (step[0] == (bboxes[:, 1, 0] - 1)) & (step[1] >= bboxes[:, 1, 1]) & (step[1] <= bboxes[:, 2, 1])
+    # handle the right side (X stays the same, Y + 1)
+    right_edge = (step[0] == (bboxes[:, 2, 0])) & (step[1] == bboxes[:, 3, 1] + 1)
+    # handle the bottom side (X + 1, Y stays the same)
+    bottom_edge = (step[0] == (bboxes[:, 0, 0] + 1)) & (step[1] >= bboxes[:, 1, 1]) & (step[1] <= bboxes[:, 3, 1])
 
     # Get indices of touching blocks
-    touching_indices = np.where(left_touch | top_touch | right_touch | bottom_touch)[0].tolist()
+    touching_indices = np.where(left_edge | top_edge | right_edge | bottom_edge)[0].tolist()
 
     if len(touching_indices) > 0:
         return touching_indices

@@ -33,15 +33,15 @@ class GeneratorTestCase(unittest.TestCase):
             [4, 4], [4, 4], [4, 6], [4, 6]
         ]])
 
+        # handle collisions on the left side
+        self.assertIsNotNone(check_collision_with_blocks(np.array([4, 3]), bboxes))
+        self.assertIsNone(check_collision_with_blocks(np.array([4, 2]), bboxes))
+
         # handle collision on the top
         self.assertIsNotNone(check_collision_with_blocks(np.array([3, 4]), bboxes))
         self.assertIsNotNone(check_collision_with_blocks(np.array([3, 5]), bboxes))
         self.assertIsNotNone(check_collision_with_blocks(np.array([3, 6]), bboxes))
         self.assertIsNone(check_collision_with_blocks(np.array([2, 5]), bboxes))
-
-        # handle collisions on the left side
-        self.assertIsNotNone(check_collision_with_blocks(np.array([4, 3]), bboxes))
-        self.assertIsNone(check_collision_with_blocks(np.array([4, 2]), bboxes))
 
         # handle collisions on the right side
         self.assertIsNotNone(check_collision_with_blocks(np.array([4, 7]), bboxes))
