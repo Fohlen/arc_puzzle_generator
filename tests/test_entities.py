@@ -3,7 +3,7 @@ import unittest
 import numpy as np
 
 from src.arc_puzzle_generator.data_loader import load_puzzle
-from src.arc_puzzle_generator.entities import find_num_colors, find_connected_objects, is_l_shape
+from src.arc_puzzle_generator.entities import find_connected_objects, is_l_shape, find_colors
 from tests.utils import test_dir
 
 
@@ -13,8 +13,8 @@ class EntityTestCase(unittest.TestCase):
         self.puzzle = load_puzzle(file_path)
 
     def test_colors(self):
-        num_colors = find_num_colors(self.puzzle.train[0].input)
-        self.assertEqual(num_colors, 5)
+        colors = find_colors(self.puzzle.train[0].input)
+        self.assertEqual(len(colors), 4)
 
     def test_find_connected_objects(self):
         target_mask = self.puzzle.train[0].input == 2
@@ -56,6 +56,7 @@ class EntityTestCase(unittest.TestCase):
         array10 = np.array([[1, 0, 1], [1, 1, 1]])  # Not an L-shape
         array11 = np.array([[1, 1, 1]])  # Not an L-shape
         array12 = np.array([[1]])  # Not an L-shape
+        array13 = np.array([[4, 4, 4], [0, 0, 0], [0, 0, 0]])  # Not an L-shape
 
         self.assertEqual(is_l_shape(array1), "bottom_right")
         self.assertEqual(is_l_shape(array2), "bottom_left")
@@ -69,3 +70,4 @@ class EntityTestCase(unittest.TestCase):
         self.assertEqual(is_l_shape(array10), None)
         self.assertEqual(is_l_shape(array11), None)
         self.assertEqual(is_l_shape(array12), None)
+        self.assertEqual(is_l_shape(array13), None)

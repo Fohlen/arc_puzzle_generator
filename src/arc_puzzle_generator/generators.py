@@ -3,7 +3,7 @@ from typing import cast, Optional
 
 import numpy as np
 
-from src.arc_puzzle_generator.entities import find_num_colors, find_connected_objects, is_l_shape, Orientation
+from src.arc_puzzle_generator.entities import find_colors, find_connected_objects, is_l_shape, Orientation
 
 
 def orientation_to_unit_vector(orientation: Orientation) -> np.ndarray:
@@ -83,7 +83,7 @@ def make_smallest_square_from_mask(original_matrix: np.ndarray, binary_mask: np.
 
     # Square the matrix
     rows_cropped, cols_cropped = cropped_array.shape
-    num_elements = rows_cropped * cols_cropped
+    num_elements = max(rows_cropped, cols_cropped) * max(rows_cropped, cols_cropped)
     side = math.ceil(math.sqrt(num_elements))
 
     squared_array = np.zeros((side, side), dtype=cropped_array.dtype)
@@ -117,12 +117,12 @@ def check_collision_with_blocks(step: np.ndarray, bboxes: np.ndarray) -> Optiona
 
 def generate_48d8fb45(input_grid: np.ndarray) -> np.ndarray:
     output_grid = input_grid.copy()
-    num_colors = find_num_colors(input_grid)
+    colors = find_colors(input_grid)
 
     l_shapes = []
     blocks = []
 
-    for target_color in range(1, num_colors + 1):
+    for target_color in colors:
         target_mask = input_grid == target_color
         labeled_grid, bounding_box, num_objects = find_connected_objects(target_mask)
 

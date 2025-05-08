@@ -3,13 +3,15 @@ from typing import Optional, Literal
 import numpy as np
 
 
-def find_num_colors(grid: np.ndarray):
+def find_colors(grid: np.ndarray, background: int = 0) -> set[int]:
     """
-    Returns the number of colors in the grid.
-    :param grid: The input grid
-    :return: integer number of colors
+    Find all colors in the grid.
+    :param grid: The grid to search.
+    :param background: The background color.
+    :return: Colors used in the grid except the background color.
     """
-    return np.unique(grid).size
+
+    return set(color for color in np.unique(grid) if color != background)
 
 
 def find_connected_objects(mask) -> tuple[np.ndarray, np.ndarray, int]:
@@ -133,7 +135,7 @@ def is_l_shape(arr: np.ndarray) -> Optional[Orientation]:
         arm2_len = horizontal_bottom_arm_len
         corner_row = max_row
 
-    if arm1_len > 0 and arm2_len > 0 and arm1_len + arm2_len - 1 == num_non_zero:
+    if arm1_len > 1 and arm2_len > 1 and arm1_len + arm2_len - 1 == num_non_zero:
         # Determine orientation based on the corner
         if corner_row == max_row and corner_col == max_col:
             return "bottom_right"
