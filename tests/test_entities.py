@@ -16,7 +16,6 @@ class EntityTestCase(unittest.TestCase):
         num_colors = find_num_colors(self.puzzle.train[0].input)
         self.assertEqual(num_colors, 5)
 
-
     def test_find_connected_objects(self):
         target_mask = self.puzzle.train[0].input == 2
         label_mask, object_count = find_connected_objects(target_mask)
@@ -35,13 +34,13 @@ class EntityTestCase(unittest.TestCase):
         array9 = np.array([[1, 1], [1, 1]])  # Not an L-shape
         array10 = np.array([[1, 0, 1], [1, 1, 1]])  # Not an L-shape
 
-        print(f"Array 1: {array1}, Orientation: {is_l_shape(array1)}")
-        print(f"Array 2: {array2}, Orientation: {is_l_shape(array2)}")
-        print(f"Array 3: {array3}, Orientation: {is_l_shape(array3)}")
-        print(f"Array 4: {array4}, Orientation: {is_l_shape(array4)}")
-        print(f"Array 5: {array5}, Orientation: {is_l_shape(array5)}")
-        print(f"Array 6: {array6}, Orientation: {is_l_shape(array6)}")
-        print(f"Array 7: {array7}, Orientation: {is_l_shape(array7)}")
-        print(f"Array 8: {array8}, Orientation: {is_l_shape(array8)}")
-        print(f"Array 9: {array9}, Orientation: {is_l_shape(array9)}")
-        print(f"Array 10: {array10}, Orientation: {is_l_shape(array10)}")
+        self.assertEqual(is_l_shape(array1), "bottom_right")
+        self.assertEqual(is_l_shape(array2), "bottom_left")
+        self.assertEqual(is_l_shape(array3), "top_right")
+        self.assertEqual(is_l_shape(array4), "top_left")
+        self.assertEqual(is_l_shape(array5), "bottom_left")
+        self.assertEqual(is_l_shape(array6), "bottom_right")
+        self.assertEqual(is_l_shape(array7), "top_right")
+        self.assertEqual(is_l_shape(array8), "top_left")
+        self.assertEqual(is_l_shape(array9), None)
+        self.assertEqual(is_l_shape(array10), None)

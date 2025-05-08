@@ -1,9 +1,6 @@
-from typing import NamedTuple
+from typing import Optional, Literal
 
 import numpy as np
-
-
-# Entity = NamedTuple("Entity", [("color", int), ("orientation", np.ndarray), ("bounding_box", np.ndarray)])
 
 
 def find_num_colors(grid: np.ndarray):
@@ -49,16 +46,15 @@ def find_connected_objects(mask):
     return labeled_mask, object_count
 
 
-def is_l_shape(arr):
+Orientation = Literal["top_left", "top_right", "bottom_left", "bottom_right"]
+
+
+def is_l_shape(arr: np.ndarray) -> Optional[Orientation]:
     """
     Checks if a 2D NumPy array represents an L-shape.
 
-    Args:
-        arr (np.ndarray): The 2D NumPy array to check.
-
-    Returns:
-        str or None: The orientation of the L-shape (e.g., "bottom right", "top left", etc.)
-                     if it's an L-shape, otherwise None.
+    :param arr: The 2D NumPy array to check.
+    :return: The orientation of the L-shape (e.g., "bottom right", "top left", etc. if it's an L-shape, otherwise None.
     """
     rows, cols = arr.shape
     non_zero_indices = np.argwhere(arr != 0)
@@ -70,13 +66,6 @@ def is_l_shape(arr):
     # Find the bounding box of the non-zero elements
     min_row, min_col = np.min(non_zero_indices, axis=0)
     max_row, max_col = np.max(non_zero_indices, axis=0)
-    bbox_height = max_row - min_row + 1
-    bbox_width = max_col - min_col + 1
-
-    # An L-shape's bounding box will have an area that is one less
-    # than the total number of cells in the bounding box if it were a rectangle.
-    if bbox_height * bbox_width - 1 != num_non_zero:
-        return None
 
     # Check for the two possible arms of the 'L'
     arm1_len = 0
@@ -110,12 +99,12 @@ def is_l_shape(arr):
     if arm1_len > 0 and arm2_len > 0 and arm1_len + arm2_len - 1 == num_non_zero:
         # Determine orientation based on the corner
         if corner_row == max_row and corner_col == max_col:
-            return "bottom right"
+            return "bottom_right"
         elif corner_row == max_row and corner_col == min_col:
-            return "bottom left"
+            return "bottom_left"
         elif corner_row == min_row and corner_col == min_col:
-            return "top left"
+            return "top_left"
         elif corner_row == min_row and corner_col == max_col:
-            return "top right"
+            return "top_right"
 
     return None
