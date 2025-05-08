@@ -1,0 +1,10 @@
+0 = black
+2 = red
+1 = blue
+3 = green
+4 = yellow
+5 = gray
+6 = pink
+7 = orange
+8 = lightblue
+9 = darkred
