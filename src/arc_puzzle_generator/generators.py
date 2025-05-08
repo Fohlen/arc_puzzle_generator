@@ -141,7 +141,7 @@ def generate_48d8fb45(input_grid: np.ndarray) -> np.ndarray:
         current_color = color
         step = orientation_to_unit_vector(orientation) + starting_point(bbox, orientation)
 
-        while step[0] < input_grid.shape[0] and step[1] < input_grid.shape[1]:
+        while input_grid.shape[0] > step[0] > -1 < step[1] < input_grid.shape[1]:
             colliding_blocks = check_collision_with_blocks(step, bboxes)
 
             if colliding_blocks is not None:
