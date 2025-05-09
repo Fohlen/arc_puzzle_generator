@@ -2,8 +2,8 @@ import unittest
 
 import numpy as np
 
-from src.arc_puzzle_generator.data_loader import load_puzzle
-from src.arc_puzzle_generator.entities import find_connected_objects, is_l_shape, find_colors, is_point_adjacent
+from arc_puzzle_generator.data_loader import load_puzzle
+from arc_puzzle_generator.entities import find_connected_objects, is_l_shape, find_colors, is_point_adjacent
 from tests.utils import test_dir
 
 

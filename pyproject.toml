@@ -23,8 +23,12 @@ vis = [
     "matplotlib~=3.10.3"
 ]
 
+dev = [
+    "mypy==1.15.0"
+]
+
 [project.scripts]
-arc-visualize = "src.arc_puzzle_generator.visualization:main"
+arc-visualize = "arc_puzzle_generator.visualization:main"
 
 #[project.urls]
 #Homepage = "https://github.com/pypa/sampleproject"

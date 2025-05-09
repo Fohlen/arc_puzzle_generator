@@ -2,10 +2,10 @@ from typing import Iterable
 
 import numpy as np
 
-from src.arc_puzzle_generator.entities import find_colors, find_connected_objects, is_l_shape, is_point_adjacent
-from src.arc_puzzle_generator.generators.generator import Generator
-from src.arc_puzzle_generator.grid_utils import make_smallest_square_from_mask
-from src.arc_puzzle_generator.physics import orientation_to_unit_vector, starting_point, orthogonal_orientation
+from arc_puzzle_generator.entities import find_colors, find_connected_objects, is_l_shape, is_point_adjacent
+from arc_puzzle_generator.generators.generator import Generator
+from arc_puzzle_generator.grid_utils import make_smallest_square_from_mask
+from arc_puzzle_generator.physics import orientation_to_unit_vector, starting_point, orthogonal_orientation
 
 
 class PuzzleFourGenerator(Generator):

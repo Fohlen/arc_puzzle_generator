@@ -18,8 +18,8 @@ from matplotlib.colors import ListedColormap
 from matplotlib.figure import Figure
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 
-from src.arc_puzzle_generator.data_loader import load_puzzle, Puzzle
-from src.arc_puzzle_generator.generators.generator import Generator
+from arc_puzzle_generator.data_loader import load_puzzle, Puzzle
+from arc_puzzle_generator.generators.generator import Generator
 
 
 def plot_grid(grid: np.ndarray, ax: Optional[plt.Axes] = None) -> plt.Axes:

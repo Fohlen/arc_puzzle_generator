@@ -2,7 +2,7 @@ import unittest
 
 import numpy as np
 
-from src.arc_puzzle_generator.physics import orientation_to_unit_vector
+from arc_puzzle_generator.physics import orientation_to_unit_vector
 
 
 class PhysicsTestCase(unittest.TestCase):

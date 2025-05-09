@@ -6,7 +6,7 @@ from typing import Optional
 
 import numpy as np
 
-from src.arc_puzzle_generator.physics import Orientation
+from arc_puzzle_generator.physics import Orientation
 
 
 def find_colors(grid: np.ndarray, background: int = 0) -> set[int]:
