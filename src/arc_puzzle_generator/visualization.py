@@ -153,7 +153,7 @@ class GeneratorVisualizer:
         # Run the generator setup
         self.generator.setup()
 
-        self.steps = [step for step in self.generator]
+        self.steps = [self.generator.input_grid.copy()] + [step for step in self.generator]
 
         # Update the display
         self.update_display()
@@ -210,11 +210,6 @@ class GeneratorVisualizer:
     def run(self):
         """Run the visualizer."""
         self.root.mainloop()
-
-    def __del__(self):
-        plt.close(self.figure)
-        self.root.destroy()
-        self.generator.teardown()
 
 
 def get_generator_class(generator_name: str) -> Type[Generator]:

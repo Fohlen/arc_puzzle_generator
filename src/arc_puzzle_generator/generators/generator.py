@@ -19,6 +19,3 @@ class Generator(ABC):
     @abstractmethod
     def __iter__(self, *args, **kwargs) -> Iterable[np.ndarray]:
         pass
-
-    def teardown(self) -> None:
-        pass
