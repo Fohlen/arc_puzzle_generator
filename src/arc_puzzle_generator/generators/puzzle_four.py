@@ -1,19 +1,19 @@
-from typing import Iterable
+from typing import Iterable, Optional
 
 import numpy as np
 
 from arc_puzzle_generator.entities import find_colors, find_connected_objects, is_l_shape, is_point_adjacent
 from arc_puzzle_generator.generators.generator import Generator
 from arc_puzzle_generator.grid_utils import make_smallest_square_from_mask
-from arc_puzzle_generator.physics import orientation_to_unit_vector, starting_point, orthogonal_orientation
+from arc_puzzle_generator.physics import orientation_to_unit_vector, starting_point, orthogonal_orientation, Orientation
 
 
 class PuzzleFourGenerator(Generator):
     def __init__(self, input_grid: np.ndarray):
         super().__init__(input_grid)
-        self.l_shapes = None
-        self.bboxes = None
-        self.blocks = None
+        self.l_shapes: list[tuple[int, np.ndarray, Orientation]] = []
+        self.blocks: list[tuple[int, np.ndarray]] = []
+        self.bboxes: np.ndarray = np.empty((4, 2))
 
     def setup(self) -> None:
         colors = find_colors(self.input_grid)
@@ -28,11 +28,12 @@ class PuzzleFourGenerator(Generator):
             for label in range(1, num_objects + 1):
                 box = make_smallest_square_from_mask(self.output_grid, labeled_grid == label)
 
-                orientation = is_l_shape(box)
-                if orientation is not None:
-                    self.l_shapes.append((target_color, bounding_box[(label - 1), :], orientation))
-                else:
-                    self.blocks.append((target_color, bounding_box[(label - 1), :]))
+                if box is not None:
+                    orientation = is_l_shape(box)
+                    if orientation is not None:
+                        self.l_shapes.append((target_color, bounding_box[(label - 1), :], orientation))
+                    else:
+                        self.blocks.append((target_color, bounding_box[(label - 1), :]))
 
         self.bboxes = np.array([bbox for _, bbox in self.blocks])
 

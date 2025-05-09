@@ -84,7 +84,7 @@ class GeneratorVisualizer:
         """
         self.generator = generator
         self.iterator = None
-        self.steps = []
+        self.steps: list[np.ndarray] = []
         self.current_step = 0
         self.playing = False
 
