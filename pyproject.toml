@@ -18,6 +18,14 @@ dependencies = [
     "numpy~=2.2.5"
 ]
 
+[project.optional-dependencies]
+vis = [
+    "matplotlib>=3.5.0"
+]
+
+[project.scripts]
+arc-visualize = "src.arc_puzzle_generator.visualization:main"
+
 #[project.urls]
 #Homepage = "https://github.com/pypa/sampleproject"
 #Issues = "https://github.com/pypa/sampleproject/issues"
