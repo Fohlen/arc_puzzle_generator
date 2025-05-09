@@ -1,3 +1,7 @@
+"""
+The entities module contains functions for extracting entities (singular color entities, shapes etc) from a grid.
+"""
+
 from typing import Optional, Literal
 
 import numpy as np
