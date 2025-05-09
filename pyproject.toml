@@ -20,7 +20,7 @@ dependencies = [
 
 [project.optional-dependencies]
 vis = [
-    "matplotlib>=3.5.0"
+    "matplotlib~=3.10.3"
 ]
 
 [project.scripts]
