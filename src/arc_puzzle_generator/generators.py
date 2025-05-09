@@ -1,9 +1,9 @@
 import math
-from typing import cast, Optional
 
 import numpy as np
 
-from src.arc_puzzle_generator.entities import find_colors, find_connected_objects, is_l_shape, Orientation
+from src.arc_puzzle_generator.entities import find_colors, find_connected_objects, is_l_shape, Orientation, \
+    is_point_adjacent
 
 
 def orientation_to_unit_vector(orientation: Orientation) -> np.ndarray:
@@ -99,41 +99,6 @@ def make_smallest_square_from_mask(original_matrix: np.ndarray, binary_mask: np.
     squared_array = np.zeros((side, side), dtype=cropped_array.dtype)
     squared_array[:rows_cropped, :cols_cropped] = cropped_array
     return squared_array
-
-
-def is_point_adjacent(point: np.ndarray, bboxes: np.ndarray) -> Optional[np.ndarray] | None:
-    """
-    Check if a point is adjacent to any of the bounding boxes
-
-    :param point: containing integer coordinates [x, y]
-    :param bboxes: containing integer coordinates of N bounding boxes, each with 4 corners in order [bottom_left, top_left, top_right, bottom_right]
-    :returns: numpy array of indices where adjacency was found, or None if no adjacency found
-    """
-
-    # Ignore empty boxes
-    if bboxes.size == 0:
-        return None
-
-    # Get min and max coordinates of bounding boxes
-    bbox_min_x = np.min(bboxes[:, :, 0], axis=1)
-    bbox_max_x = np.max(bboxes[:, :, 0], axis=1)
-    bbox_min_y = np.min(bboxes[:, :, 1], axis=1)
-    bbox_max_y = np.max(bboxes[:, :, 1], axis=1)
-
-    x, y = point
-
-    # Check x-adjacency (point is one unit away horizontally and within vertical bounds)
-    x_adjacent = ((x == bbox_max_x + 1) | (x == bbox_min_x - 1)) & \
-                 (y >= bbox_min_y) & (y <= bbox_max_y)
-
-    # Check y-adjacency (point is one unit away vertically and within horizontal bounds)
-    y_adjacent = ((y == bbox_max_y + 1) | (y == bbox_min_y - 1)) & \
-                 (x >= bbox_min_x) & (x <= bbox_max_x)
-
-    adjacent = x_adjacent | y_adjacent
-    matching_indices = np.where(adjacent)[0]
-
-    return matching_indices if matching_indices.size > 0 else None
 
 
 def generate_48d8fb45(input_grid: np.ndarray) -> np.ndarray:
