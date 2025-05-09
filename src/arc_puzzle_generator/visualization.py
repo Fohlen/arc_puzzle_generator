@@ -211,6 +211,11 @@ class GeneratorVisualizer:
         """Run the visualizer."""
         self.root.mainloop()
 
+    def __del__(self):
+        plt.close(self.figure)
+        self.root.destroy()
+        self.generator.teardown()
+
 
 def get_generator_class(generator_name: str) -> Type[Generator]:
     """
@@ -291,6 +296,7 @@ def main():
     except Exception as e:
         print(f"Error: {e}", file=sys.stderr)
         sys.exit(1)
+
 
 if __name__ == "__main__":
     main()
