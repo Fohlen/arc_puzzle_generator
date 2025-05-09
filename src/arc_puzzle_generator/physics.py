@@ -1,9 +1,11 @@
 """
 The physics module contains world *physics*, for instance calculating orientation vectors and other physical properties.
 """
+from typing import Literal
+
 import numpy as np
 
-from src.arc_puzzle_generator.entities import Orientation
+Orientation = Literal["top_left", "top_right", "bottom_left", "bottom_right"]
 
 
 def orientation_to_unit_vector(orientation: Orientation) -> np.ndarray:

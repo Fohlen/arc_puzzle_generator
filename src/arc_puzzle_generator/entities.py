@@ -2,9 +2,11 @@
 The entities module contains functions for extracting entities (singular color entities, shapes etc) from a grid.
 """
 
-from typing import Optional, Literal
+from typing import Optional
 
 import numpy as np
+
+from src.arc_puzzle_generator.physics import Orientation
 
 
 def find_colors(grid: np.ndarray, background: int = 0) -> set[int]:
@@ -83,9 +85,6 @@ def find_connected_objects(mask) -> tuple[np.ndarray, np.ndarray, int]:
         bounding_boxes = np.zeros((0, 4, 2), dtype=int)
 
     return labeled_mask, bounding_boxes, object_count
-
-
-Orientation = Literal["top_left", "top_right", "bottom_left", "bottom_right"]
 
 
 def is_l_shape(arr: np.ndarray) -> Optional[Orientation]:
