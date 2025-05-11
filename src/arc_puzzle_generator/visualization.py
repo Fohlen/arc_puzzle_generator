@@ -76,17 +76,22 @@ class GeneratorVisualizer:
     Tkinter-based GUI for visualizing generator steps.
     """
 
-    def __init__(self, generator: Generator):
+    def __init__(self, generator_class: Type[Generator], puzzle: Puzzle):
         """
         Initialize the visualizer.
 
-        :arg generator: The generator to visualize
+        :arg generator_class: The generator class to use
+        :arg puzzle: The puzzle containing train and test examples
         """
-        self.generator = generator
+        self.generator_class = generator_class
+        self.puzzle = puzzle
+        self.generator = None
         self.iterator = None
         self.steps: list[np.ndarray] = []
         self.current_step = 0
         self.playing = False
+        self.current_example_type = "train"
+        self.current_example_index = 0
 
         # Create the main window
         self.root = tk.Tk()
@@ -99,12 +104,39 @@ class GeneratorVisualizer:
 
         # Configure grid layout for parent frame
         self.parent_frame.columnconfigure(0, weight=1)
-        self.parent_frame.rowconfigure(0, weight=1)
-        self.parent_frame.rowconfigure(1, weight=0)  # Control row doesn't need to expand
+        self.parent_frame.rowconfigure(0, weight=0)  # Selector row
+        self.parent_frame.rowconfigure(1, weight=1)  # Main content
+        self.parent_frame.rowconfigure(2, weight=0)  # Control row
+
+        # Create the selector frame
+        self.selector_frame = ttk.Frame(self.parent_frame, padding=10, relief="raised", borderwidth=1)
+        self.selector_frame.grid(row=0, column=0, sticky="ew")
+
+        # Create the puzzle selector dropdown
+        self.example_var = tk.StringVar()
+        self.example_options = []
+
+        # Populate the dropdown options
+        for i in range(len(self.puzzle.train)):
+            self.example_options.append(f"Train {i+1}")
+        for i in range(len(self.puzzle.test)):
+            self.example_options.append(f"Test {i+1}")
+
+        self.example_var.set(self.example_options[0])  # Set default value
+
+        # Create the dropdown label
+        self.example_label = ttk.Label(self.selector_frame, text="Select Puzzle:", font=('Arial', 12))
+        self.example_label.pack(side=tk.LEFT, padx=10, pady=5)
+
+        # Create the dropdown
+        self.example_dropdown = ttk.Combobox(self.selector_frame, textvariable=self.example_var, 
+                                            values=self.example_options, state="readonly", font=('Arial', 12))
+        self.example_dropdown.pack(side=tk.LEFT, padx=10, pady=5)
+        self.example_dropdown.bind("<<ComboboxSelected>>", self.on_example_selected)
 
         # Create the main frame
         self.main_frame = ttk.Frame(self.parent_frame, padding=10)
-        self.main_frame.grid(row=0, column=0, sticky="nsew")
+        self.main_frame.grid(row=1, column=0, sticky="nsew")
 
         # Create the matplotlib figure
         self.figure = Figure(figsize=(8, 8))
@@ -116,7 +148,7 @@ class GeneratorVisualizer:
 
         # Create the control frame
         self.control_frame = ttk.Frame(self.parent_frame, padding=10, relief="raised", borderwidth=1)
-        self.control_frame.grid(row=1, column=0, sticky="ew")
+        self.control_frame.grid(row=2, column=0, sticky="ew")
 
         # Create a style for the buttons
         style = ttk.Style()
@@ -148,12 +180,39 @@ class GeneratorVisualizer:
         # Initialize the generator
         self.initialize_generator()
 
+    def on_example_selected(self, event):
+        """Handle selection of a new example from the dropdown."""
+        selected = self.example_var.get()
+
+        # Parse the selection to determine type and index
+        parts = selected.split()
+        example_type = parts[0].lower()  # "train" or "test"
+        example_index = int(parts[1]) - 1  # Convert to 0-based index
+
+        # Update current selection
+        self.current_example_type = example_type
+        self.current_example_index = example_index
+
+        # Reinitialize the generator with the new example
+        self.initialize_generator()
+
     def initialize_generator(self):
         """Initialize the generator and prepare for visualization."""
+        # Get the input grid for the selected example
+        if self.current_example_type == "train":
+            input_grid = self.puzzle.train[self.current_example_index].input
+        else:  # test
+            input_grid = self.puzzle.test[self.current_example_index].input
+
+        # Create a new generator instance with the selected input
+        self.generator = self.generator_class(input_grid)
+
         # Run the generator setup
         self.generator.setup()
 
+        # Reset steps and current step
         self.steps = [self.generator.input_grid.copy()] + [step for step in self.generator]
+        self.current_step = 0
 
         # Update the display
         self.update_display()
@@ -248,11 +307,8 @@ def visualize_generator(generator_name: str, puzzle_id: str, base_dir: str = "te
     # Get the generator class
     generator_class = get_generator_class(generator_name)
 
-    # Create the generator with the first training input
-    generator = generator_class(puzzle.train[0].input)
-
-    # Create the visualizer
-    visualizer = GeneratorVisualizer(generator)
+    # Create the visualizer with the generator class and puzzle
+    visualizer = GeneratorVisualizer(generator_class, puzzle)
 
     # Run the visualizer
     visualizer.run()
