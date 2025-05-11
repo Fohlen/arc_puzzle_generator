@@ -13,7 +13,7 @@ class PuzzleFourGenerator(Generator):
         super().__init__(input_grid)
         self.l_shapes: list[tuple[int, np.ndarray, Orientation]] = []
         self.blocks: list[tuple[int, np.ndarray]] = []
-        self.bboxes: np.ndarray = np.empty((4, 2))
+        self.bboxes: Optional[np.ndarray] = None
 
     def setup(self) -> None:
         colors = find_colors(self.input_grid)
@@ -38,6 +38,8 @@ class PuzzleFourGenerator(Generator):
         self.bboxes = np.array([bbox for _, bbox in self.blocks])
 
     def __iter__(self, *args, **kwargs) -> Iterable[np.ndarray]:
+        assert self.bboxes is not None, "setup() must be called before iterating"
+
         for color, bbox, orientation in self.l_shapes:
             current_color = color
             step = orientation_to_unit_vector(orientation) + starting_point(bbox, orientation)
