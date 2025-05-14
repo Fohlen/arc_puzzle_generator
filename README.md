@@ -4,6 +4,8 @@ arc_puzzle_generator
 This repository contains a puzzle generator for
 the [Abstraction and Reasoning Corpus](https://github.com/arcprize/ARC-AGI-2).
 
+[![CI](https://github.com/Fohlen/arc_puzzle_generator/actions/workflows/ci.yml/badge.svg)](https://github.com/Fohlen/arc_puzzle_generator/actions/workflows/ci.yml)
+
 ## Installation and use
 
 One can install the package using pip:
@@ -48,3 +50,25 @@ python3 -m arc_puzzle_generator.visualization PuzzleFourGenerator 142ca369
 ```
 
 The `--help` flag will give you more information about the tool.
+
+## Development
+
+To set up the development environment:
+
+```shell
+pip install -e ".[dev]"
+```
+
+To run tests:
+
+```shell
+python -m unittest discover tests
+```
+
+To run type checking:
+
+```shell
+python -m mypy src tests
+```
+
+These checks are automatically run on each commit via GitHub Actions.
