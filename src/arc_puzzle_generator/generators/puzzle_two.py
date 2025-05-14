@@ -69,12 +69,13 @@ class PuzzleTwoGenerator(Generator):
                 current_box = reachable_boxes[0]
                 break
 
-        for _, color2 in color_order[1:]:
-            color2_indexes = box_colors[color2]
-            reachable_boxes = [index2 for index2 in color2_indexes if index2 in adjacent_boxes[current_box]]
-            if len(reachable_boxes) == 1:
-                self.box_order.append((current_box, reachable_boxes[0]))
-                current_box = reachable_boxes[0]
+        if current_box is not None:
+            for _, color2 in color_order[1:]:
+                color2_indexes = box_colors[color2]
+                reachable_boxes = [index2 for index2 in color2_indexes if index2 in adjacent_boxes[current_box]]
+                if len(reachable_boxes) == 1:
+                    self.box_order.append((current_box, reachable_boxes[0]))
+                    current_box = reachable_boxes[0]
 
     def __iter__(self, *args, **kwargs) -> Iterable[np.ndarray]:
         for box1, box2 in self.box_order:
@@ -93,19 +94,19 @@ class PuzzleTwoGenerator(Generator):
                 target_pos = box2_bbox[1] + np.array([-1, border])
                 target_pos = np.array([target_pos + [0, i] for i in range(beam_size)])
             elif box1_bbox[0, 0] > box2_bbox[0, 0]:
-                direction: Direction = "up"
+                direction = "up"
                 start_pos = box1_bbox[1] + np.array([0, border])
                 start_pos = np.array([start_pos + [0, i] for i in range(beam_size)])
                 target_pos = box2_bbox[0] + np.array([1, border])
                 target_pos = np.array([target_pos + [0, i] for i in range(beam_size)])
             elif box1_bbox[0, 1] < box2_bbox[0, 1]:
-                direction: Direction = "right"
+                direction = "right"
                 start_pos = box1_bbox[2] + np.array([border, 0])
                 start_pos = np.array([start_pos + [i, 0] for i in range(beam_size)])
                 target_pos = box2_bbox[1] + np.array([border, -1])
                 target_pos = np.array([target_pos + [i, 0] for i in range(beam_size)])
             else:  # elif box1_bbox[0, 1] > box2_bbox[0, 1]:
-                direction: Direction = "left"
+                direction = "left"
                 start_pos = box1_bbox[1] + np.array([border, 0])
                 start_pos = np.array([start_pos + [i, 0] for i in range(beam_size)])
                 target_pos = box2_bbox[2] + np.array([border, 1])
