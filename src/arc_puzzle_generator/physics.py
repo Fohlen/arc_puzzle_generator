@@ -6,6 +6,23 @@ from typing import Literal
 import numpy as np
 
 Orientation = Literal["top_left", "top_right", "bottom_left", "bottom_right"]
+Direction = Literal["left", "right", "up", "down"]
+
+
+def direction_to_unit_vector(direction: Direction):
+    """
+    Returns the unit vector corresponding to the given direction.
+    :param direction: The direction to convert.
+    :return: A unit vector for the given direction.
+    """
+
+    if direction == "left":
+        return np.array([0, -1])
+    elif direction == "right":
+        return np.array([0, 1])
+    elif direction == "up":
+        return np.array([-1, 0])
+    return np.array([1, 0])
 
 
 def orientation_to_unit_vector(orientation: Orientation) -> np.ndarray:
