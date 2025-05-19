@@ -4,7 +4,7 @@ from math import ceil
 import numpy as np
 from mypy.checkexpr import defaultdict
 
-from arc_puzzle_generator.entities import find_connected_objects
+from arc_puzzle_generator.entities import find_connected_objects, colour_count
 from arc_puzzle_generator.generators.generator import Generator
 from arc_puzzle_generator.physics import direction_to_unit_vector, Direction
 
@@ -18,10 +18,9 @@ class PuzzleTwoGenerator(Generator):
     def setup(self) -> None:
         grid = self.input_grid[:-2, :]
 
-        values, counts = np.unique(grid, return_counts=True)
-        sorted_counts = np.argsort(counts)[::-1]
-        background_color = values[sorted_counts[0]]
-        box_color = values[sorted_counts[1]]
+        sorted_colors = colour_count(grid)
+        background_color = sorted_colors[0][0]
+        box_color = sorted_colors[1][0]
 
         mask = grid == box_color
         labels, bboxes, num_objects = find_connected_objects(mask)

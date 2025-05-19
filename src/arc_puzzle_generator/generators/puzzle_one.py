@@ -3,7 +3,7 @@ from collections import OrderedDict
 
 import numpy as np
 
-from arc_puzzle_generator.entities import color_count, find_connected_objects
+from arc_puzzle_generator.entities import colour_count, find_connected_objects
 from arc_puzzle_generator.generators.generator import Generator
 
 
@@ -16,7 +16,7 @@ class PuzzleOneGenerator(Generator):
         self.start_col = 0
 
     def setup(self) -> None:
-        sorted_colors = color_count(self.input_grid)
+        sorted_colors = colour_count(self.input_grid)
         self.background_color = sorted_colors[0][0]
 
         line_color = sorted_colors[1][0]

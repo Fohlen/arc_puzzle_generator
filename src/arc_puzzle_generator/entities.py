@@ -20,7 +20,7 @@ def find_colors(grid: np.ndarray, background: int = 0) -> set[int]:
     return set(color for color in np.unique(grid) if color != background)
 
 
-def color_count(grid: np.ndarray) -> list[tuple[int, int]]:
+def colour_count(grid: np.ndarray) -> list[tuple[int, int]]:
     """
     Return color count in the grid.
     :param grid: The grid to search.
