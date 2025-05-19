@@ -20,6 +20,18 @@ def find_colors(grid: np.ndarray, background: int = 0) -> set[int]:
     return set(color for color in np.unique(grid) if color != background)
 
 
+def color_count(grid: np.ndarray) -> list[tuple[int, int]]:
+    """
+    Return color count in the grid.
+    :param grid: The grid to search.
+    :return: The count of every color in the grid as a tuple of (color, frequency) in descending order of frequency.
+    """
+
+    values, counts = np.unique(grid, return_counts=True)
+    sorted_counts = np.argsort(counts)[::-1]
+    return [(values[idx], counts[idx]) for idx in sorted_counts]
+
+
 def find_connected_objects(mask) -> tuple[np.ndarray, np.ndarray, int]:
     """
     Find connected objects in a binary mask.
