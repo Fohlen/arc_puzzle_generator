@@ -1,8 +1,8 @@
+from collections import defaultdict
 from typing import Iterable
 from math import ceil
 
 import numpy as np
-from mypy.checkexpr import defaultdict
 
 from arc_puzzle_generator.entities import find_connected_objects, colour_count
 from arc_puzzle_generator.generators.generator import Generator
