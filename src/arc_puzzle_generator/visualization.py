@@ -36,25 +36,21 @@ def plot_grid(grid: np.ndarray, ax: Optional[plt.Axes] = None) -> plt.Axes:
     if ax is None:
         _, ax = plt.subplots(figsize=(8, 8))
 
-    # Fixed color mapping as per requirements
-    color_mapping = {
-        0: (0, 0, 0),
-        1: (30, 147, 255),
-        2: (249, 60, 49),
-        3: (79, 204, 48),
-        4: (255, 220, 0),
-        5: (153, 153, 153),
-        6: (229, 58, 163),
-        7: (255, 133, 27),
-        8: (135, 216, 241),
-        9: (146, 18, 19)
-    }
-
-    # Create a custom colormap based on the mapping
-    colors = list(color_mapping.values())
+    colors = np.array([
+        [0, 0, 0],
+        [30, 147, 255],
+        [249, 60, 49],
+        [79, 204, 48],
+        [255, 220, 0],
+        [153, 153, 153],
+        [229, 58, 163],
+        [255, 133, 27],
+        [135, 216, 241],
+        [146, 18, 19]
+    ]) / 255
     cmap = ListedColormap(colors)
 
-    ax.imshow(grid, cmap=cmap, interpolation='nearest')
+    ax.imshow(grid, cmap=cmap, interpolation='nearest', vmin=0, vmax=9)
 
     # Add grid lines
     # ax.grid(which='major', axis='both', linestyle='-', color='k', linewidth=2)
@@ -118,9 +114,9 @@ class GeneratorVisualizer:
 
         # Populate the dropdown options
         for i in range(len(self.puzzle.train)):
-            self.example_options.append(f"Train {i+1}")
+            self.example_options.append(f"Train {i + 1}")
         for i in range(len(self.puzzle.test)):
-            self.example_options.append(f"Test {i+1}")
+            self.example_options.append(f"Test {i + 1}")
 
         self.example_var.set(self.example_options[0])  # Set default value
 
@@ -129,8 +125,8 @@ class GeneratorVisualizer:
         self.example_label.pack(side=tk.LEFT, padx=10, pady=5)
 
         # Create the dropdown
-        self.example_dropdown = ttk.Combobox(self.selector_frame, textvariable=self.example_var, 
-                                            values=self.example_options, state="readonly", font=('Arial', 12))
+        self.example_dropdown = ttk.Combobox(self.selector_frame, textvariable=self.example_var,
+                                             values=self.example_options, state="readonly", font=('Arial', 12))
         self.example_dropdown.pack(side=tk.LEFT, padx=10, pady=5)
         self.example_dropdown.bind("<<ComboboxSelected>>", self.on_example_selected)
 
