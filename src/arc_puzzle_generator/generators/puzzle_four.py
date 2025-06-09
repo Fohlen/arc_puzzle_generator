@@ -16,7 +16,7 @@ class PuzzleFourGenerator(Generator):
         self.bboxes: Optional[np.ndarray] = None
 
     def setup(self) -> None:
-        colors = find_colors(self.input_grid)
+        colors = find_colors(self.input_grid, background=0)
 
         self.l_shapes = []
         self.blocks = []

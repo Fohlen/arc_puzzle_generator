@@ -13,7 +13,7 @@ class EntityTestCase(unittest.TestCase):
         self.puzzle = load_puzzle(file_path)
 
     def test_colors(self):
-        colors = find_colors(self.puzzle.train[0].input)
+        colors = find_colors(self.puzzle.train[0].input, background=0)
         self.assertEqual(len(colors), 4)
 
     def test_find_connected_objects(self):

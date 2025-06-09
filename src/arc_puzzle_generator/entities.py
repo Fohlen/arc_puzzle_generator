@@ -9,15 +9,18 @@ import numpy as np
 from arc_puzzle_generator.physics import Orientation
 
 
-def find_colors(grid: np.ndarray, background: int = 0) -> set[int]:
+def find_colors(grid: np.ndarray, background: Optional[int] = None) -> set[int]:
     """
     Find all colors in the grid.
     :param grid: The grid to search.
-    :param background: The background color.
+    :param background: An optional background color.
     :return: Colors used in the grid except the background color.
     """
 
-    return set(color for color in np.unique(grid) if color != background)
+    if background is not None:
+        return set(color for color in np.unique(grid).tolist() if color != background)
+    else:
+        return set(np.unique(grid).tolist())
 
 
 def colour_count(grid: np.ndarray) -> list[tuple[int, int]]:
