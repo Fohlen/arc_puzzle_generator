@@ -6,7 +6,7 @@ from typing import Optional
 
 import numpy as np
 
-from arc_puzzle_generator.physics import Orientation
+from arc_puzzle_generator.physics import Direction
 
 
 def find_colors(grid: np.ndarray, background: Optional[int] = None) -> set[int]:
@@ -102,7 +102,7 @@ def find_connected_objects(mask) -> tuple[np.ndarray, np.ndarray, int]:
     return labeled_mask, bounding_boxes, object_count
 
 
-def is_l_shape(arr: np.ndarray) -> Optional[Orientation]:
+def is_l_shape(arr: np.ndarray) -> Optional[Direction]:
     """
     Checks if a 2D NumPy array represents an L-shape.
 
