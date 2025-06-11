@@ -5,13 +5,13 @@ import numpy as np
 from arc_puzzle_generator.entities import find_colors, find_connected_objects, is_l_shape, is_point_adjacent
 from arc_puzzle_generator.generators.generator import Generator
 from arc_puzzle_generator.grid_utils import make_smallest_square_from_mask
-from arc_puzzle_generator.physics import orientation_to_unit_vector, starting_point, orthogonal_orientation, Orientation
+from arc_puzzle_generator.physics import direction_to_unit_vector, starting_point, orthogonal_direction, Direction
 
 
 class PuzzleFourGenerator(Generator):
     def __init__(self, input_grid: np.ndarray):
         super().__init__(input_grid)
-        self.l_shapes: list[tuple[int, np.ndarray, Orientation]] = []
+        self.l_shapes: list[tuple[int, np.ndarray, Direction]] = []
         self.blocks: list[tuple[int, np.ndarray]] = []
         self.bboxes: Optional[np.ndarray] = None
 
@@ -29,9 +29,9 @@ class PuzzleFourGenerator(Generator):
                 box = make_smallest_square_from_mask(self.output_grid, labeled_grid == label)
 
                 if box is not None:
-                    orientation = is_l_shape(box)
-                    if orientation is not None:
-                        self.l_shapes.append((target_color, bounding_box[(label - 1), :], orientation))
+                    direction = is_l_shape(box)
+                    if direction is not None:
+                        self.l_shapes.append((target_color, bounding_box[(label - 1), :], direction))
                     else:
                         self.blocks.append((target_color, bounding_box[(label - 1), :]))
 
@@ -40,9 +40,9 @@ class PuzzleFourGenerator(Generator):
     def __iter__(self, *args, **kwargs) -> Iterable[np.ndarray]:
         assert self.bboxes is not None, "setup() must be called before iterating"
 
-        for color, bbox, orientation in self.l_shapes:
+        for color, bbox, direction in self.l_shapes:
             current_color = color
-            step = orientation_to_unit_vector(orientation) + starting_point(bbox, orientation)
+            step = direction_to_unit_vector(direction) + starting_point(bbox, direction)
 
             while self.input_grid.shape[0] > step[0] > -1 < step[1] < self.input_grid.shape[1]:
                 colliding_blocks = is_point_adjacent(step, self.bboxes)
@@ -54,8 +54,8 @@ class PuzzleFourGenerator(Generator):
                     is_horizontal = (np.min(block_bbox[:, 0]) <= step[0] <= np.max(block_bbox[:, 0]))
 
                     current_color = self.blocks[colliding_blocks[0]][0]
-                    orientation = orthogonal_orientation(orientation, is_horizontal)
+                    direction = orthogonal_direction(direction, "horizontal" if is_horizontal else "vertical")
 
                 self.output_grid[step[0], step[1]] = current_color
-                step += orientation_to_unit_vector(orientation)
+                step += direction_to_unit_vector(direction)
                 yield self.output_grid.copy()
