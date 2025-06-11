@@ -1,5 +1,5 @@
 """
-The physics module contains world *physics*, for instance, calculating orientation vectors and other physical properties.
+The physics module contains world *physics*, for instance, calculating direction vectors and other physical properties.
 """
 from typing import Literal
 
@@ -40,7 +40,7 @@ def direction_to_unit_vector(direction: Direction):
 def orthogonal_direction(direction: Direction, axis: Axis = "horizontal") -> Direction:
     """
     Returns the orthogonal direction of the given direction based on a collision axis.
-    :param direction: The orientation to convert.
+    :param direction: The direction to convert.
     :param axis: The collision axis.
     :return: The orthogonal direction of the given direction.
     """
@@ -72,19 +72,22 @@ def orthogonal_direction(direction: Direction, axis: Axis = "horizontal") -> Dir
     raise ValueError("Unknown axis {}".format(axis))
 
 
-def starting_point(bounding_box: np.ndarray, orientation: Direction) -> np.ndarray:
+def starting_point(bounding_box: np.ndarray, direction: Direction) -> np.ndarray:
     """
-    Returns the starting point of a structure with a given bounding box and orientation.
+    Returns the starting point of a structure with a given bounding box and direction.
     :param bounding_box: The bounding box of the structure.
-    :param orientation: The orientation of the structure.
+    :param direction: The direction of the structure.
     :return: Starting point of the structure.
     """
 
-    if orientation == "bottom_left":
-        return bounding_box[0]
-    elif orientation == "top_left":
-        return bounding_box[1]
-    elif orientation == "top_right":
-        return bounding_box[2]
+    match direction:
+        case "bottom_left":
+            return bounding_box[0]
+        case "top_left":
+            return bounding_box[1]
+        case "top_right":
+            return bounding_box[2]
+        case "bottom_right":
+            return bounding_box[3]
 
-    return bounding_box[3]
+    raise ValueError("Unknown direction {}".format(direction))

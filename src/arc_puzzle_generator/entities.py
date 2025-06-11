@@ -107,7 +107,7 @@ def is_l_shape(arr: np.ndarray) -> Optional[Direction]:
     Checks if a 2D NumPy array represents an L-shape.
 
     :param arr: The 2D NumPy array to check.
-    :return: The orientation of the L-shape (e.g., "bottom right", "top left", etc. if it's an L-shape, otherwise None.
+    :return: The direction of the L-shape (e.g., "bottom right", "top left", etc. if it's an L-shape, otherwise None.
     """
 
     # L-shape's cannot be straight lines
@@ -154,7 +154,7 @@ def is_l_shape(arr: np.ndarray) -> Optional[Direction]:
         corner_row = max_row
 
     if arm1_len > 1 and arm2_len > 1 and arm1_len + arm2_len - 1 == num_non_zero:
-        # Determine orientation based on the corner
+        # Determine direction based on the corner
         if corner_row == max_row and corner_col == max_col:
             return "bottom_right"
         elif corner_row == max_row and corner_col == min_col:

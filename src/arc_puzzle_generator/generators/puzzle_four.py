@@ -29,9 +29,9 @@ class PuzzleFourGenerator(Generator):
                 box = make_smallest_square_from_mask(self.output_grid, labeled_grid == label)
 
                 if box is not None:
-                    orientation = is_l_shape(box)
-                    if orientation is not None:
-                        self.l_shapes.append((target_color, bounding_box[(label - 1), :], orientation))
+                    direction = is_l_shape(box)
+                    if direction is not None:
+                        self.l_shapes.append((target_color, bounding_box[(label - 1), :], direction))
                     else:
                         self.blocks.append((target_color, bounding_box[(label - 1), :]))
 
