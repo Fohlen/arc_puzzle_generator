@@ -1,0 +1,88 @@
+from collections import defaultdict
+from itertools import cycle
+from typing import Iterable
+
+import numpy as np
+
+from arc_puzzle_generator.color_iterator import ColorIterator
+from arc_puzzle_generator.entities import colour_count, find_connected_objects
+from arc_puzzle_generator.generators.agent import Agent
+from arc_puzzle_generator.generators.generator_new import GeneratorNew
+from arc_puzzle_generator.physics import Direction, relative_box_direction, box_distance
+
+
+class PuzzleTwoGeneratorNew(GeneratorNew):
+    def setup(self) -> Iterable[Agent]:
+        boxes: list[tuple[int, int, int, np.ndarray]] = []  # [(index, target_color, color_count, bounding box)]
+        box_order: list[tuple[int, Direction, int]] = []  # [(box, direction, distance)]
+        grid = self.input_grid[:-2, :]
+
+        sorted_colors = colour_count(grid)
+        background_color = sorted_colors[0][0]
+        box_color = sorted_colors[1][0]
+
+        mask = grid == box_color
+        labels, bboxes, num_objects = find_connected_objects(mask)
+
+        box_colors = defaultdict(list)
+        adjacent_boxes = defaultdict(list)
+        horizontal_boxes = defaultdict(list)
+        vertical_boxes = defaultdict(list)
+
+        for index, bbox in enumerate(bboxes):
+            grid_box = grid[bbox[1, 0]:bbox[0, 0] + 1, bbox[0, 1]:bbox[3, 1] + 1]
+            target_color = [color for color in np.unique(grid_box) if color != box_color][0]
+            color_count = np.sum(grid_box == target_color)
+
+            boxes.append((index, target_color, color_count, bbox))
+            box_colors[target_color].append(index)
+            horizontal_boxes[bbox[0, 0]].append(index)
+            vertical_boxes[bbox[0, 1]].append(index)
+
+        for (index, color, count, bbox) in boxes:
+            horizontal_index = horizontal_boxes[bbox[0, 0]].index(index)
+            vertical_index = vertical_boxes[bbox[0, 1]].index(index)
+
+            # we select the left and right boxes on the horizontal scale
+            adjacent_boxes[index].extend(
+                [idx for idx in horizontal_boxes[bbox[0, 0]][(max(horizontal_index - 1, 0)):(horizontal_index + 2)] if
+                 idx != index]
+            )
+            # we select the top and bottom boxes on the vertical scale
+            adjacent_boxes[index].extend(
+                [idx for idx in vertical_boxes[bbox[0, 1]][(max(vertical_index - 1, 0)):(vertical_index + 2)] if
+                 idx != index]
+            )
+
+        legend = [color for color in self.input_grid[-2, :] if color != background_color]
+        color_order = [(legend[i], legend[i + 1]) for i in range(len(legend) - 1)]
+
+        current_box = None
+        start_indexes = box_colors[color_order[0][0]]
+        for start_index in start_indexes:
+            color2_indexes = box_colors[color_order[0][1]]
+            reachable_boxes = [index2 for index2 in color2_indexes if index2 in adjacent_boxes[start_index]]
+            if len(reachable_boxes) == 1:
+                direction = relative_box_direction(boxes[start_index][3], boxes[reachable_boxes[0]][3])
+                distance = box_distance(boxes[start_index][3], boxes[reachable_boxes[0]][3], direction)
+                box_order.append((start_index, direction, distance))
+                current_box = reachable_boxes[0]
+                break
+
+        if current_box is not None:
+            for _, color2 in color_order[1:]:
+                color2_indexes = box_colors[color2]
+                reachable_boxes = [index2 for index2 in color2_indexes if index2 in adjacent_boxes[current_box]]
+                if len(reachable_boxes) == 1:
+                    direction = relative_box_direction(boxes[current_box][3], boxes[reachable_boxes[0]][3])
+                    distance = box_distance(boxes[current_box][3], boxes[reachable_boxes[0]][3], direction)
+                    box_order.append((current_box, direction, distance))
+                    current_box = reachable_boxes[0]
+
+        return [Agent(
+            output_grid=self.output_grid,
+            bounding_box=boxes[box1][3],
+            direction=direction,
+            colors=ColorIterator([(1, distance), (boxes[box1][0], 1)]),
+            charge=distance,
+        ) for box1, direction, distance in box_order]

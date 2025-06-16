@@ -1,5 +1,3 @@
-import abc
-from itertools import cycle
 from typing import Iterable, Iterator
 
 import numpy as np

@@ -37,6 +37,47 @@ def direction_to_unit_vector(direction: Direction):
     raise ValueError("Unknown direction {}".format(direction))
 
 
+def box_distance(box1: np.ndarray, box2: np.ndarray, direction: Direction) -> int:
+    """
+    Returns the distance between two bounding boxes given a direction.
+    :param box1: The first box.
+    :param box2: The second box.
+    :param direction: The direction between the two boxes.
+    :return: The distance between the two points.
+    """
+
+    # TODO: Support diagonal directions
+
+    if direction == "left":
+        return box1[0][1] - box2[3][1]
+    elif direction == "right":
+        return box2[0][1] - box1[3][1]
+    elif direction == "up":
+        return box1[2][0] - box2[0][0]
+    else:
+        return box2[2][0] - box1[0][0]
+
+
+def relative_box_direction(box1: np.ndarray, box2: np.ndarray) -> Direction:
+    """
+    Returns the relative direction between two boxes.
+    :param box1: The box to determine a relative direction for.
+    :param box2: The box to determine a relative direction to.
+    :return: The relative direction between the two boxes.
+    """
+
+    # TODO: Support diagonal directions
+
+    if box1[0, 0] < box2[0, 0]:
+        return "down"
+    elif box1[0, 0] > box2[0, 0]:
+        return "up"
+    elif box1[0, 1] < box2[0, 1]:
+        return "right"
+    else:
+        return "left"
+
+
 def orthogonal_direction(direction: Direction, axis: Axis = "horizontal") -> Direction:
     """
     Returns the orthogonal direction of the given direction based on a collision axis.
