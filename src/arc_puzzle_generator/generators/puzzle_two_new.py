@@ -13,8 +13,9 @@ from arc_puzzle_generator.physics import Direction, relative_box_direction, box_
 
 class PuzzleTwoGeneratorNew(GeneratorNew):
     def setup(self) -> Iterable[Agent]:
-        boxes: list[tuple[int, int, int, np.ndarray]] = []  # [(index, target_color, color_count, bounding box)]
+        boxes: list[tuple[int, int, np.ndarray]] = []  # [(index, target_color, bounding box)]
         box_order: list[tuple[int, Direction, int]] = []  # [(box, direction, distance)]
+        box_size: int | None = None
         grid = self.input_grid[:-2, :]
 
         sorted_colors = colour_count(grid)
@@ -32,14 +33,15 @@ class PuzzleTwoGeneratorNew(GeneratorNew):
         for index, bbox in enumerate(bboxes):
             grid_box = grid[bbox[1, 0]:bbox[0, 0] + 1, bbox[0, 1]:bbox[3, 1] + 1]
             target_color = [color for color in np.unique(grid_box) if color != box_color][0]
-            color_count = np.sum(grid_box == target_color)
+            if box_size is None:
+                box_size = np.sum(grid_box == target_color)
 
-            boxes.append((index, target_color, color_count, bbox))
+            boxes.append((index, target_color, bbox))
             box_colors[target_color].append(index)
             horizontal_boxes[bbox[0, 0]].append(index)
             vertical_boxes[bbox[0, 1]].append(index)
 
-        for (index, color, count, bbox) in boxes:
+        for (index, color, bbox) in boxes:
             horizontal_index = horizontal_boxes[bbox[0, 0]].index(index)
             vertical_index = vertical_boxes[bbox[0, 1]].index(index)
 
@@ -63,8 +65,8 @@ class PuzzleTwoGeneratorNew(GeneratorNew):
             color2_indexes = box_colors[color_order[0][1]]
             reachable_boxes = [index2 for index2 in color2_indexes if index2 in adjacent_boxes[start_index]]
             if len(reachable_boxes) == 1:
-                direction = relative_box_direction(boxes[start_index][3], boxes[reachable_boxes[0]][3])
-                distance = box_distance(boxes[start_index][3], boxes[reachable_boxes[0]][3], direction)
+                direction = relative_box_direction(boxes[start_index][2], boxes[reachable_boxes[0]][2])
+                distance = box_distance(boxes[start_index][2], boxes[reachable_boxes[0]][2], direction)
                 box_order.append((start_index, direction, distance))
                 current_box = reachable_boxes[0]
                 break
@@ -74,16 +76,16 @@ class PuzzleTwoGeneratorNew(GeneratorNew):
                 color2_indexes = box_colors[color2]
                 reachable_boxes = [index2 for index2 in color2_indexes if index2 in adjacent_boxes[current_box]]
                 if len(reachable_boxes) == 1:
-                    direction = relative_box_direction(boxes[current_box][3], boxes[reachable_boxes[0]][3])
-                    distance = box_distance(boxes[current_box][3], boxes[reachable_boxes[0]][3], direction)
+                    direction = relative_box_direction(boxes[current_box][2], boxes[reachable_boxes[0]][2])
+                    distance = box_distance(boxes[current_box][2], boxes[reachable_boxes[0]][2], direction)
                     box_order.append((current_box, direction, distance))
                     current_box = reachable_boxes[0]
 
-        beam_width = ceil(boxes[0][2] / 2)
+        beam_width = ceil(box_size / 2)
 
         return [Agent(
             output_grid=self.output_grid,
-            bounding_box=boxes[box1][3],
+            bounding_box=boxes[box1][2],
             direction=direction,
             colors=ColorIterator(
                 [(box_color, distance), (boxes[box1][1], 1)],
