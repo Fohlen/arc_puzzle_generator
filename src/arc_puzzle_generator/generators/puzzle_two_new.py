@@ -1,5 +1,4 @@
 from collections import defaultdict
-from itertools import cycle
 from typing import Iterable
 
 import numpy as np
@@ -83,6 +82,9 @@ class PuzzleTwoGeneratorNew(GeneratorNew):
             output_grid=self.output_grid,
             bounding_box=boxes[box1][3],
             direction=direction,
-            colors=ColorIterator([(1, distance), (boxes[box1][0], 1)]),
+            colors=ColorIterator(
+                [(box_color, distance), (boxes[box1][1], 1)],
+                background_color=background_color
+            ),
             charge=distance,
         ) for box1, direction, distance in box_order]

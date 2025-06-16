@@ -19,20 +19,17 @@ class PuzzleTwoTestCase(unittest.TestCase):
         self.assertTrue(np.array_equal(output_grid, self.puzzle.train[0].output))
 
     def test_generate_3e6067c3_second(self):
-        generator = PuzzleTwoGenerator(self.puzzle.train[1].input)
-        generator.setup()
+        generator = PuzzleTwoGeneratorNew(self.puzzle.train[1].input)
         *_, output_grid = generator
         self.assertTrue(np.array_equal(output_grid, self.puzzle.train[1].output))
 
     def test_generate_3e6067c3_third(self):
-        generator = PuzzleTwoGenerator(self.puzzle.train[2].input)
-        generator.setup()
+        generator = PuzzleTwoGeneratorNew(self.puzzle.train[2].input)
         *_, output_grid = generator
         self.assertTrue(np.array_equal(output_grid, self.puzzle.train[2].output))
 
     def test_generate_3e6067c3_prompt(self):
-        generator = PuzzleTwoGenerator(self.puzzle.test[0].input)
-        generator.setup()
+        generator = PuzzleTwoGeneratorNew(self.puzzle.test[0].input)
         *_, output_grid = generator
         self.assertTrue(np.array_equal(output_grid, self.puzzle.test[0].output))
 
