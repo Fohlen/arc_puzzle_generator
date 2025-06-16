@@ -3,6 +3,7 @@ from typing import Iterable
 
 import numpy as np
 
+from arc_puzzle_generator.color_iterator import ColorIterator
 from arc_puzzle_generator.entities import colour_count, find_connected_objects
 from arc_puzzle_generator.generators.agent import Agent
 from arc_puzzle_generator.generators.generator_new import GeneratorNew
@@ -15,7 +16,7 @@ class PuzzleOneGeneratorNew(GeneratorNew):
 
     def setup(self) -> Iterable[Agent]:
         sorted_colors = colour_count(self.input_grid)
-        color_sequences: list[tuple[int, list[int]]] = []  # [(row, [color, color, ...]]
+        color_sequences: list[tuple[int, list[tuple[int, int]]]] = []  # [(row, [color, count]]
         background_color = sorted_colors[0][0]
         start_col = 0
         charge: int = 0
@@ -29,7 +30,7 @@ class PuzzleOneGeneratorNew(GeneratorNew):
             direction = "left"
             input_grid = self.input_grid[:, (separator_bboxes[0][0, 1] + 1):]
             start_col = separator_bboxes[0][1, 1] - 1
-            charge = separator_bboxes[0][3][1] - 1
+            charge = separator_bboxes[0][3][1]
         # left-to-right
         else:
             input_grid = self.input_grid[:, :separator_bboxes[0][0, 1]]
@@ -43,28 +44,21 @@ class PuzzleOneGeneratorNew(GeneratorNew):
             if np.all(row == background_color):
                 continue
 
-            items = row if direction == "right" else row[::-1]
-            for item in items:
-                if item != background_color:
+            colors = row if direction == "right" else row[::-1]
+            for color in colors:
+                if color != background_color:
 
-                    if item not in color_order:
-                        color_order[item] = 0
-                    color_order[item] += 1
+                    if color not in color_order:
+                        color_order[color] = 0
+                    color_order[color] += 1
 
-            total_count = sum(color_order.values())
-            color_sequence = [background_color] * total_count
-
-            insert_items = color_order.items() if direction == "right" else reversed(color_order.items())
-            for item in insert_items:
-                for i in range(0, total_count, item[1]):
-                    color_sequence[i] = item[0]
-
-            color_sequences.append((index, color_sequence))
+            color_sequence = color_order.items() if direction == "left" else reversed(color_order.items())
+            color_sequences.append((index, list(color_sequence)))
 
         return [Agent(
             output_grid=self.output_grid,
             bounding_box=np.array([[row, start_col], [row, start_col], [row, start_col], [row, start_col]]),
             charge=charge,
             direction=direction,
-            colors=color_sequence,
+            colors=ColorIterator(color_sequence, background_color),
         ) for row, color_sequence in color_sequences]

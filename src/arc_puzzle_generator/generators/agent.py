@@ -19,7 +19,7 @@ class Agent(Iterator[np.ndarray], Iterable[np.ndarray]):
         self.output_grid = output_grid
         self.bounding_box = bounding_box
         self.direction = direction
-        self.color_cycle = cycle(colors)
+        self.colors = iter(colors)
         self.charge = charge
         self.step = starting_point(bounding_box, direction)
 
@@ -33,12 +33,11 @@ class Agent(Iterator[np.ndarray], Iterable[np.ndarray]):
             if step[0] < 0 or step[0] > self.output_grid.shape[0] or step[1] < 0 or step[1] > self.output_grid.shape[1]:
                 raise StopIteration
             else:
-                self.output_grid[self.step[0], self.step[1]] = next(self.color_cycle)
-
+                self.output_grid[self.step[0], self.step[1]] = next(self.colors)
                 self.step = step
                 return self.output_grid.copy()
         elif self.charge > 0:
-            self.output_grid[self.step[0], self.step[1]] = next(self.color_cycle)
+            self.output_grid[self.step[0], self.step[1]] = next(self.colors)
             self.step = self.step + direction_to_unit_vector(self.direction)
             self.charge -= 1
 
