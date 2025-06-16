@@ -7,7 +7,7 @@ import numpy as np
 from arc_puzzle_generator.physics import Direction, starting_point, direction_to_unit_vector
 
 
-class Agent:
+class Agent(Iterator[np.ndarray], Iterable[np.ndarray]):
     def __init__(
             self,
             output_grid: np.ndarray,
@@ -15,7 +15,7 @@ class Agent:
             direction: Direction,
             colors: Iterable[int],
             charge: int = -1,
-    ):
+    ) -> None:
         self.output_grid = output_grid
         self.bounding_box = bounding_box
         self.direction = direction
@@ -23,10 +23,10 @@ class Agent:
         self.charge = charge
         self.step = starting_point(bounding_box, direction)
 
-    def __iter__(self):
+    def __iter__(self) -> Iterator[np.ndarray]:
         return self
 
-    def __next__(self):
+    def __next__(self) -> np.ndarray:
         if self.charge == -1:
             step = self.step + direction_to_unit_vector(self.direction)
 

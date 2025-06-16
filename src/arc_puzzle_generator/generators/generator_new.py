@@ -7,7 +7,7 @@ import numpy as np
 from arc_puzzle_generator.generators.agent import Agent
 
 
-class GeneratorNew(ABC):
+class GeneratorNew(Iterator[np.ndarray], Iterable[np.ndarray], ABC):
     """
     A generator class will receive an input grid and yield one step at a time, until finished.
     """
@@ -17,6 +17,7 @@ class GeneratorNew(ABC):
         self.output_grid = input_grid.copy()
         self.iter = None
 
+    @abstractmethod
     def setup(self) -> Iterable[Agent]:
         pass
 
@@ -25,4 +26,6 @@ class GeneratorNew(ABC):
         return self.iter
 
     def __next__(self) -> np.ndarray:
+        if self.iter is None:
+            raise StopIteration
         return next(self.iter)
