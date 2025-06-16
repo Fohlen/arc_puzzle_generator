@@ -113,30 +113,41 @@ def orthogonal_direction(direction: Direction, axis: Axis = "horizontal") -> Dir
     raise ValueError("Unknown axis {}".format(axis))
 
 
-def starting_point(bounding_box: np.ndarray, direction: Direction) -> np.ndarray:
+def starting_point(
+        bounding_box: np.ndarray,
+        direction: Direction,
+        point_width: int = 1,
+) -> np.ndarray:
     """
     Returns the starting point of a structure with a given bounding box and direction.
     :param bounding_box: The bounding box of the structure.
     :param direction: The direction of the structure.
+    :param point_width: The width of the starting point.
     :return: Starting point of the structure.
     """
 
+    # TODO: Properly support diagonal directions
+
     match direction:
         case "left":
-            return (bounding_box[0] + bounding_box[1]) // 2
+            start_pos = ((bounding_box[0] + bounding_box[1]) // 2)
+            return np.array([start_pos + [i, 0] for i in range(point_width)])
         case "right":
-            return (bounding_box[2] + bounding_box[3]) // 2
+            start_pos = ((bounding_box[2] + bounding_box[3]) // 2)
+            return np.array([start_pos + [i, 0] for i in range(point_width)])
         case "up":
-            return (bounding_box[1] + bounding_box[2]) // 2
+            start_pos = ((bounding_box[1] + bounding_box[2]) // 2)
+            return np.array([start_pos + [0, i] for i in range(point_width)])
         case "down":
-            return (bounding_box[0] + bounding_box[3]) // 2
+            start_pos = ((bounding_box[0] + bounding_box[3]) // 2)
+            return np.array([start_pos + [0, i] for i in range(point_width)])
         case "bottom_left":
-            return bounding_box[0]
+            return np.array([bounding_box[0]])
         case "top_left":
-            return bounding_box[1]
+            return np.array([bounding_box[1]])
         case "top_right":
-            return bounding_box[2]
+            return np.array([bounding_box[2]])
         case "bottom_right":
-            return bounding_box[3]
+            return np.array([bounding_box[3]])
 
     raise ValueError("Unknown direction {}".format(direction))

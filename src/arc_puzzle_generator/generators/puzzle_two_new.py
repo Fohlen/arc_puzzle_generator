@@ -1,4 +1,5 @@
 from collections import defaultdict
+from math import ceil
 from typing import Iterable
 
 import numpy as np
@@ -78,6 +79,8 @@ class PuzzleTwoGeneratorNew(GeneratorNew):
                     box_order.append((current_box, direction, distance))
                     current_box = reachable_boxes[0]
 
+        beam_width = ceil(boxes[0][2] / 2)
+
         return [Agent(
             output_grid=self.output_grid,
             bounding_box=boxes[box1][3],
@@ -87,4 +90,5 @@ class PuzzleTwoGeneratorNew(GeneratorNew):
                 background_color=background_color
             ),
             charge=distance,
+            beam_width=beam_width,
         ) for box1, direction, distance in box_order]
