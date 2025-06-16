@@ -81,6 +81,14 @@ def starting_point(bounding_box: np.ndarray, direction: Direction) -> np.ndarray
     """
 
     match direction:
+        case "left":
+            return (bounding_box[0] + bounding_box[1]) // 2
+        case "right":
+            return (bounding_box[2] + bounding_box[3]) // 2
+        case "up":
+            return (bounding_box[1] + bounding_box[2]) // 2
+        case "down":
+            return (bounding_box[0] + bounding_box[3]) // 2
         case "bottom_left":
             return bounding_box[0]
         case "top_left":

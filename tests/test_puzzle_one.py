@@ -4,6 +4,7 @@ import numpy as np
 
 from arc_puzzle_generator.data_loader import load_puzzle
 from arc_puzzle_generator.generators.puzzle_one import PuzzleOneGenerator
+from arc_puzzle_generator.generators.puzzle_one_new import PuzzleOneGeneratorNew
 from tests.utils import test_dir
 
 
@@ -18,6 +19,10 @@ class PuzzleOneTestCase(unittest.TestCase):
         *_, output_grid = generator
         self.assertTrue(np.array_equal(output_grid, self.puzzle.train[0].output))
 
+    def test_generate_1ae2feb7_new(self):
+        generator = PuzzleOneGeneratorNew(self.puzzle.train[0].input)
+        *_, output_grid = generator
+        self.assertTrue(np.array_equal(output_grid, self.puzzle.train[0].output))
 
     def test_generate_1ae2feb7_second(self):
         generator = PuzzleOneGenerator(self.puzzle.train[1].input)
@@ -30,7 +35,6 @@ class PuzzleOneTestCase(unittest.TestCase):
         generator.setup()
         *_, output_grid = generator
         self.assertTrue(np.array_equal(output_grid, self.puzzle.train[2].output))
-
 
     def test_generate_1ae2feb7_prompt(self):
         generator = PuzzleOneGenerator(self.puzzle.test[0].input)
@@ -49,4 +53,3 @@ class PuzzleOneTestCase(unittest.TestCase):
         generator.setup()
         *_, output_grid = generator
         self.assertTrue(np.array_equal(output_grid, self.puzzle.test[2].output))
-
