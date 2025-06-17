@@ -186,7 +186,8 @@ def is_point_adjacent(point: np.ndarray, bboxes: np.ndarray) -> Optional[np.ndar
     bbox_min_y = np.min(bboxes[:, :, 1], axis=1)
     bbox_max_y = np.max(bboxes[:, :, 1], axis=1)
 
-    x, y = point
+    x = point[:, 0].max()
+    y = point[:, 1].max()
 
     # Check x-adjacency (point is one unit away horizontally and within vertical bounds)
     x_adjacent = ((x == bbox_max_x + 1) | (x == bbox_min_x - 1)) & \

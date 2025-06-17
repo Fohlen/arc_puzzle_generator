@@ -87,8 +87,8 @@ def orthogonal_direction(direction: Direction, axis: Axis = "horizontal") -> Dir
     """
 
     match axis:
-        case "horizontal":
-            # For horizontal collisions (hitting vertical walls)
+        case "vertical":
+            # For vertical collisions (hitting vertical walls)
             match direction:
                 case "bottom_left":
                     return "bottom_right"
@@ -98,8 +98,8 @@ def orthogonal_direction(direction: Direction, axis: Axis = "horizontal") -> Dir
                     return "top_right"
                 case "top_right":
                     return "top_left"
-        case "vertical":
-            # For vertical collisions (hitting horizontal walls)
+        case "horizontal":
+            # For horizontal collisions (hitting horizontal walls)
             match direction:
                 case "bottom_left":
                     return "top_left"
