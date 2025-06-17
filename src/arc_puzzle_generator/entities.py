@@ -167,7 +167,7 @@ def is_l_shape(arr: np.ndarray) -> Optional[Direction]:
     return None
 
 
-def is_point_adjacent(point: np.ndarray, bboxes: np.ndarray) -> Optional[np.ndarray] | None:
+def is_point_adjacent(point: np.ndarray, bboxes: np.ndarray) -> Optional[np.ndarray]:
     """
     Check if a point is adjacent to any of the bounding boxes
 
@@ -186,7 +186,7 @@ def is_point_adjacent(point: np.ndarray, bboxes: np.ndarray) -> Optional[np.ndar
     bbox_min_y = np.min(bboxes[:, :, 1], axis=1)
     bbox_max_y = np.max(bboxes[:, :, 1], axis=1)
 
-    x = point[:, 0].max()
+    x = point[:, 0].min()
     y = point[:, 1].max()
 
     # Check x-adjacency (point is one unit away horizontally and within vertical bounds)

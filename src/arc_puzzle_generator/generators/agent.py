@@ -4,7 +4,8 @@ from typing import Iterable, Iterator
 import numpy as np
 
 from arc_puzzle_generator.entities import is_point_adjacent
-from arc_puzzle_generator.physics import Direction, starting_point, direction_to_unit_vector, orthogonal_direction
+from arc_puzzle_generator.physics import Direction, starting_point, direction_to_unit_vector, orthogonal_direction, \
+    Axis, collision_axis
 
 
 class Agent(Iterator[np.ndarray], Iterable[np.ndarray]):
@@ -31,12 +32,12 @@ class Agent(Iterator[np.ndarray], Iterable[np.ndarray]):
 
     def __next__(self) -> np.ndarray:
         if self.charge == -1:
+            # compute the next step
+            step = self.step + direction_to_unit_vector(self.direction)
             # calculate if we collide with a block
             colliding_blocks = None if self.collision_bounding_boxes is None else is_point_adjacent(
                 self.step, self.collision_bounding_boxes
             )
-            # compute the next step
-            step = self.step + direction_to_unit_vector(self.direction)
 
             # if the current step runs out of bounds, terminate the agent
             if (self.step[:, 0].min() < 0 or self.step[:, 0].max() >= self.output_grid.shape[0]
@@ -44,16 +45,15 @@ class Agent(Iterator[np.ndarray], Iterable[np.ndarray]):
                 raise StopIteration
             # if the current step collides, update the direction and color
             elif colliding_blocks is not None:
-                self.output_grid[self.step[:, 0], self.step[:, 1]] = next(self.colors)
-
+                block_bbox = self.collision_bounding_boxes[colliding_blocks[0]]
+                current_color = self.output_grid[block_bbox[0][0], block_bbox[0][1]]
                 # Determine if collision is horizontal by checking if the beam's x-coordinate
                 # is adjacent to the block's vertical sides
-                block_bbox = self.collision_bounding_boxes[colliding_blocks[0]]
-                is_horizontal = (block_bbox[:, 0].min() <= step[:, 0].max() <= block_bbox[:, 0].max())
-                current_color = self.output_grid[block_bbox[0][0], block_bbox[0][1]]
+                axis = collision_axis(self.step, block_bbox, self.direction)
 
                 self.colors = cycle([current_color])
-                self.direction = orthogonal_direction(self.direction, "horizontal" if is_horizontal else "vertical")
+                self.output_grid[self.step[:, 0], self.step[:, 1]] = next(self.colors)
+                self.direction = orthogonal_direction(self.direction, axis)
                 self.step = self.step + direction_to_unit_vector(self.direction)
 
                 return self.output_grid.copy()

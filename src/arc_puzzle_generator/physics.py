@@ -78,6 +78,32 @@ def relative_box_direction(box1: np.ndarray, box2: np.ndarray) -> Direction:
         return "left"
 
 
+def collision_axis(point: np.ndarray, box: np.ndarray, direction: Direction) -> Axis:
+    """
+    Returns the axis of the collision between two points based on the given direction.
+    :param point: The point to go from.
+    :param box:  The box to go to.
+    :param direction: The direction between the two.
+    :return: The axis of the collision between the two points.
+    """
+
+    match direction:
+        case "up":
+            return "horizontal"
+        case "down":
+            return "horizontal"
+        case "left":
+            return "vertical"
+        case "right":
+            return "vertical"
+        case "top_left" | "bottom_left":
+            return "vertical" if box[3][1] < point[:, 1].min() else "horizontal"
+        case "top_right" | "bottom_right":
+            return "vertical" if point[:, 1].max() < box[0][1] else "horizontal"
+
+    raise ValueError("Unknown collision direction {}".format(direction))
+
+
 def orthogonal_direction(direction: Direction, axis: Axis = "horizontal") -> Direction:
     """
     Returns the orthogonal direction of the given direction based on a collision axis.
