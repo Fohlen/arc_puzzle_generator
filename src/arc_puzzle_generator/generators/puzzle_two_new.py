@@ -81,6 +81,7 @@ class PuzzleTwoGeneratorNew(GeneratorNew):
                     box_order.append((current_box, direction, distance))
                     current_box = reachable_boxes[0]
 
+        assert box_size is not None
         beam_width = ceil(box_size / 2)
 
         return [Agent(
