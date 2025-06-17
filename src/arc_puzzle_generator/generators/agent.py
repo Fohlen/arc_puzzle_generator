@@ -3,9 +3,8 @@ from typing import Iterable, Iterator
 
 import numpy as np
 
-from arc_puzzle_generator.entities import is_point_adjacent
 from arc_puzzle_generator.physics import Direction, starting_point, direction_to_unit_vector, orthogonal_direction, \
-    collision_axis
+    collision_axis, is_point_adjacent
 
 
 class Agent(Iterator[np.ndarray], Iterable[np.ndarray]):
