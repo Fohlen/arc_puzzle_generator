@@ -4,6 +4,7 @@ import numpy as np
 
 from arc_puzzle_generator.data_loader import load_puzzle
 from arc_puzzle_generator.generators.puzzle_four import PuzzleFourGenerator
+from arc_puzzle_generator.generators.puzzle_four_new import PuzzleFourGeneratorNew
 from tests.utils import test_dir
 
 
@@ -13,8 +14,7 @@ class PuzzleFourTestCase(unittest.TestCase):
         self.puzzle = load_puzzle(file_path)
 
     def test_generate_48d8fb45(self):
-        generator = PuzzleFourGenerator(self.puzzle.train[0].input)
-        generator.setup()
+        generator = PuzzleFourGeneratorNew(self.puzzle.train[0].input)
         *_, output_grid = generator
         self.assertTrue(np.array_equal(output_grid, self.puzzle.train[0].output))
 

@@ -29,10 +29,11 @@ class Agent(Iterator[np.ndarray], Iterable[np.ndarray]):
         if self.charge == -1:
             step = self.step + direction_to_unit_vector(self.direction)
 
-            if step[0] < 0 or step[0] > self.output_grid.shape[0] or step[1] < 0 or step[1] > self.output_grid.shape[1]:
+            if (step[:, 0].min() < 0 or step[:, 0].max() > self.output_grid.shape[0]
+                    or step[:, 1].min() < 0 or step[:, 1].max() > self.output_grid.shape[1]):
                 raise StopIteration
             else:
-                self.output_grid[[self.step[:, 0], self.step[:, 1]]] = next(self.colors)
+                self.output_grid[self.step[:, 0], self.step[:, 1]] = next(self.colors)
                 self.step = step
                 return self.output_grid.copy()
         elif self.charge > 0:
