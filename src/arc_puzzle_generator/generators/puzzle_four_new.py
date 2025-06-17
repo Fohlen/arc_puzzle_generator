@@ -5,12 +5,12 @@ import numpy as np
 
 from arc_puzzle_generator.entities import find_colors, find_connected_objects, is_l_shape
 from arc_puzzle_generator.generators.agent import Agent
-from arc_puzzle_generator.generators.generator_new import GeneratorNew
+from arc_puzzle_generator.generators.puzzle_generator import PuzzleGenerator
 from arc_puzzle_generator.grid_utils import make_smallest_square_from_mask
 from arc_puzzle_generator.physics import Direction
 
 
-class PuzzleFourGeneratorNew(GeneratorNew):
+class PuzzleFourPuzzleGenerator(PuzzleGenerator):
     def setup(self) -> Iterable[Agent]:
         colors = find_colors(self.input_grid, background=0)
         l_shapes: list[tuple[int, np.ndarray, Direction]] = []

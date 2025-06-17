@@ -7,11 +7,11 @@ import numpy as np
 from arc_puzzle_generator.color_iterator import ColorIterator
 from arc_puzzle_generator.entities import colour_count, find_connected_objects
 from arc_puzzle_generator.generators.agent import Agent
-from arc_puzzle_generator.generators.generator_new import GeneratorNew
+from arc_puzzle_generator.generators.puzzle_generator import PuzzleGenerator
 from arc_puzzle_generator.physics import Direction, relative_box_direction, box_distance
 
 
-class PuzzleTwoGeneratorNew(GeneratorNew):
+class PuzzleTwoPuzzleGenerator(PuzzleGenerator):
     def setup(self) -> Iterable[Agent]:
         boxes: list[tuple[int, int, np.ndarray]] = []  # [(index, target_color, bounding box)]
         box_order: list[tuple[int, Direction, int]] = []  # [(box, direction, distance)]

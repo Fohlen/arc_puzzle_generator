@@ -6,11 +6,11 @@ import numpy as np
 from arc_puzzle_generator.color_iterator import ColorIterator
 from arc_puzzle_generator.entities import colour_count, find_connected_objects
 from arc_puzzle_generator.generators.agent import Agent
-from arc_puzzle_generator.generators.generator_new import GeneratorNew
+from arc_puzzle_generator.generators.puzzle_generator import PuzzleGenerator
 from arc_puzzle_generator.physics import Direction
 
 
-class PuzzleOneGeneratorNew(GeneratorNew):
+class PuzzleOnePuzzleGenerator(PuzzleGenerator):
     def __init__(self, input_grid: np.ndarray):
         super().__init__(input_grid)
 
