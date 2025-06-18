@@ -56,3 +56,51 @@ def collision_neighbourhood(point: np.ndarray, direction: Direction) -> np.ndarr
             ])
 
     raise ValueError(f"Invalid direction: {direction}")
+
+
+def orthogonal_direction(
+        point: np.ndarray,
+        collision_block: np.ndarray,
+        direction: Direction,
+):
+    """
+    Calculates the orthogonal direction of a collision based on a point and the collision blocks.
+    :param point: The point to determine the orthogonal direction for.
+    :param collision_block: The block to collide with.
+    :param direction: The direction to determine the orthogonal direction into.
+    :return: A orthogonal direction.
+    """
+
+    x_min = point[:, 0].min()
+    x_max = point[:, 0].max()
+
+    if direction == "right":
+        return "left"
+    elif direction == "left":
+        return "right"
+    elif direction == "up":
+        return "down"
+    elif direction == "down":
+        return "up"
+    elif direction == "top_left":
+        if collision_block[0].max() < x_min:
+            return "bottom_left"
+        else:
+            return "top_right"
+    elif direction == "top_right":
+        if collision_block[0].max() < x_min:
+            return "bottom_right"
+        else:
+            return "top_left"
+    elif direction == "bottom_left":
+        if x_max < collision_block[0].min():
+            return "top_left"
+        else:
+            return "bottom_right"
+    elif direction == "bottom_right":
+        if x_max < collision_block[0].min():
+            return "top_right"
+        else:
+            return "bottom_left"
+
+    raise ValueError(f"Invalid direction: {direction}")

@@ -3,8 +3,8 @@ from typing import Iterable, Iterator, Optional
 
 import numpy as np
 
-from arc_puzzle_generator.physics import Direction, starting_point, direction_to_unit_vector, orthogonal_direction, \
-    collision_axis, is_point_adjacent
+from arc_puzzle_generator.collisions import collision_neighbourhood, orthogonal_direction
+from arc_puzzle_generator.physics import Direction, starting_point, direction_to_unit_vector
 
 
 class Agent(Iterator[np.ndarray], Iterable[np.ndarray]):
@@ -16,7 +16,7 @@ class Agent(Iterator[np.ndarray], Iterable[np.ndarray]):
             colors: Iterable[int],
             charge: int = -1,
             beam_width: int = 1,
-            collision_bounding_boxes: Optional[np.ndarray] = None,
+            background_color: Optional[int] = None,
     ) -> None:
         self.output_grid = output_grid
         self.bounding_box = bounding_box
@@ -24,7 +24,7 @@ class Agent(Iterator[np.ndarray], Iterable[np.ndarray]):
         self.colors = iter(colors)
         self.charge = charge
         self.step = starting_point(bounding_box, direction, point_width=beam_width)
-        self.collision_bounding_boxes = collision_bounding_boxes
+        self.background_color = background_color
 
     def __iter__(self) -> Iterator[np.ndarray]:
         return self
@@ -39,21 +39,16 @@ class Agent(Iterator[np.ndarray], Iterable[np.ndarray]):
                     or self.step[:, 1].min() < 0 or self.step[:, 1].max() >= self.output_grid.shape[1]):
                 raise StopIteration
 
-            if self.collision_bounding_boxes is not None:
-                colliding_blocks: Optional[np.ndarray] = is_point_adjacent(
-                    self.step, self.collision_bounding_boxes
-                )
+            if self.background_color is not None:
+                neighbourhood = collision_neighbourhood(self.step, self.direction)
+                colliding_blocks = self.output_grid[neighbourhood[:, 0], neighbourhood[:, 1]] != self.background_color
 
-                if colliding_blocks is not None:
-                    block_bbox = self.collision_bounding_boxes[colliding_blocks[0]]
-                    current_color = self.output_grid[block_bbox[0][0], block_bbox[0][1]]
-                    # Determine if collision is horizontal by checking if the beam's x-coordinate
-                    # is adjacent to the block's vertical sides
-                    axis = collision_axis(self.step, block_bbox, self.direction)
-
+                if np.any(colliding_blocks):
+                    block = neighbourhood[np.where(colliding_blocks)][0]
+                    current_color = self.output_grid[block[0], block[1]]
                     self.colors = cycle([current_color])
                     self.output_grid[self.step[:, 0], self.step[:, 1]] = next(self.colors)
-                    self.direction = orthogonal_direction(self.direction, axis)
+                    self.direction = orthogonal_direction(self.step, block, self.direction)
                     self.step = self.step + direction_to_unit_vector(self.direction)
 
                     return self.output_grid.copy()

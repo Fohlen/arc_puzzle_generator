@@ -30,13 +30,11 @@ class PuzzleFourPuzzleGenerator(PuzzleGenerator):
                     else:
                         blocks.append((target_color, bounding_box[(label - 1), :]))
 
-        bboxes = np.array([bbox for _, bbox in blocks])
-
         return [Agent(
             output_grid=self.output_grid,
             bounding_box=bbox,
             direction=direction,
             colors=cycle([color]),
             charge=-1,
-            collision_bounding_boxes=bboxes,
+            background_color=0
         ) for color, bbox, direction in l_shapes]
