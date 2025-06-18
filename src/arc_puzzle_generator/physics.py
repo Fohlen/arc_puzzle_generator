@@ -78,6 +78,25 @@ def relative_box_direction(box1: np.ndarray, box2: np.ndarray) -> Direction:
         return "left"
 
 
+def contained(point: np.ndarray, bbox: np.ndarray) -> np.ndarray:
+    """
+    Check if any of the points is contained in any of the bounding boxes.
+    :param point: The points to check.
+    :param bbox: The bounding boxes to check.
+    :return: A numpy array of booleans indicating whether the points are contained in the bounding boxes.
+    """
+
+    indexes = np.zeros(point.shape[0], dtype=bool)
+
+    for index, p in enumerate(point):
+        for box in bbox:
+            if box[1][0] <= p[0] <= box[3][0] and box[0][1] <= p[1] <= box[2][1]:
+                indexes[index] = True
+                break
+
+    return indexes
+
+
 def line_axis(box: np.ndarray) -> Axis:
     """
     Determines the axis of the line between two N.

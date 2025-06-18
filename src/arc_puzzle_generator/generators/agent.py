@@ -4,7 +4,7 @@ from typing import Iterable, Iterator, Optional
 import numpy as np
 
 from arc_puzzle_generator.collisions import collision_neighbourhood, orthogonal_direction
-from arc_puzzle_generator.physics import Direction, starting_point, direction_to_unit_vector, line_axis
+from arc_puzzle_generator.physics import Direction, starting_point, direction_to_unit_vector, line_axis, contained
 
 
 class Agent(Iterator[np.ndarray], Iterable[np.ndarray]):
@@ -16,7 +16,7 @@ class Agent(Iterator[np.ndarray], Iterable[np.ndarray]):
             colors: Iterable[int],
             charge: int = -1,
             beam_width: int = 1,
-            background_color: Optional[int] = None,
+            collision_bounding_box: Optional[np.ndarray] = None,
     ) -> None:
         self.output_grid = output_grid
         self.bounding_box = bounding_box
@@ -24,7 +24,7 @@ class Agent(Iterator[np.ndarray], Iterable[np.ndarray]):
         self.colors = iter(colors)
         self.charge = charge
         self.step = starting_point(bounding_box, direction, point_width=beam_width)
-        self.background_color = background_color
+        self.collision_bounding_box = collision_bounding_box
 
     def __iter__(self) -> Iterator[np.ndarray]:
         return self
@@ -39,7 +39,7 @@ class Agent(Iterator[np.ndarray], Iterable[np.ndarray]):
                     or self.step[:, 1].min() < 0 or self.step[:, 1].max() >= self.output_grid.shape[1]):
                 raise StopIteration
 
-            if self.background_color is not None:
+            if self.collision_bounding_box is not None:
                 # calculate the neighbourhood of the step dependant on the direction
                 neighbourhood = collision_neighbourhood(self.step, self.direction)
                 # remove collisions which are out of grid
@@ -48,7 +48,7 @@ class Agent(Iterator[np.ndarray], Iterable[np.ndarray]):
                     (neighbourhood[:, 1] < self.output_grid.shape[1])
                     ]
                 # mark possible collisions
-                colliding_blocks = self.output_grid[neighbourhood[:, 0], neighbourhood[:, 1]] != self.background_color
+                colliding_blocks = contained(neighbourhood, self.collision_bounding_box)
 
                 if np.any(colliding_blocks):
                     block = neighbourhood[np.where(colliding_blocks)][0]
