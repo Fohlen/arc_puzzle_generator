@@ -5,8 +5,7 @@ import numpy as np
 from arc_puzzle_generator.entities import find_colors, find_connected_objects, is_l_shape
 from arc_puzzle_generator.generators.generator import Generator
 from arc_puzzle_generator.grid_utils import make_smallest_square_from_mask
-from arc_puzzle_generator.physics import direction_to_unit_vector, starting_point, orthogonal_direction, Direction, \
-    is_point_adjacent
+from arc_puzzle_generator.physics import direction_to_unit_vector, starting_point, Direction
 
 
 class PuzzleFourGenerator(Generator):

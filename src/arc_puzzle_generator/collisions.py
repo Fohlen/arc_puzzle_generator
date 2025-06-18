@@ -1,6 +1,6 @@
 import numpy as np
 
-from arc_puzzle_generator.physics import Direction
+from arc_puzzle_generator.physics import Direction, Axis
 
 
 def collision_neighbourhood(point: np.ndarray, direction: Direction) -> np.ndarray:
@@ -58,49 +58,36 @@ def collision_neighbourhood(point: np.ndarray, direction: Direction) -> np.ndarr
     raise ValueError(f"Invalid direction: {direction}")
 
 
-def orthogonal_direction(
-        point: np.ndarray,
-        collision_block: np.ndarray,
-        direction: Direction,
-):
+def orthogonal_direction(direction: Direction, axis: Axis = "horizontal") -> Direction:
     """
-    Calculates the orthogonal direction of a collision based on a point and the collision blocks.
-    :param point: The point to determine the orthogonal direction for.
-    :param collision_block: The block to collide with.
-    :param direction: The direction to determine the orthogonal direction into.
-    :return: A orthogonal direction.
+    Returns the orthogonal direction of the given direction based on a collision axis.
+    :param direction: The direction to convert.
+    :param axis: The collision axis.
+    :return: The orthogonal direction of the given direction.
     """
 
-    x_min = point[:, 0].min()
-    x_max = point[:, 0].max()
+    match axis:
+        case "vertical":
+            # For vertical collisions (hitting vertical walls)
+            match direction:
+                case "bottom_left":
+                    return "bottom_right"
+                case "bottom_right":
+                    return "bottom_left"
+                case "top_left":
+                    return "top_right"
+                case "top_right":
+                    return "top_left"
+        case "horizontal":
+            # For horizontal collisions (hitting horizontal walls)
+            match direction:
+                case "bottom_left":
+                    return "top_left"
+                case "bottom_right":
+                    return "top_right"
+                case "top_left":
+                    return "bottom_left"
+                case "top_right":
+                    return "bottom_right"
 
-    if direction == "right":
-        return "left"
-    elif direction == "left":
-        return "right"
-    elif direction == "up":
-        return "down"
-    elif direction == "down":
-        return "up"
-    elif direction == "top_left":
-        if collision_block[0].max() < x_min:
-            return "bottom_left"
-        else:
-            return "top_right"
-    elif direction == "top_right":
-        if collision_block[0].max() < x_min:
-            return "bottom_right"
-        else:
-            return "top_left"
-    elif direction == "bottom_left":
-        if x_max < collision_block[0].min():
-            return "top_left"
-        else:
-            return "bottom_right"
-    elif direction == "bottom_right":
-        if x_max < collision_block[0].min():
-            return "top_right"
-        else:
-            return "bottom_left"
-
-    raise ValueError(f"Invalid direction: {direction}")
+    raise ValueError("Unknown axis {}".format(axis))

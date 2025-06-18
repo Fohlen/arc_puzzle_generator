@@ -4,7 +4,7 @@ from typing import Iterable, Iterator, Optional
 import numpy as np
 
 from arc_puzzle_generator.collisions import collision_neighbourhood, orthogonal_direction
-from arc_puzzle_generator.physics import Direction, starting_point, direction_to_unit_vector
+from arc_puzzle_generator.physics import Direction, starting_point, direction_to_unit_vector, line_axis
 
 
 class Agent(Iterator[np.ndarray], Iterable[np.ndarray]):
@@ -40,15 +40,24 @@ class Agent(Iterator[np.ndarray], Iterable[np.ndarray]):
                 raise StopIteration
 
             if self.background_color is not None:
+                # calculate the neighbourhood of the step dependant on the direction
                 neighbourhood = collision_neighbourhood(self.step, self.direction)
+                # remove collisions which are out of grid
+                neighbourhood = neighbourhood[
+                    (neighbourhood[:, 0] < self.output_grid.shape[0]) &
+                    (neighbourhood[:, 1] < self.output_grid.shape[1])
+                    ]
+                # mark possible collisions
                 colliding_blocks = self.output_grid[neighbourhood[:, 0], neighbourhood[:, 1]] != self.background_color
 
                 if np.any(colliding_blocks):
                     block = neighbourhood[np.where(colliding_blocks)][0]
                     current_color = self.output_grid[block[0], block[1]]
+                    axis = line_axis(neighbourhood[np.where(colliding_blocks)])
+
                     self.colors = cycle([current_color])
                     self.output_grid[self.step[:, 0], self.step[:, 1]] = next(self.colors)
-                    self.direction = orthogonal_direction(self.step, block, self.direction)
+                    self.direction = orthogonal_direction(direction=self.direction, axis=axis)
                     self.step = self.step + direction_to_unit_vector(self.direction)
 
                     return self.output_grid.copy()

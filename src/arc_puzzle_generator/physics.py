@@ -78,65 +78,22 @@ def relative_box_direction(box1: np.ndarray, box2: np.ndarray) -> Direction:
         return "left"
 
 
-def collision_axis(point: np.ndarray, box: np.ndarray, direction: Direction) -> Axis:
+def line_axis(box: np.ndarray) -> Axis:
     """
-    Returns the axis of the collision between two points based on the given direction.
-    :param point: The point to go from.
-    :param box:  The box to go to.
-    :param direction: The direction between the two.
-    :return: The axis of the collision between the two points.
+    Determines the axis of the line between two N.
+    :param box: The box to determine the axis for.
+    :return: The determined axis.
     """
 
-    match direction:
-        case "up":
-            return "horizontal"
-        case "down":
-            return "horizontal"
-        case "left":
-            return "vertical"
-        case "right":
-            return "vertical"
-        case "top_left" | "bottom_left":
-            return "vertical" if box[3][1] < point[:, 1].min() else "horizontal"
-        case "top_right" | "bottom_right":
-            return "vertical" if point[:, 1].max() < box[0][1] else "horizontal"
+    xs = np.unique(box[:, 0])
+    ys = np.unique(box[:, 1])
 
-    raise ValueError("Unknown collision direction {}".format(direction))
-
-
-def orthogonal_direction(direction: Direction, axis: Axis = "horizontal") -> Direction:
-    """
-    Returns the orthogonal direction of the given direction based on a collision axis.
-    :param direction: The direction to convert.
-    :param axis: The collision axis.
-    :return: The orthogonal direction of the given direction.
-    """
-
-    match axis:
-        case "vertical":
-            # For vertical collisions (hitting vertical walls)
-            match direction:
-                case "bottom_left":
-                    return "bottom_right"
-                case "bottom_right":
-                    return "bottom_left"
-                case "top_left":
-                    return "top_right"
-                case "top_right":
-                    return "top_left"
-        case "horizontal":
-            # For horizontal collisions (hitting horizontal walls)
-            match direction:
-                case "bottom_left":
-                    return "top_left"
-                case "bottom_right":
-                    return "top_right"
-                case "top_left":
-                    return "bottom_left"
-                case "top_right":
-                    return "bottom_right"
-
-    raise ValueError("Unknown axis {}".format(axis))
+    if len(xs) == 1 and np.all(xs == box[:, 0]):
+        return "horizontal"
+    elif len(ys) == 1 and np.all(ys == box[:, 1]):
+        return "vertical"
+    else:
+        return "diagonal"
 
 
 def starting_point(
@@ -177,39 +134,3 @@ def starting_point(
             return np.array([bounding_box[3]])
 
     raise ValueError("Unknown direction {}".format(direction))
-
-
-def is_point_adjacent(point: np.ndarray, bboxes: np.ndarray) -> Optional[np.ndarray]:
-    """
-    Check if a point is adjacent to any of the bounding boxes
-
-    :param point: containing integer coordinates [x, y]
-    :param bboxes: containing integer coordinates of N bounding boxes, each with 4 corners in order [bottom_left, top_left, top_right, bottom_right]
-    :returns: numpy array of indices where adjacency was found, or None if no adjacency found
-    """
-
-    # Ignore empty boxes
-    if bboxes.size == 0:
-        return None
-
-    # Get min and max coordinates of bounding boxes
-    bbox_min_x = np.min(bboxes[:, :, 0], axis=1)
-    bbox_max_x = np.max(bboxes[:, :, 0], axis=1)
-    bbox_min_y = np.min(bboxes[:, :, 1], axis=1)
-    bbox_max_y = np.max(bboxes[:, :, 1], axis=1)
-
-    x = point[:, 0].min()
-    y = point[:, 1].max()
-
-    # Check x-adjacency (point is one unit away horizontally and within vertical bounds)
-    x_adjacent = ((x == bbox_max_x + 1) | (x == bbox_min_x - 1)) & \
-                 (y >= bbox_min_y) & (y <= bbox_max_y)
-
-    # Check y-adjacency (point is one unit away vertically and within horizontal bounds)
-    y_adjacent = ((y == bbox_max_y + 1) | (y == bbox_min_y - 1)) & \
-                 (x >= bbox_min_x) & (x <= bbox_max_x)
-
-    adjacent = x_adjacent | y_adjacent
-    matching_indices = np.where(adjacent)[0]
-
-    return matching_indices if matching_indices.size > 0 else None

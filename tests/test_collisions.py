@@ -2,7 +2,7 @@ from unittest import TestCase
 
 import numpy as np
 
-from arc_puzzle_generator.collisions import collision_neighbourhood
+from arc_puzzle_generator.collisions import collision_neighbourhood, orthogonal_direction
 
 
 class CollisionTest(TestCase):
