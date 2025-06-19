@@ -28,16 +28,12 @@ class BackgroundColorRule:
         if np.any(output_grid[neighbourhood[:, 0], neighbourhood[:, 1]] != self.background_color):
             opposite = snake_direction(direction)
             opposite_step = step + direction_to_unit_vector(opposite)
+            collision_border = step + direction_to_unit_vector(direction)
 
             if np.any(output_grid[opposite_step[:, 0], opposite_step[:, 1]] != self.background_color):
-                raise StopIteration
+                return True, chain([self.border_color], colors), opposite, collision_border
             else:
-                collision_border = step + direction_to_unit_vector(direction)
 
-                return (
-                    chain([self.border_color], colors),
-                    opposite,
-                    collision_border,
-                )
+                return False, chain([self.border_color], colors), opposite, collision_border
         else:
             return None

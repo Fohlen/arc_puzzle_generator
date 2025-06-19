@@ -107,9 +107,10 @@ def snake_direction(direction: Direction) -> Direction:
     return "right"
 
 
-CollisionResult = tuple[Iterator[int], Direction, Optional[np.ndarray]]
+CollisionResult = tuple[bool, Iterator[int], Direction, Optional[np.ndarray]]
 """
 A tuple containing:
+- A boolean indicating whether the collision terminates the agent.
 - A color iterable to replace the current color sequence
 - The future direction of the agent.
 - A set of additional steps, if any.
@@ -125,5 +126,4 @@ A collision rule regulates the detects collisions and determines the future beha
 :param direction: the direction of the agent.
 :param grid: the grid of the collision.
 :return: A collision result.
-:raises StopIteration: If the collision terminates the agent.
 """

@@ -24,6 +24,7 @@ class Agent(Iterator[np.ndarray], Iterable[np.ndarray]):
         self.charge = charge
         self.step = starting_point(bounding_box, direction, point_width=beam_width)
         self.collision_rule = collision_rule
+        self.terminates = False
 
     def __iter__(self) -> Iterator[np.ndarray]:
         return self
@@ -32,6 +33,10 @@ class Agent(Iterator[np.ndarray], Iterable[np.ndarray]):
         if self.charge == -1:
             # compute the next step
             step = self.step + direction_to_unit_vector(self.direction)
+
+            # if the agent has previously been terminated
+            if self.terminates:
+                raise StopIteration
 
             # if the current step runs out of bounds, terminate the agent
             if (self.step[:, 0].min() < 0 or self.step[:, 0].max() >= self.output_grid.shape[0]
@@ -58,7 +63,8 @@ class Agent(Iterator[np.ndarray], Iterable[np.ndarray]):
                 # 3) run current step
                 # 4) update direction
                 if result is not None:
-                    colors, direction, extra_steps = result
+                    terminates, colors, direction, extra_steps = result
+                    self.terminates = terminates
                     self.colors = colors
 
                     if extra_steps is not None:

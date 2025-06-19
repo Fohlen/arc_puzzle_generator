@@ -30,6 +30,6 @@ class BoundingBoxRule:
             current_color: int = output_grid[block[0], block[1]]
             axis = line_axis(neighbourhood[np.where(colliding_blocks)])
 
-            return cycle([current_color]), orthogonal_direction(direction=direction, axis=axis), None
+            return False, cycle([current_color]), orthogonal_direction(direction=direction, axis=axis), None
         else:
             return None
