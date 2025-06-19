@@ -3,6 +3,7 @@ from typing import Iterable
 
 import numpy as np
 
+from arc_puzzle_generator.collision_rules.BoundingBoxRule import BoundingBoxRule
 from arc_puzzle_generator.entities import find_colors, find_connected_objects, is_l_shape
 from arc_puzzle_generator.generators.agent import Agent
 from arc_puzzle_generator.generators.puzzle_generator import PuzzleGenerator
@@ -38,5 +39,5 @@ class PuzzleFourPuzzleGenerator(PuzzleGenerator):
             direction=direction,
             colors=cycle([color]),
             charge=-1,
-            collision_bounding_box=bboxes,
+            collision_rule=BoundingBoxRule(bboxes)
         ) for color, bbox, direction in l_shapes]

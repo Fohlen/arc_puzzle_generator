@@ -1,3 +1,5 @@
+from typing import Callable, Iterable, Optional, Iterator
+
 import numpy as np
 
 from arc_puzzle_generator.physics import Direction, Axis
@@ -91,3 +93,22 @@ def orthogonal_direction(direction: Direction, axis: Axis = "horizontal") -> Dir
                     return "bottom_right"
 
     raise ValueError("Unknown axis {}".format(axis))
+
+
+CollisionResult = tuple[Iterator[int], Direction, Optional[np.ndarray]]
+"""
+A tuple containing:
+- A color iterable to replace the current color sequence
+- The future direction of the agent.
+- A set of additional steps, if any.
+"""
+
+CollisionRule = Callable[[np.ndarray, np.ndarray, Direction], Optional[CollisionResult]]
+"""
+A collision rule regulates the detects collisions and determines the future behaviour of an agent.
+
+:param grid: the grid of the collision.
+:param neighbourhood: the neighbourhood of the agent in the current direction.
+:param direction: the direction of the agent.
+:return: A collision result.
+"""
