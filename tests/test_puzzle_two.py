@@ -3,7 +3,7 @@ import unittest
 import numpy as np
 
 from arc_puzzle_generator.data_loader import load_puzzle
-from arc_puzzle_generator.generators.puzzle_two_new import PuzzleTwoPuzzleGenerator
+from arc_puzzle_generator.generators.puzzle_two import PuzzleTwoPuzzleGenerator
 from tests.utils import test_dir
 
 
