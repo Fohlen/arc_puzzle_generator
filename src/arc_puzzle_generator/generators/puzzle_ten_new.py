@@ -4,6 +4,7 @@ from typing import Iterable, Mapping
 
 import numpy as np
 
+from arc_puzzle_generator.collision_rules.BackgroundColorRule import BackgroundColorRule
 from arc_puzzle_generator.entities import colour_count, find_colors, find_connected_objects
 from arc_puzzle_generator.generators.agent import Agent
 from arc_puzzle_generator.generators.puzzle_generator import PuzzleGenerator
@@ -38,15 +39,18 @@ class PuzzleTenPuzzleGenerator(PuzzleGenerator):
         border_row = max(color_boxes.keys())
         color_sequence = [color for col, color in sorted(color_boxes[sequence_row], key=lambda x: x[0])]
         border_color = color_boxes[border_row][0][1]
-        
 
         return [
             Agent(
                 output_grid=self.output_grid,
-                bounding_box=np.array([[row, 0]*4]),
+                bounding_box=np.array([[row, 0], [row, 0], [row, 0], [row, 0]]),
                 direction="right",
                 colors=cycle(color_sequence),
                 charge=-1,
+                collision_rule=BackgroundColorRule(
+                    inside_color,
+                    border_color
+                )
             )
             for row in start_rows
         ]

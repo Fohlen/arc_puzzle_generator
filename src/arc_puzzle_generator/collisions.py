@@ -7,10 +7,10 @@ from arc_puzzle_generator.physics import Direction, Axis
 
 def collision_neighbourhood(point: np.ndarray, direction: Direction) -> np.ndarray:
     """
-    Determines the neighbourhood of a point based on a direction.
-    :param point: The point to determine the neighbourhood for.
-    :param direction: The direction to determine the neighbourhood into.
-    :return: A 2D array of neighbourhood coordinates.
+    Determines the neighborhood of a point based on a direction.
+    :param point: The point to determine the neighborhood for.
+    :param direction: The direction to determine the neighborhood into.
+    :return: A 2D array of neighborhood coordinates.
     """
 
     # TODO: Implement multiple step size diagonal collisions
@@ -95,6 +95,18 @@ def orthogonal_direction(direction: Direction, axis: Axis = "horizontal") -> Dir
     raise ValueError("Unknown axis {}".format(axis))
 
 
+def snake_direction(direction: Direction) -> Direction:
+    """
+    Returns the opposite direction of the given direction, moving in a snake pattern.
+    :param direction: The input direction
+    :return: the opposite direction
+    """
+    if direction == "right":
+        return "up"
+
+    return "right"
+
+
 CollisionResult = tuple[Iterator[int], Direction, Optional[np.ndarray]]
 """
 A tuple containing:
@@ -103,12 +115,15 @@ A tuple containing:
 - A set of additional steps, if any.
 """
 
-CollisionRule = Callable[[np.ndarray, np.ndarray, Direction], Optional[CollisionResult]]
+CollisionRule = Callable[[np.ndarray, np.ndarray, Iterable[int], Direction, np.ndarray], Optional[CollisionResult]]
 """
 A collision rule regulates the detects collisions and determines the future behaviour of an agent.
 
-:param grid: the grid of the collision.
+:param step: the current step.
 :param neighbourhood: the neighbourhood of the agent in the current direction.
+:param colors: the current color iterator.
 :param direction: the direction of the agent.
+:param grid: the grid of the collision.
 :return: A collision result.
+:raises StopIteration: If the collision terminates the agent.
 """

@@ -16,7 +16,6 @@ class Agent(Iterator[np.ndarray], Iterable[np.ndarray]):
             charge: int = -1,
             beam_width: int = 1,
             collision_rule: Optional[CollisionRule] = None,
-            collision_bounding_box: Optional[np.ndarray] = None,
     ) -> None:
         self.output_grid = output_grid
         self.bounding_box = bounding_box
@@ -25,7 +24,6 @@ class Agent(Iterator[np.ndarray], Iterable[np.ndarray]):
         self.charge = charge
         self.step = starting_point(bounding_box, direction, point_width=beam_width)
         self.collision_rule = collision_rule
-        self.collision_bounding_box = collision_bounding_box
 
     def __iter__(self) -> Iterator[np.ndarray]:
         return self
@@ -50,7 +48,7 @@ class Agent(Iterator[np.ndarray], Iterable[np.ndarray]):
                     ]
 
                 # mark possible collisions
-                result = self.collision_rule(self.output_grid, neighbourhood, self.direction)
+                result = self.collision_rule(self.step, neighbourhood, self.colors, self.direction, self.output_grid)
 
                 # if the collision rule found a collision, apply in order
                 # 1) update colors
