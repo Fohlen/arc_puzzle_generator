@@ -5,6 +5,7 @@ from typing import Iterable, Mapping
 import numpy as np
 
 from arc_puzzle_generator.collision_rules.BackgroundColorRule import BackgroundColorRule
+from arc_puzzle_generator.collisions import snake_direction
 from arc_puzzle_generator.entities import colour_count, find_colors, find_connected_objects
 from arc_puzzle_generator.agent import Agent
 from arc_puzzle_generator.puzzle_generator import PuzzleGenerator
@@ -23,7 +24,7 @@ class PuzzleTenPuzzleGenerator(PuzzleGenerator):
 
         # this is primitive but works
         outside_color = self.input_grid[0, 0]
-        inside_color = self.input_grid[start_rows[0], 1]
+        inside_color: int = self.input_grid[start_rows[0], 1]  # type: ignore
 
         color_boxes: Mapping[int, list[tuple[int, int]]] = defaultdict(list)  # { row: [(col, color)] }
         colors = find_colors(self.input_grid)
@@ -48,8 +49,9 @@ class PuzzleTenPuzzleGenerator(PuzzleGenerator):
                 colors=cycle(color_sequence),
                 charge=-1,
                 collision_rule=BackgroundColorRule(
-                    inside_color,
-                    border_color
+                    background_color=inside_color,
+                    direction_rule=snake_direction,
+                    border_color=border_color,
                 )
             )
             for row in start_rows

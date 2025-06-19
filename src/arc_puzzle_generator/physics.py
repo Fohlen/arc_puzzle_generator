@@ -1,13 +1,13 @@
 """
 The physics module contains world *physics*, for instance, calculating direction vectors and other physical properties.
 """
-from typing import Literal, Optional
+from typing import Literal, Callable
 
 import numpy as np
 
 Axis = Literal["horizontal", "vertical", "diagonal"]
 Direction = Literal["left", "right", "up", "down", "top_left", "top_right", "bottom_left", "bottom_right"]
-
+DirectionRule = Callable[[...], Direction]
 
 def direction_to_unit_vector(direction: Direction):
     """
