@@ -6,7 +6,14 @@ from typing import Literal, Protocol
 import numpy as np
 
 Axis = Literal["horizontal", "vertical", "diagonal"]
+"""
+The axis of a line.
+"""
+
 Direction = Literal["left", "right", "up", "down", "top_left", "top_right", "bottom_left", "bottom_right"]
+"""
+The possible directions we can go in our universe.
+"""
 
 
 class DirectionRule(Protocol):
