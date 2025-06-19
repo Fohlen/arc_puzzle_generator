@@ -4,7 +4,7 @@ from typing import Optional, Iterable
 import numpy as np
 
 from arc_puzzle_generator.collisions import CollisionResult
-from arc_puzzle_generator.physics import Direction, direction_to_unit_vector, DirectionRule
+from arc_puzzle_generator.physics import Direction, direction_to_unit_vector
 
 
 class BackgroundColorRule:
@@ -13,7 +13,7 @@ class BackgroundColorRule:
     If the neighbourhood contains colors other than the background color, a collision is detected and the rule is executed.
     """
 
-    def __init__(self, background_color: int, direction_rule: DirectionRule, border_color: Optional[int] = None) -> None:
+    def __init__(self, background_color: int, direction_rule, border_color: Optional[int] = None) -> None:
         self.background_color = background_color
         self.border_color = border_color
         self.direction_rule = direction_rule

@@ -4,7 +4,7 @@ from typing import Optional, Iterable
 import numpy as np
 
 from arc_puzzle_generator.collisions import CollisionResult
-from arc_puzzle_generator.physics import Direction, DirectionRule, contained, line_axis
+from arc_puzzle_generator.physics import Direction, contained, line_axis
 
 
 class BoundingBoxRule:
@@ -12,7 +12,7 @@ class BoundingBoxRule:
     Uses a bounding box to determine collisions.
     """
 
-    def __init__(self, bounding_box: np.ndarray, direction_rule: DirectionRule) -> None:
+    def __init__(self, bounding_box: np.ndarray, direction_rule) -> None:
         self.bounding_box = bounding_box
         self.direction_rule = direction_rule
 
