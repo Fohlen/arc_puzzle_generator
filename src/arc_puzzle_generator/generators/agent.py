@@ -43,6 +43,8 @@ class Agent(Iterator[np.ndarray], Iterable[np.ndarray]):
                 neighbourhood = collision_neighbourhood(self.step, self.direction)
                 # remove neighbors which are out of grid
                 neighbourhood = neighbourhood[
+                    (neighbourhood[:, 0] > -1) &
+                    (neighbourhood[:, 1] > -1) &
                     (neighbourhood[:, 0] < self.output_grid.shape[0]) &
                     (neighbourhood[:, 1] < self.output_grid.shape[1])
                     ]
