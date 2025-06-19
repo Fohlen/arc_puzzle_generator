@@ -3,7 +3,6 @@ import unittest
 import numpy as np
 
 from arc_puzzle_generator.data_loader import load_puzzle
-from arc_puzzle_generator.generators.puzzle_two import PuzzleTwoGenerator
 from arc_puzzle_generator.generators.puzzle_two_new import PuzzleTwoPuzzleGenerator
 from tests.utils import test_dir
 
@@ -34,7 +33,7 @@ class PuzzleTwoTestCase(unittest.TestCase):
         self.assertTrue(np.array_equal(output_grid, self.puzzle.test[0].output))
 
     def test_generate_3e6067c3_prompt_second(self):
-        generator = PuzzleTwoGenerator(self.puzzle.test[1].input)
+        generator = PuzzleTwoPuzzleGenerator(self.puzzle.test[1].input)
         generator.setup()
         *_, output_grid = generator
         self.assertTrue(np.array_equal(output_grid, self.puzzle.test[1].output))
