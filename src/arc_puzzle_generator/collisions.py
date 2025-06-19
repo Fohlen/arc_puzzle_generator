@@ -1,4 +1,4 @@
-from typing import Callable, Iterable, Optional, Iterator
+from typing import Optional, Iterator, Protocol
 
 import numpy as np
 
@@ -116,14 +116,24 @@ A tuple containing:
 - A set of additional steps, if any.
 """
 
-CollisionRule = Callable[[np.ndarray, np.ndarray, Iterable[int], Direction, np.ndarray], Optional[CollisionResult]]
-"""
-A collision rule regulates the detects collisions and determines the future behaviour of an agent.
 
-:param step: the current step.
-:param neighbourhood: the neighbourhood of the agent in the current direction.
-:param colors: the current color iterator.
-:param direction: the direction of the agent.
-:param grid: the grid of the collision.
-:return: A collision result.
-"""
+class CollisionRule(Protocol):
+    def __call__(
+            self,
+            step: np.ndarray,
+            neighbourhood: np.ndarray,
+            colors: Iterator[int],
+            direction: Direction,
+            grid: np.ndarray
+    ) -> Optional[CollisionResult]:
+        """
+        A collision rule regulates the detection of collisions and determines the future behavior of an agent.
+
+        :param step: the current step.
+        :param neighbourhood: the neighbourhood of the agent in the current direction.
+        :param colors: the current color iterator.
+        :param direction: the direction of the agent.
+        :param grid: the grid of the collision.
+        :return: A collision result.
+        """
+        pass

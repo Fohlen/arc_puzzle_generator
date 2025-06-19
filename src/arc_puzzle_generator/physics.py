@@ -1,12 +1,22 @@
 """
 The physics module contains world *physics*, for instance, calculating direction vectors and other physical properties.
 """
-from typing import Literal, Callable
+from typing import Literal, Protocol
 
 import numpy as np
 
 Axis = Literal["horizontal", "vertical", "diagonal"]
 Direction = Literal["left", "right", "up", "down", "top_left", "top_right", "bottom_left", "bottom_right"]
+
+
+class DirectionRule(Protocol):
+    """
+    A direction rule determines the future direction of an agent based on the current direction and additional parameters.
+    """
+
+    def __call__(self, direction: Direction, *args, **kwargs) -> Direction:
+        pass
+
 
 def direction_to_unit_vector(direction: Direction):
     """
