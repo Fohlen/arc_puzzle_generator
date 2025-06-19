@@ -6,8 +6,8 @@ import numpy as np
 
 from arc_puzzle_generator.collision_rules.BackgroundColorRule import BackgroundColorRule
 from arc_puzzle_generator.entities import colour_count, find_colors, find_connected_objects
-from arc_puzzle_generator.generators.agent import Agent
-from arc_puzzle_generator.generators.puzzle_generator import PuzzleGenerator
+from arc_puzzle_generator.agent import Agent
+from arc_puzzle_generator.puzzle_generator import PuzzleGenerator
 
 
 class PuzzleTenPuzzleGenerator(PuzzleGenerator):

@@ -4,7 +4,7 @@ from typing import Iterable, Iterator
 
 import numpy as np
 
-from arc_puzzle_generator.generators.agent import Agent
+from arc_puzzle_generator.agent import Agent
 
 
 class PuzzleGenerator(Iterator[np.ndarray], Iterable[np.ndarray], ABC):

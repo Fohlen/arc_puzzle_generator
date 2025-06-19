@@ -6,8 +6,8 @@ import numpy as np
 
 from arc_puzzle_generator.color_iterator import ColorIterator
 from arc_puzzle_generator.entities import colour_count, find_connected_objects
-from arc_puzzle_generator.generators.agent import Agent
-from arc_puzzle_generator.generators.puzzle_generator import PuzzleGenerator
+from arc_puzzle_generator.agent import Agent
+from arc_puzzle_generator.puzzle_generator import PuzzleGenerator
 from arc_puzzle_generator.physics import Direction, relative_box_direction, box_distance
 
 

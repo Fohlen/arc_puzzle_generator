@@ -19,7 +19,7 @@ from matplotlib.figure import Figure
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 
 from arc_puzzle_generator.data_loader import load_puzzle, Puzzle
-from arc_puzzle_generator.generators.puzzle_generator import PuzzleGenerator
+from arc_puzzle_generator.puzzle_generator import PuzzleGenerator
 
 
 def plot_grid(grid: np.ndarray, ax: Optional[plt.Axes] = None) -> plt.Axes:
