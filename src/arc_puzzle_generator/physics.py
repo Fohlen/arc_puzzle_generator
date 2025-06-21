@@ -167,8 +167,6 @@ def starting_point(
     :return: Starting point of the structure.
     """
 
-    # TODO: Properly support diagonal directions
-
     match direction:
         case "left":
             start_pos = ((bounding_box[0] + bounding_box[1]) // 2)
@@ -183,12 +181,16 @@ def starting_point(
             start_pos = ((bounding_box[0] + bounding_box[3]) // 2)
             return np.array([start_pos + [0, i] for i in range(point_width)])
         case "bottom_left":
-            return np.array([bounding_box[0]])
+            start_pos = bounding_box[0]
+            return np.array([start_pos + (direction_to_unit_vector("bottom_right") * i) for i in range(point_width)])
         case "top_left":
-            return np.array([bounding_box[1]])
+            start_pos = bounding_box[1]
+            return np.array([start_pos + (direction_to_unit_vector("top_right") * i) for i in range(point_width)])
         case "top_right":
-            return np.array([bounding_box[2]])
+            start_pos = bounding_box[2]
+            return np.array([start_pos + (direction_to_unit_vector("bottom_right") * i) for i in range(point_width)])
         case "bottom_right":
-            return np.array([bounding_box[3]])
+            start_pos = bounding_box[3]
+            return np.array([start_pos + (direction_to_unit_vector("top_right") * i) for i in range(point_width)])
 
     raise ValueError("Unknown direction {}".format(direction))
