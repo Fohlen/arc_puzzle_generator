@@ -5,15 +5,35 @@ import numpy as np
 from arc_puzzle_generator.physics import Direction, Axis
 
 
-def collision_neighbourhood(point: np.ndarray, direction: Direction) -> np.ndarray:
+def moore_neighbourhood(point: np.ndarray) -> np.ndarray:
     """
-    Determines the neighborhood of a point based on a direction.
+    Determines the neighborhood of a point using the Moore neighborhood.
+    :param point: A point to determine the neighborhood for.
+    :return: The moore neighborhood of the point.
+    """
+
+    if point.ndim != 1:
+        return np.concat([moore_neighbourhood(p) for p in point])
+
+    x, y = point
+
+    return np.array([
+        (x - 1, y - 1), (x - 1, y), (x - 1, y + 1),
+        (x, y - 1), (x, y + 1),
+        (x + 1, y - 1), (x + 1, y), (x + 1, y + 1)
+    ])
+
+
+def directional_neighbourhood(point: np.ndarray, direction: Direction) -> np.ndarray:
+    """
+    Determines the neighborhood of a point based on a direction (Berger neighborhood).
     :param point: The point to determine the neighborhood for.
     :param direction: The direction to determine the neighborhood into.
     :return: A 2D array of neighborhood coordinates.
     """
 
-    # TODO: Implement multiple step size diagonal collisions
+    # NOTE: Diagonal points will validate the tip of the step
+
     y_min = point[:, 1].min()
     y_max = point[:, 1].max()
     x_min = point[:, 0].min()
