@@ -1,63 +1,64 @@
-from typing import Iterable
 from collections import OrderedDict
+from typing import Iterable
 
 import numpy as np
 
+from arc_puzzle_generator.color_iterator import ColorIterator
 from arc_puzzle_generator.entities import colour_count, find_connected_objects
-from arc_puzzle_generator.generators.generator import Generator
+from arc_puzzle_generator.agent import Agent
+from arc_puzzle_generator.puzzle_generator import PuzzleGenerator
+from arc_puzzle_generator.physics import Direction
 
 
-class PuzzleOneGenerator(Generator):
+class PuzzleOnePuzzleGenerator(PuzzleGenerator):
     def __init__(self, input_grid: np.ndarray):
         super().__init__(input_grid)
-        self.color_sequence: list[tuple[int, int, int]] = []  # [(row, color, counter)]
-        self.left_to_right = True
-        self.background_color = 0
-        self.start_col = 0
 
-    def setup(self) -> None:
+    def setup(self) -> Iterable[Agent]:
         sorted_colors = colour_count(self.input_grid)
-        self.background_color = sorted_colors[0][0]
+        color_sequences: list[tuple[int, list[tuple[int, int]]]] = []  # [(row, [color, count]]
+        background_color = sorted_colors[0][0]
+        start_col = 0
+        charge: int = 0
+        direction: Direction = "right"
 
         line_color = sorted_colors[1][0]
 
         separator_labels, separator_bboxes, separator_count = find_connected_objects(self.input_grid == line_color)
         # right-to-left
-        if np.all(self.input_grid[:, :separator_bboxes[0][0, 1]] == self.background_color):
-            self.left_to_right = False
+        if np.all(self.input_grid[:, :separator_bboxes[0][0, 1]] == background_color):
+            direction = "left"
             input_grid = self.input_grid[:, (separator_bboxes[0][0, 1] + 1):]
-            self.start_col = separator_bboxes[0][1, 1] - 1
+            start_col = separator_bboxes[0][1, 1] - 1
+            charge = separator_bboxes[0][3][1]
         # left-to-right
         else:
             input_grid = self.input_grid[:, :separator_bboxes[0][0, 1]]
-            self.start_col = separator_bboxes[0][2, 1] + 1
+            start_col = separator_bboxes[0][2, 1] + 1
+            charge = self.input_grid.shape[1] - separator_bboxes[0][3][1] - 1
 
         for index, row in enumerate(input_grid):
-            color_order = OrderedDict()
+            color_order = OrderedDict()  # { color: count }
 
             # empty row
-            if np.all(row == self.background_color):
+            if np.all(row == background_color):
                 continue
 
-            items = row if self.left_to_right else row[::-1]
-            for item in items:
-                if item != self.background_color:
-                    if item not in color_order:
-                        color_order[item] = 0
-                    color_order[item] += 1
+            colors = row if direction == "right" else row[::-1]
+            for color in colors:
+                if color != background_color:
 
-            insert_items = reversed(color_order.items()) if self.left_to_right else color_order.items()
-            for color, count in insert_items:
-                self.color_sequence.append((index, color, count))
+                    if color not in color_order:
+                        color_order[color] = 0
+                    color_order[color] += 1
 
-    def __iter__(self, *args, **kwargs) -> Iterable[np.ndarray]:
-        for sequence in self.color_sequence:
-            current_col = self.start_col
-            end = self.input_grid.shape[1] if self.left_to_right else -1
-            step = sequence[2] if self.left_to_right else -sequence[2]
+            color_sequence = color_order.items() if direction == "left" else reversed(color_order.items())
+            color_sequences.append((index, list(color_sequence)))
 
-            for col in range(current_col, end, step):
-                if self.output_grid[sequence[0], col] == self.background_color:
-                    self.output_grid[sequence[0], col] = sequence[1]
-
-                yield self.output_grid.copy()
+        return [Agent(
+            output_grid=self.output_grid,
+            bounding_box=np.array([[row, start_col], [row, start_col], [row, start_col], [row, start_col]]),
+            charge=charge,
+            direction=direction,
+            colors=ColorIterator(color_sequence, background_color),
+        ) for row, color_sequence in color_sequences]

@@ -19,7 +19,7 @@ from matplotlib.figure import Figure
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 
 from arc_puzzle_generator.data_loader import load_puzzle, Puzzle
-from arc_puzzle_generator.generators.generator import Generator
+from arc_puzzle_generator.puzzle_generator import PuzzleGenerator
 
 
 def plot_grid(grid: np.ndarray, ax: Optional[plt.Axes] = None) -> plt.Axes:
@@ -72,7 +72,7 @@ class GeneratorVisualizer:
     Tkinter-based GUI for visualizing generator steps.
     """
 
-    def __init__(self, generator_class: Type[Generator], puzzle: Puzzle):
+    def __init__(self, generator_class: Type[PuzzleGenerator], puzzle: Puzzle):
         """
         Initialize the visualizer.
 
@@ -203,9 +203,6 @@ class GeneratorVisualizer:
         # Create a new generator instance with the selected input
         self.generator = self.generator_class(input_grid)
 
-        # Run the generator setup
-        self.generator.setup()
-
         # Reset steps and current step
         self.steps = [self.generator.input_grid.copy()] + [step for step in self.generator]
         self.current_step = 0
@@ -267,7 +264,7 @@ class GeneratorVisualizer:
         self.root.mainloop()
 
 
-def get_generator_class(generator_name: str) -> Type[Generator]:
+def get_generator_class(generator_name: str) -> Type[PuzzleGenerator]:
     """
     Get a generator class by name.
 
@@ -279,7 +276,7 @@ def get_generator_class(generator_name: str) -> Type[Generator]:
     # Look for a class that matches the name
     if hasattr(module, generator_name):
         attr = getattr(module, generator_name)
-        if isinstance(attr, type) and issubclass(attr, Generator) and attr != Generator:
+        if isinstance(attr, type) and issubclass(attr, PuzzleGenerator) and attr != PuzzleGenerator:
             return attr
 
     raise AttributeError(f"No generator class found with name '{generator_name}'")

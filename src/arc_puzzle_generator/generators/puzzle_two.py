@@ -1,21 +1,21 @@
 from collections import defaultdict
-from typing import Iterable
 from math import ceil
+from typing import Iterable
 
 import numpy as np
 
-from arc_puzzle_generator.entities import find_connected_objects, colour_count
-from arc_puzzle_generator.generators.generator import Generator
-from arc_puzzle_generator.physics import direction_to_unit_vector, Direction
+from arc_puzzle_generator.color_iterator import ColorIterator
+from arc_puzzle_generator.entities import colour_count, find_connected_objects
+from arc_puzzle_generator.agent import Agent
+from arc_puzzle_generator.puzzle_generator import PuzzleGenerator
+from arc_puzzle_generator.physics import Direction, relative_box_direction, box_distance
 
 
-class PuzzleTwoGenerator(Generator):
-    def __init__(self, input_grid: np.ndarray):
-        super().__init__(input_grid)
-        self.boxes: list[tuple[int, int, int, np.ndarray]] = []  # index, target_color, bounding box
-        self.box_order: list[tuple[int, int]] = []
-
-    def setup(self) -> None:
+class PuzzleTwoPuzzleGenerator(PuzzleGenerator):
+    def setup(self) -> Iterable[Agent]:
+        boxes: list[tuple[int, int, np.ndarray]] = []  # [(index, target_color, bounding box)]
+        box_order: list[tuple[int, Direction, int]] = []  # [(box, direction, distance)]
+        box_size: int | None = None
         grid = self.input_grid[:-2, :]
 
         sorted_colors = colour_count(grid)
@@ -33,14 +33,15 @@ class PuzzleTwoGenerator(Generator):
         for index, bbox in enumerate(bboxes):
             grid_box = grid[bbox[1, 0]:bbox[0, 0] + 1, bbox[0, 1]:bbox[3, 1] + 1]
             target_color = [color for color in np.unique(grid_box) if color != box_color][0]
-            color_count = np.sum(grid_box == target_color)
+            if box_size is None:
+                box_size = np.sum(grid_box == target_color)
 
-            self.boxes.append((index, target_color, color_count, bbox))
+            boxes.append((index, target_color, bbox))
             box_colors[target_color].append(index)
             horizontal_boxes[bbox[0, 0]].append(index)
             vertical_boxes[bbox[0, 1]].append(index)
 
-        for (index, color, count, bbox) in self.boxes:
+        for (index, color, bbox) in boxes:
             horizontal_index = horizontal_boxes[bbox[0, 0]].index(index)
             vertical_index = vertical_boxes[bbox[0, 1]].index(index)
 
@@ -64,7 +65,9 @@ class PuzzleTwoGenerator(Generator):
             color2_indexes = box_colors[color_order[0][1]]
             reachable_boxes = [index2 for index2 in color2_indexes if index2 in adjacent_boxes[start_index]]
             if len(reachable_boxes) == 1:
-                self.box_order.append((start_index, reachable_boxes[0]))
+                direction = relative_box_direction(boxes[start_index][2], boxes[reachable_boxes[0]][2])
+                distance = box_distance(boxes[start_index][2], boxes[reachable_boxes[0]][2], direction)
+                box_order.append((start_index, direction, distance))
                 current_box = reachable_boxes[0]
                 break
 
@@ -73,47 +76,22 @@ class PuzzleTwoGenerator(Generator):
                 color2_indexes = box_colors[color2]
                 reachable_boxes = [index2 for index2 in color2_indexes if index2 in adjacent_boxes[current_box]]
                 if len(reachable_boxes) == 1:
-                    self.box_order.append((current_box, reachable_boxes[0]))
+                    direction = relative_box_direction(boxes[current_box][2], boxes[reachable_boxes[0]][2])
+                    distance = box_distance(boxes[current_box][2], boxes[reachable_boxes[0]][2], direction)
+                    box_order.append((current_box, direction, distance))
                     current_box = reachable_boxes[0]
 
-    def __iter__(self, *args, **kwargs) -> Iterable[np.ndarray]:
-        for box1, box2 in self.box_order:
-            box1_bbox = self.boxes[box1][3]
-            box2_bbox = self.boxes[box2][3]
+        assert box_size is not None
+        beam_width = ceil(box_size / 2)
 
-            # Determine a relative direction based on bounding box corners
-            rectangle_size = (box1_bbox[0, 0] - box1_bbox[1, 0]) + 1
-            beam_size = ceil(self.boxes[box1][2] / 2)
-            border = (rectangle_size - beam_size) // 2
-
-            if box1_bbox[0, 0] < box2_bbox[0, 0]:
-                direction: Direction = "down"
-                start_pos = box1_bbox[0] + np.array([0, border])
-                start_pos = np.array([start_pos + [0, i] for i in range(beam_size)])
-                target_pos = box2_bbox[1] + np.array([-1, border])
-                target_pos = np.array([target_pos + [0, i] for i in range(beam_size)])
-            elif box1_bbox[0, 0] > box2_bbox[0, 0]:
-                direction = "up"
-                start_pos = box1_bbox[1] + np.array([0, border])
-                start_pos = np.array([start_pos + [0, i] for i in range(beam_size)])
-                target_pos = box2_bbox[0] + np.array([1, border])
-                target_pos = np.array([target_pos + [0, i] for i in range(beam_size)])
-            elif box1_bbox[0, 1] < box2_bbox[0, 1]:
-                direction = "right"
-                start_pos = box1_bbox[2] + np.array([border, 0])
-                start_pos = np.array([start_pos + [i, 0] for i in range(beam_size)])
-                target_pos = box2_bbox[1] + np.array([border, -1])
-                target_pos = np.array([target_pos + [i, 0] for i in range(beam_size)])
-            else:  # elif box1_bbox[0, 1] > box2_bbox[0, 1]:
-                direction = "left"
-                start_pos = box1_bbox[1] + np.array([border, 0])
-                start_pos = np.array([start_pos + [i, 0] for i in range(beam_size)])
-                target_pos = box2_bbox[2] + np.array([border, 1])
-                target_pos = np.array([target_pos + [i, 0] for i in range(beam_size)])
-
-            step = start_pos.copy()
-            while not np.array_equal(step, target_pos):
-                step += direction_to_unit_vector(direction)
-                self.output_grid[step[:, 0], step[:, 1]] = self.boxes[box1][1]
-
-                yield self.output_grid.copy()
+        return [Agent(
+            output_grid=self.output_grid,
+            bounding_box=boxes[box1][2],
+            direction=direction,
+            colors=ColorIterator(
+                [(box_color, distance), (boxes[box1][1], 1)],
+                background_color=background_color
+            ),
+            charge=distance,
+            beam_width=beam_width,
+        ) for box1, direction, distance in box_order]

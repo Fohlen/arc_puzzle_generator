@@ -19,12 +19,12 @@ This will give you access to individual generators and the functions that power 
 ```python
 from pathlib import Path
 from arc_puzzle_generator.data_loader import load_puzzle
-from arc_puzzle_generator.generators import PuzzleTwoGenerator
+from arc_puzzle_generator.generators import PuzzleTwoPuzzleGenerator
 
 file_path = Path("3e6067c3.json")
 puzzle = load_puzzle(file_path)
 
-generator = PuzzleTwoGenerator(puzzle.train[0].input)
+generator = PuzzleTwoPuzzleGenerator(puzzle.train[0].input)
 generator.setup()
 *_, output_grid = generator
 ```
@@ -46,7 +46,7 @@ pip install -e ".[vis]"
 Once dependencies for `tkinter` are satisfied, you can run the visualization tool by running:
 
 ```shell
-python3 -m arc_puzzle_generator.visualization PuzzleFourGenerator 142ca369
+python3 -m arc_puzzle_generator.visualization PuzzleTwoPuzzleGenerator 142ca369
 ```
 
 The `--help` flag will give you more information about the tool.

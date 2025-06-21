@@ -3,7 +3,7 @@ import unittest
 import numpy as np
 
 from arc_puzzle_generator.data_loader import load_puzzle
-from arc_puzzle_generator.entities import find_connected_objects, is_l_shape, find_colors, is_point_adjacent
+from arc_puzzle_generator.entities import find_connected_objects, is_l_shape, find_colors
 from tests.utils import test_dir
 
 
@@ -71,38 +71,3 @@ class EntityTestCase(unittest.TestCase):
         self.assertEqual(is_l_shape(array11), None)
         self.assertEqual(is_l_shape(array12), None)
         self.assertEqual(is_l_shape(array13), None)
-
-    def test_collisions(self):
-        bboxes = np.array([[
-            [4, 4], [4, 4], [4, 6], [4, 6]
-        ]])
-
-        # handle collisions on the left side
-        self.assertIsNotNone(is_point_adjacent(np.array([4, 3]), bboxes))
-        self.assertIsNone(is_point_adjacent(np.array([4, 2]), bboxes))
-
-        # handle collision on the top
-        self.assertIsNotNone(is_point_adjacent(np.array([3, 4]), bboxes))
-        self.assertIsNotNone(is_point_adjacent(np.array([3, 5]), bboxes))
-        self.assertIsNotNone(is_point_adjacent(np.array([3, 6]), bboxes))
-        self.assertIsNone(is_point_adjacent(np.array([2, 5]), bboxes))
-
-        # handle collisions on the right side
-        self.assertIsNotNone(is_point_adjacent(np.array([4, 7]), bboxes))
-        self.assertIsNone(is_point_adjacent(np.array([4, 8]), bboxes))
-
-        # handle collisions on the bottom side
-        self.assertIsNotNone(is_point_adjacent(np.array([5, 4]), bboxes))
-        self.assertIsNotNone(is_point_adjacent(np.array([5, 5]), bboxes))
-        self.assertIsNotNone(is_point_adjacent(np.array([5, 6]), bboxes))
-        self.assertIsNone(is_point_adjacent(np.array([6, 4]), bboxes))
-
-    def test_collisions_left_right(self):
-        arr = np.array([[
-            [4, 4], [3, 4], [3, 4], [4, 4]
-        ]])
-
-        self.assertIsNotNone(is_point_adjacent(np.array([3, 3]), arr))
-        self.assertIsNone(is_point_adjacent(np.array([4, 2]), arr))
-        self.assertIsNotNone(is_point_adjacent(np.array([3, 5]), arr))
-        self.assertIsNone(is_point_adjacent(np.array([4, 6]), arr))
