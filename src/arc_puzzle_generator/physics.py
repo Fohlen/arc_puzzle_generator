@@ -1,6 +1,7 @@
 """
 The physics module contains world *physics*, for instance, calculating direction vectors and other physical properties.
 """
+import math
 from typing import Literal, Protocol
 
 import numpy as np
@@ -62,16 +63,24 @@ def box_distance(box1: np.ndarray, box2: np.ndarray, direction: Direction) -> in
     :return: The distance between the two points.
     """
 
-    # TODO: Support diagonal directions
-
     if direction == "left":
-        return box1[0][1] - box2[3][1]
+        return int(math.dist(box1[0], box2[3]))
     elif direction == "right":
-        return box2[0][1] - box1[3][1]
+        return int(math.dist(box1[3], box2[0]))
     elif direction == "up":
-        return box1[2][0] - box2[0][0]
-    else:
-        return box2[2][0] - box1[0][0]
+        return int(math.dist(box1[1], box2[0]))
+    elif direction == "down":
+        return int(math.dist(box1[0], box2[1]))
+    elif direction == "top_left":
+        return int(math.dist(box1[1], box2[3]))
+    elif direction == "top_right":
+        return int(math.dist(box1[2], box2[0]))
+    elif direction == "bottom_left":
+        return int(math.dist(box1[0], box2[2]))
+    elif direction == "bottom_right":
+        return int(math.dist(box1[3], box2[1]))
+
+    raise ValueError("Unknown direction {}".format(direction))
 
 
 def relative_box_direction(box1: np.ndarray, box2: np.ndarray) -> Direction:
