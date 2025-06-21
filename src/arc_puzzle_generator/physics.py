@@ -91,16 +91,30 @@ def relative_box_direction(box1: np.ndarray, box2: np.ndarray) -> Direction:
     :return: The relative direction between the two boxes.
     """
 
-    # TODO: Support diagonal directions
+    left = (box2[3, 1] < box1[0, 1]).item()
+    right = (box1[3, 1] < box2[0, 1]).item()
+    up = (box2[0, 0] < box1[1, 0]).item()
+    down = (box1[0, 0] < box2[1, 0]).item()
 
-    if box1[0, 0] < box2[0, 0]:
-        return "down"
-    elif box1[0, 0] > box2[0, 0]:
-        return "up"
-    elif box1[0, 1] < box2[0, 1]:
-        return "right"
-    else:
-        return "left"
+    match (left, right, up, down):
+        case (True, False, False, False):
+            return "left"
+        case (False, True, False, False):
+            return "right"
+        case (False, False, True, False):
+            return "up"
+        case (False, False, False, True):
+            return "down"
+        case (True, False, True, False):
+            return "top_left"
+        case (False, True, True, False):
+            return "top_right"
+        case (True, False, False, True):
+            return "bottom_left"
+        case (False, True, False, True):
+            return "bottom_right"
+        case _:
+            raise ValueError("Unknown direction")
 
 
 def contained(point: np.ndarray, bbox: np.ndarray) -> np.ndarray:
