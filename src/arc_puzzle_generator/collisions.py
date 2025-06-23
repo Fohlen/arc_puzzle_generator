@@ -5,6 +5,18 @@ import numpy as np
 from arc_puzzle_generator.physics import Direction, Axis
 
 
+class NeighbourhoodRule(Protocol):
+    def __call__(self, point: np.ndarray, *args, **kwargs) -> np.ndarray:
+        """
+        A collision rule regulates which neighbours will be considered in a collision.
+        :param point: The point to determine the neighbourhood for.
+        :param args: Additional arguments.
+        :param kwargs: Additional keyword arguments.
+        :return: A 2D array of neighbourhood coordinates.
+        """
+        pass
+
+
 def moore_neighbourhood(point: np.ndarray) -> np.ndarray:
     """
     Determines the neighborhood of a point using the Moore neighborhood.

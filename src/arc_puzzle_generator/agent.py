@@ -2,7 +2,8 @@ from typing import Iterable, Iterator, Optional
 
 import numpy as np
 
-from arc_puzzle_generator.collisions import directional_neighbourhood, CollisionRule
+from arc_puzzle_generator.collisions import CollisionRule, NeighbourhoodRule, \
+    directional_neighbourhood, moore_neighbourhood
 from arc_puzzle_generator.physics import Direction, starting_point, direction_to_unit_vector
 
 
@@ -15,6 +16,7 @@ class Agent(Iterator[np.ndarray], Iterable[np.ndarray]):
             colors: Iterable[int],
             charge: int = -1,
             beam_width: int = 1,
+            neighbourhood_rule: NeighbourhoodRule = directional_neighbourhood,
             collision_rule: Optional[CollisionRule] = None,
     ) -> None:
         self.output_grid = output_grid
@@ -24,7 +26,17 @@ class Agent(Iterator[np.ndarray], Iterable[np.ndarray]):
         self.charge = charge
         self.step = starting_point(bounding_box, direction, point_width=beam_width)
         self.collision_rule = collision_rule
+        self.neighbourhood_rule = neighbourhood_rule
         self.terminated = False
+
+    def _neighbours(self) -> np.ndarray:
+        if self.neighbourhood_rule is directional_neighbourhood:
+            # calculate the neighborhood of the step dependent on the direction
+            return directional_neighbourhood(self.step, self.direction)
+        elif self.neighbourhood_rule is moore_neighbourhood:
+            return moore_neighbourhood(self.step)
+        else:
+            return np.empty((0, 2))
 
     def __iter__(self) -> Iterator[np.ndarray]:
         return self
@@ -44,8 +56,9 @@ class Agent(Iterator[np.ndarray], Iterable[np.ndarray]):
                 raise StopIteration
 
             if self.collision_rule is not None:
-                # calculate the neighborhood of the step dependant on the direction
-                neighbourhood = directional_neighbourhood(self.step, self.direction)
+                # calculate the neighbourhood
+                neighbourhood = self._neighbours()
+
                 # remove neighbors which are out of grid
                 neighbourhood = neighbourhood[
                     (neighbourhood[:, 0] > -1) &
