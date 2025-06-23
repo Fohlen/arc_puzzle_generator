@@ -30,7 +30,7 @@ class Agent(Iterator[np.ndarray], Iterable[np.ndarray]):
         return self
 
     def __next__(self) -> np.ndarray:
-        if self.charge == -1:
+        while self.charge == -1 or self.charge > 0:
             # compute the next step
             step = self.step + direction_to_unit_vector(self.direction)
 
@@ -75,15 +75,17 @@ class Agent(Iterator[np.ndarray], Iterable[np.ndarray]):
                     self.direction = direction
                     self.step = self.step + direction_to_unit_vector(self.direction)
 
+                    if self.charge > 0:
+                        self.charge -= 1
+
                     return self.output_grid.copy()
+
             # continue loop
             self.output_grid[self.step[:, 0], self.step[:, 1]] = next(self.colors)
             self.step = step
-            return self.output_grid.copy()
-        elif self.charge > 0:
-            self.output_grid[self.step[:, 0], self.step[:, 1]] = next(self.colors)
-            self.step = self.step + direction_to_unit_vector(self.direction)
-            self.charge -= 1
+
+            if self.charge > 0:
+                self.charge -= 1
 
             return self.output_grid.copy()
         else:
