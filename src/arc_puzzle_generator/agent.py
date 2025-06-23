@@ -8,6 +8,22 @@ from arc_puzzle_generator.physics import Direction, starting_point, direction_to
 
 
 class Agent(Iterator[np.ndarray], Iterable[np.ndarray]):
+    """
+    An agent is a generator that iterates over a grid and updates the grid according to the given direction and colors.
+
+    Agents can be bounded by a charge or unbounded, in which case they will continue to run until they reach the end of the grid.
+    A neighbourhood rule determines how the agent calculates collisions, and a collision rule determines how the agent reacts to collisions.
+
+    :param output_grid: The grid to update.
+    :param bounding_box: The bounding box of the agent.
+    :param direction: The initial direction of the agent.
+    :param colors: The colors of the agent.
+    :param charge: The charge of the agent (-1 for unbounded).
+    :param beam_width: The beam width of the agent.
+    :param neighbourhood_rule: The neighbourhood rule of the agent.
+    :param collision_rule: The collision rule of the agent.
+    """
+
     def __init__(
             self,
             output_grid: np.ndarray,
