@@ -48,10 +48,12 @@ class Agent(Iterator[np.ndarray], Iterable[np.ndarray]):
         self.terminated = False
 
     def _neighbours(self) -> np.ndarray:
-        if self.neighbourhood_rule in [directional_neighbourhood, axis_neighbourhood]:
+        if self.neighbourhood_rule == directional_neighbourhood:
             # calculate the neighborhood of the step dependent on the direction
             return directional_neighbourhood(self.step, self.direction)
-        elif self.neighbourhood_rule is moore_neighbourhood:
+        elif self.neighbourhood_rule == axis_neighbourhood:
+            return axis_neighbourhood(self.step, self.direction, self.output_grid.shape)
+        elif self.neighbourhood_rule == moore_neighbourhood:
             return moore_neighbourhood(self.step)
         else:
             return np.empty((0, 2))

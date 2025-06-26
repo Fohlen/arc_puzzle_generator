@@ -11,9 +11,11 @@ class FillColorRule(CollisionRule):
     def __init__(
             self,
             background_color: int,
+            fill_color: int,
             direction_rule: DirectionRule,
     ) -> None:
         self.background_color = background_color
+        self.fill_color = fill_color
         self.direction_rule = direction_rule
 
     def __call__(
@@ -27,7 +29,14 @@ class FillColorRule(CollisionRule):
         if np.any(output_grid[neighbourhood[:, 0], neighbourhood[:, 1]] != self.background_color):
             color = next(colors)
 
-            return False, chain(repeat(color, len(neighbourhood) + 1), colors), self.direction_rule(
-                direction), neighbourhood
+            if color == self.fill_color:
+                extra_steps = neighbourhood[output_grid[neighbourhood[:, 0], neighbourhood[:, 1]] != self.background_color]
+
+                return False, chain(repeat(color, len(extra_steps) + 1), colors), self.direction_rule(
+                    direction), extra_steps
+            else:
+                return False, chain([color], colors), self.direction_rule(direction), None
+
+
         else:
             return None

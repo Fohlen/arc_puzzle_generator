@@ -97,16 +97,17 @@ def axis_neighbourhood(point: np.ndarray, direction: Direction, grid_size: tuple
     neighbours = set()
 
     if direction in ["up", "down"]:
-        xs = point[:, 0]
+        xs = point[:, 0].tolist()
 
         for x in xs:
-            neighbours.update([(x, i) for i in range(0, grid_size[0] + 1)])
+            neighbours.update([(x, i) for i in range(0, grid_size[0])])
     else:
-        ys = point[:, 1]
-        for y in ys:
-            neighbours.update([(i, y) for i in range(0, grid_size[1] + 1)])
+        ys = point[:, 1].tolist()
 
-    return np.array([neighbours - points])
+        for y in ys:
+            neighbours.update([(i, y) for i in range(0, grid_size[1])])
+
+    return np.array(sorted(neighbours - points))
 
 
 def orthogonal_direction(direction: Direction, axis: Axis = "horizontal") -> Direction:
