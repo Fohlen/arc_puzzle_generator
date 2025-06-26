@@ -92,6 +92,23 @@ def directional_neighbourhood(point: np.ndarray, direction: Direction) -> np.nda
     raise ValueError(f"Invalid direction: {direction}")
 
 
+def axis_neighbourhood(point: np.ndarray, direction: Direction, grid_size: tuple[int, int]) -> np.ndarray:
+    points = set(map(tuple, point.tolist()))
+    neighbours = set()
+
+    if direction in ["up", "down"]:
+        xs = point[:, 0]
+
+        for x in xs:
+            neighbours.update([(x, i) for i in range(0, grid_size[0] + 1)])
+    else:
+        ys = point[:, 1]
+        for y in ys:
+            neighbours.update([(i, y) for i in range(0, grid_size[1] + 1)])
+
+    return np.array([neighbours - points])
+
+
 def orthogonal_direction(direction: Direction, axis: Axis = "horizontal") -> Direction:
     """
     Returns the orthogonal direction of the given direction based on a collision axis.
@@ -137,6 +154,16 @@ def snake_direction(direction: Direction) -> Direction:
         return "up"
 
     return "right"
+
+
+def identity_direction(direction: Direction) -> Direction:
+    """
+    Continues eternally in the same direction.
+    :param direction: The input direction.
+    :return: the same direction.
+    """
+
+    return direction
 
 
 CollisionResult = tuple[bool, Iterator[int], Direction, Optional[np.ndarray]]
