@@ -1,5 +1,5 @@
 from itertools import chain
-from typing import Optional, Iterable
+from typing import Optional, Iterable, Iterator
 
 import numpy as np
 
@@ -13,7 +13,8 @@ class BackgroundColorRule(CollisionRule):
     If the neighbourhood contains colors other than the background color, a collision is detected and the rule is executed.
     """
 
-    def __init__(self, background_color: int, direction_rule: DirectionRule, border_color: Optional[int] = None) -> None:
+    def __init__(self, background_color: int, direction_rule: DirectionRule,
+                 border_color: Optional[int] = None) -> None:
         self.background_color = background_color
         self.border_color = border_color
         self.direction_rule = direction_rule
@@ -22,7 +23,7 @@ class BackgroundColorRule(CollisionRule):
             self,
             step: np.ndarray,
             neighbourhood: np.ndarray,
-            colors: Iterable[int],
+            colors: Iterator[int],
             direction: Direction,
             output_grid: np.ndarray,
     ) -> Optional[CollisionResult]:

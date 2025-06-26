@@ -1,5 +1,5 @@
 from itertools import cycle, chain
-from typing import Optional, Iterable
+from typing import Optional, Iterator
 
 import numpy as np
 
@@ -26,7 +26,7 @@ class BoundingBoxRule(CollisionRule):
             self,
             step: np.ndarray,
             neighbourhood: np.ndarray,
-            colors: Iterable[int],
+            colors: Iterator[int],
             direction: Direction,
             output_grid: np.ndarray,
     ) -> Optional[CollisionResult]:
