@@ -33,7 +33,11 @@ class PuzzleFourteenPuzzleGenerator(PuzzleGenerator):
         else:
             raise ValueError("Puzzle scenario is not supported")
 
-        beam_width = bounding_box[0, 3, 1] - bounding_box[0, 0, 1] + 1
+        if direction in ["up", "down"]:
+            beam_width = bounding_box[0, 3, 1] - bounding_box[0, 0, 1] + 1
+        else:
+            beam_width = bounding_box[0, 0, 0] - bounding_box[0, 2, 0] + 1
+
         colors = cycle([
             start_color, background_color, start_color, background_color, fill_color, background_color
         ])
