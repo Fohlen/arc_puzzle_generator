@@ -21,3 +21,13 @@ class PuzzleFourteenTestCase(unittest.TestCase):
         generator = PuzzleFourteenPuzzleGenerator(self.puzzle.train[1].input)
         *_, output_grid = generator
         self.assertTrue(np.array_equal(output_grid, self.puzzle.train[1].output))
+
+    def test_generate_221dfab4_prompt(self):
+        generator = PuzzleFourteenPuzzleGenerator(self.puzzle.test[0].input)
+        *_, output_grid = generator
+        self.assertTrue(np.array_equal(output_grid, self.puzzle.test[0].output))
+
+    def test_generate_221dfab4_prompt_second(self):
+        generator = PuzzleFourteenPuzzleGenerator(self.puzzle.test[1].input)
+        *_, output_grid = generator
+        self.assertTrue(np.array_equal(output_grid, self.puzzle.test[1].output))
