@@ -7,7 +7,7 @@ from arc_puzzle_generator.agent import Agent
 from arc_puzzle_generator.collision_rules.FillColorRule import FillColorRule
 from arc_puzzle_generator.collisions import identity_direction, axis_neighbourhood
 from arc_puzzle_generator.entities import find_connected_objects
-from arc_puzzle_generator.physics import Direction
+from arc_puzzle_generator.physics import Direction, bounding_box_to_points
 from arc_puzzle_generator.puzzle_generator import PuzzleGenerator
 
 
@@ -33,23 +33,17 @@ class PuzzleFourteenPuzzleGenerator(PuzzleGenerator):
         else:
             raise ValueError("Puzzle scenario is not supported")
 
-        if direction in ["up", "down"]:
-            beam_width = bounding_box[0, 3, 1] - bounding_box[0, 0, 1] + 1
-        else:
-            beam_width = bounding_box[0, 0, 0] - bounding_box[0, 2, 0] + 1
-
         colors = cycle([
             start_color, background_color, start_color, background_color, fill_color, background_color
         ])
 
         return [Agent(
             output_grid=self.output_grid,
-            bounding_box=bounding_box[0] - np.array([0, 1]),
+            step=bounding_box_to_points(bounding_box[0]),
             charge=-1,
             direction=direction,
             colors=colors,
             step_size=1,
-            beam_width=beam_width,
             collision_rule=FillColorRule(
                 background_color=background_color,
                 fill_color=fill_color,

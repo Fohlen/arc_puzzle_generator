@@ -44,7 +44,7 @@ class PuzzleTenPuzzleGenerator(PuzzleGenerator):
         return [
             Agent(
                 output_grid=self.output_grid,
-                bounding_box=np.array([[row, 0], [row, 0], [row, 0], [row, 0]]),
+                step=np.array([[row, 0]]),
                 direction="right",
                 colors=cycle(color_sequence),
                 charge=-1,

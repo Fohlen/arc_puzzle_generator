@@ -15,11 +15,10 @@ class Agent(Iterator[np.ndarray], Iterable[np.ndarray]):
     A neighbourhood rule determines how the agent calculates collisions, and a collision rule determines how the agent reacts to collisions.
 
     :param output_grid: The grid to update.
-    :param bounding_box: The bounding box of the agent.
+    :param step: The initial coordinates of the agent.
     :param direction: The initial direction of the agent.
     :param colors: The colors of the agent.
     :param charge: The charge of the agent (-1 for unbounded).
-    :param beam_width: The beam width of the agent.
     :param neighbourhood_rule: The neighbourhood rule of the agent.
     :param collision_rule: The collision rule of the agent.
     """
@@ -27,21 +26,19 @@ class Agent(Iterator[np.ndarray], Iterable[np.ndarray]):
     def __init__(
             self,
             output_grid: np.ndarray,
-            bounding_box: np.ndarray,
+            step: np.ndarray,
             direction: Direction,
             colors: Iterable[int],
             charge: int = -1,
-            beam_width: int = 1,
             step_size: int = 1,
             neighbourhood_rule: NeighbourhoodRule = directional_neighbourhood,
             collision_rule: Optional[CollisionRule] = None,
     ) -> None:
         self.output_grid = output_grid
-        self.bounding_box = bounding_box
         self.direction = direction
         self.colors = iter(colors)
         self.charge = charge
-        self.step = starting_point(bounding_box, direction, point_width=beam_width)
+        self.step = step
         self.step_size = step_size
         self.collision_rule = collision_rule
         self.neighbourhood_rule = neighbourhood_rule
