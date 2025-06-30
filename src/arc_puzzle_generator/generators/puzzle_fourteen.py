@@ -1,6 +1,8 @@
 from itertools import cycle
 from typing import Iterable, cast
 
+import numpy as np
+
 from arc_puzzle_generator.agent import Agent
 from arc_puzzle_generator.collision_rules.FillColorRule import FillColorRule
 from arc_puzzle_generator.collisions import identity_direction, axis_neighbourhood
@@ -22,14 +24,17 @@ class PuzzleFourteenPuzzleGenerator(PuzzleGenerator):
 
         direction = cast(Direction, "down" if bounding_box[0, 0, 0] == 0 else "up")
         beam_width = bounding_box[0, 3, 1] - bounding_box[0, 0, 1] + 1
+        colors = cycle([
+            start_color, background_color, start_color, background_color, fill_color, background_color
+        ])
 
         return [Agent(
             output_grid=self.output_grid,
-            bounding_box=bounding_box[0],
+            bounding_box=bounding_box[0] - np.array([0, 1]),
             charge=-1,
             direction=direction,
-            colors=cycle([start_color, start_color, fill_color]),
-            step_size=2,
+            colors=colors,
+            step_size=1,
             beam_width=beam_width,
             collision_rule=FillColorRule(
                 background_color=background_color,

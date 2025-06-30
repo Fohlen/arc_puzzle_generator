@@ -36,7 +36,5 @@ class FillColorRule(CollisionRule):
                     direction), extra_steps
             else:
                 return False, chain([color], colors), self.direction_rule(direction), None
-
-
         else:
             return None
