@@ -86,7 +86,11 @@ class PuzzleTwoPuzzleGenerator(PuzzleGenerator):
 
         return [Agent(
             output_grid=self.output_grid,
-            step=starting_point(boxes[box1][2], direction, beam_width),
+            step=starting_point(
+                bounding_box=boxes[box1][2],
+                direction=direction,
+                point_width=beam_width
+            ),
             direction=direction,
             colors=ColorIterator(
                 [(box_color, distance), (boxes[box1][1], 1)],

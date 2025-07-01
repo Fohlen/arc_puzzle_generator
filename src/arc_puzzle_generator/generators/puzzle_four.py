@@ -36,7 +36,11 @@ class PuzzleFourPuzzleGenerator(PuzzleGenerator):
 
         return [Agent(
             output_grid=self.output_grid,
-            step=starting_point(bbox, direction, 1),
+            step=starting_point(
+                bounding_box=bbox,
+                direction=direction,
+                point_width=1
+            ),
             direction=direction,
             colors=cycle([color]),
             charge=-1,
