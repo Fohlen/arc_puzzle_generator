@@ -8,7 +8,7 @@ from arc_puzzle_generator.color_iterator import ColorIterator
 from arc_puzzle_generator.entities import colour_count, find_connected_objects
 from arc_puzzle_generator.agent import Agent
 from arc_puzzle_generator.puzzle_generator import PuzzleGenerator
-from arc_puzzle_generator.physics import Direction, relative_box_direction, box_distance
+from arc_puzzle_generator.physics import Direction, relative_box_direction, box_distance, starting_point
 
 
 class PuzzleTwoPuzzleGenerator(PuzzleGenerator):
@@ -86,12 +86,15 @@ class PuzzleTwoPuzzleGenerator(PuzzleGenerator):
 
         return [Agent(
             output_grid=self.output_grid,
-            bounding_box=boxes[box1][2],
+            step=starting_point(
+                bounding_box=boxes[box1][2],
+                direction=direction,
+                point_width=beam_width
+            ),
             direction=direction,
             colors=ColorIterator(
                 [(box_color, distance), (boxes[box1][1], 1)],
                 background_color=background_color
             ),
             charge=distance,
-            beam_width=beam_width,
         ) for box1, direction, distance in box_order]

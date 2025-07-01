@@ -9,7 +9,7 @@ from arc_puzzle_generator.entities import find_colors, find_connected_objects, i
 from arc_puzzle_generator.agent import Agent
 from arc_puzzle_generator.puzzle_generator import PuzzleGenerator
 from arc_puzzle_generator.grid_utils import make_smallest_square_from_mask
-from arc_puzzle_generator.physics import Direction
+from arc_puzzle_generator.physics import Direction, starting_point
 
 
 class PuzzleFourPuzzleGenerator(PuzzleGenerator):
@@ -36,7 +36,11 @@ class PuzzleFourPuzzleGenerator(PuzzleGenerator):
 
         return [Agent(
             output_grid=self.output_grid,
-            bounding_box=bbox,
+            step=starting_point(
+                bounding_box=bbox,
+                direction=direction,
+                point_width=1
+            ),
             direction=direction,
             colors=cycle([color]),
             charge=-1,

@@ -2,7 +2,8 @@ from unittest import TestCase
 
 import numpy as np
 
-from arc_puzzle_generator.collisions import directional_neighbourhood, orthogonal_direction, moore_neighbourhood
+from arc_puzzle_generator.collisions import directional_neighbourhood, moore_neighbourhood, \
+    identity_direction, AxisNeighbourHood
 
 
 class CollisionTest(TestCase):
@@ -163,3 +164,24 @@ class CollisionTest(TestCase):
             [[5, 4], [6, 3], [6, 4]],
             directional_neighbourhood(step, "bottom_right")
         ))
+
+    def test_identity_direction(self):
+        self.assertEqual(identity_direction("right"), "right")
+
+    def test_axis_neighbours(self):
+        step = np.array([[5, 3]])
+        grid_size = (10, 10)
+        axis_neighbourhood = AxisNeighbourHood(grid_size)
+        neighbours = axis_neighbourhood(step, "up")
+        self.assertEqual(neighbours.shape, (9, 2))
+        self.assertEqual(neighbours[0, 0], 5)
+        self.assertEqual(neighbours[8, 0], 5)
+        self.assertEqual(neighbours[0, 1], 0)
+        self.assertEqual(neighbours[8, 1], 9)
+
+        neighbours_vertical = axis_neighbourhood(step, "right")
+        self.assertEqual(neighbours_vertical.shape, (9, 2))
+        self.assertEqual(neighbours_vertical[0, 1], 3)
+        self.assertEqual(neighbours_vertical[8, 1], 3)
+        self.assertEqual(neighbours_vertical[0, 0], 0)
+        self.assertEqual(neighbours_vertical[8, 0], 9)

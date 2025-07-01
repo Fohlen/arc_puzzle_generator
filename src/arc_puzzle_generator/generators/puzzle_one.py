@@ -18,8 +18,7 @@ class PuzzleOnePuzzleGenerator(PuzzleGenerator):
         sorted_colors = colour_count(self.input_grid)
         color_sequences: list[tuple[int, list[tuple[int, int]]]] = []  # [(row, [color, count]]
         background_color = sorted_colors[0][0]
-        start_col = 0
-        charge: int = 0
+        charge: int
         direction: Direction = "right"
 
         line_color = sorted_colors[1][0]
@@ -57,7 +56,7 @@ class PuzzleOnePuzzleGenerator(PuzzleGenerator):
 
         return [Agent(
             output_grid=self.output_grid,
-            bounding_box=np.array([[row, start_col], [row, start_col], [row, start_col], [row, start_col]]),
+            step=np.array([[row, start_col]]),
             charge=charge,
             direction=direction,
             colors=ColorIterator(color_sequence, background_color),

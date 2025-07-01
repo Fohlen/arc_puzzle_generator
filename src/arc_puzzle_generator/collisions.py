@@ -6,10 +6,11 @@ from arc_puzzle_generator.physics import Direction, Axis
 
 
 class NeighbourhoodRule(Protocol):
-    def __call__(self, point: np.ndarray, *args, **kwargs) -> np.ndarray:
+    def __call__(self, point: np.ndarray, direction: Direction, *args, **kwargs) -> np.ndarray:
         """
         A collision rule regulates which neighbours will be considered in a collision.
         :param point: The point to determine the neighbourhood for.
+        :param direction: The direction to determine the neighbourhood for.
         :param args: Additional arguments.
         :param kwargs: Additional keyword arguments.
         :return: A 2D array of neighbourhood coordinates.
@@ -17,7 +18,7 @@ class NeighbourhoodRule(Protocol):
         pass
 
 
-def moore_neighbourhood(point: np.ndarray) -> np.ndarray:
+def moore_neighbourhood(point: np.ndarray, *arg, **kwargs) -> np.ndarray:
     """
     Determines the neighborhood of a point using the Moore neighborhood.
     :param point: A point to determine the neighborhood for.
@@ -91,6 +92,27 @@ def directional_neighbourhood(point: np.ndarray, direction: Direction) -> np.nda
 
     raise ValueError(f"Invalid direction: {direction}")
 
+class AxisNeighbourHood(NeighbourhoodRule):
+    def __init__(self, grid_size: tuple[int, int]) -> None:
+        self.grid_size = grid_size
+
+    def __call__(self, point: np.ndarray, direction: Direction, *args, **kwargs) -> np.ndarray:
+        points = set(map(tuple, point.tolist()))
+        neighbours = set()
+
+        if direction in ["up", "down"]:
+            xs = point[:, 0].tolist()
+
+            for x in xs:
+                neighbours.update([(x, i) for i in range(0, self.grid_size[0])])
+        else:
+            ys = point[:, 1].tolist()
+
+            for y in ys:
+                neighbours.update([(i, y) for i in range(0, self.grid_size[1])])
+
+        return np.array(sorted(neighbours - points))
+
 
 def orthogonal_direction(direction: Direction, axis: Axis = "horizontal") -> Direction:
     """
@@ -137,6 +159,16 @@ def snake_direction(direction: Direction) -> Direction:
         return "up"
 
     return "right"
+
+
+def identity_direction(direction: Direction) -> Direction:
+    """
+    Continues eternally in the same direction.
+    :param direction: The input direction.
+    :return: the same direction.
+    """
+
+    return direction
 
 
 CollisionResult = tuple[bool, Iterator[int], Direction, Optional[np.ndarray]]

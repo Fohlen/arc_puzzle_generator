@@ -4,7 +4,7 @@ from unittest import TestCase
 import numpy as np
 
 from arc_puzzle_generator.physics import direction_to_unit_vector, contained, box_distance, relative_box_direction, \
-    starting_point
+    starting_point, bounding_box_to_points
 
 
 class PhysicsTestCase(unittest.TestCase):
@@ -131,4 +131,29 @@ class PhysicsTestCase(unittest.TestCase):
         self.assertTrue(np.array_equal(
             starting_point(point_a, "top_left", 2),
             step_f
+        ))
+
+    def test_bounding_box_to_points(self):
+        points_a = np.array([[5, 3], [5, 3], [5, 3], [5, 3]])
+        box_points_a = np.array([[5, 3]])
+
+        self.assertTrue(np.array_equal(
+            box_points_a,
+            bounding_box_to_points(points_a)
+        ))
+
+        points_b = np.array([[5, 3], [5, 3], [5, 4], [5, 4]])
+        box_points_b = np.array([[5, 3], [5, 4]])
+
+        self.assertTrue(np.array_equal(
+            box_points_b,
+            bounding_box_to_points(points_b)
+        ))
+
+        points_c = np.array([[5, 3], [4, 3], [4, 4], [5, 4]])
+        box_points_c = np.array(sorted([[5, 3], [4, 3], [4, 4], [5, 4]]))
+
+        self.assertTrue(np.array_equal(
+            box_points_c,
+            bounding_box_to_points(points_c)
         ))

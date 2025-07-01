@@ -2,9 +2,8 @@ from typing import Iterable, Iterator, Optional
 
 import numpy as np
 
-from arc_puzzle_generator.collisions import CollisionRule, NeighbourhoodRule, \
-    directional_neighbourhood, moore_neighbourhood
-from arc_puzzle_generator.physics import Direction, starting_point, direction_to_unit_vector
+from arc_puzzle_generator.collisions import CollisionRule, NeighbourhoodRule, directional_neighbourhood
+from arc_puzzle_generator.physics import Direction, direction_to_unit_vector
 
 
 class Agent(Iterator[np.ndarray], Iterable[np.ndarray]):
@@ -15,11 +14,10 @@ class Agent(Iterator[np.ndarray], Iterable[np.ndarray]):
     A neighbourhood rule determines how the agent calculates collisions, and a collision rule determines how the agent reacts to collisions.
 
     :param output_grid: The grid to update.
-    :param bounding_box: The bounding box of the agent.
+    :param step: The initial coordinates of the agent.
     :param direction: The initial direction of the agent.
     :param colors: The colors of the agent.
     :param charge: The charge of the agent (-1 for unbounded).
-    :param beam_width: The beam width of the agent.
     :param neighbourhood_rule: The neighbourhood rule of the agent.
     :param collision_rule: The collision rule of the agent.
     """
@@ -27,32 +25,23 @@ class Agent(Iterator[np.ndarray], Iterable[np.ndarray]):
     def __init__(
             self,
             output_grid: np.ndarray,
-            bounding_box: np.ndarray,
+            step: np.ndarray,
             direction: Direction,
             colors: Iterable[int],
             charge: int = -1,
-            beam_width: int = 1,
+            step_size: int = 1,
             neighbourhood_rule: NeighbourhoodRule = directional_neighbourhood,
             collision_rule: Optional[CollisionRule] = None,
     ) -> None:
         self.output_grid = output_grid
-        self.bounding_box = bounding_box
         self.direction = direction
         self.colors = iter(colors)
         self.charge = charge
-        self.step = starting_point(bounding_box, direction, point_width=beam_width)
+        self.step = step
+        self.step_size = step_size
         self.collision_rule = collision_rule
         self.neighbourhood_rule = neighbourhood_rule
         self.terminated = False
-
-    def _neighbours(self) -> np.ndarray:
-        if self.neighbourhood_rule is directional_neighbourhood:
-            # calculate the neighborhood of the step dependent on the direction
-            return directional_neighbourhood(self.step, self.direction)
-        elif self.neighbourhood_rule is moore_neighbourhood:
-            return moore_neighbourhood(self.step)
-        else:
-            return np.empty((0, 2))
 
     def __iter__(self) -> Iterator[np.ndarray]:
         return self
@@ -60,7 +49,7 @@ class Agent(Iterator[np.ndarray], Iterable[np.ndarray]):
     def __next__(self) -> np.ndarray:
         while self.charge == -1 or self.charge > 0:
             # compute the next step
-            step = self.step + direction_to_unit_vector(self.direction)
+            step = self.step + direction_to_unit_vector(self.direction) * self.step_size
 
             # if the agent has previously been terminated
             if self.terminated:
@@ -73,7 +62,7 @@ class Agent(Iterator[np.ndarray], Iterable[np.ndarray]):
 
             if self.collision_rule is not None:
                 # calculate the neighbourhood
-                neighbourhood = self._neighbours()
+                neighbourhood = self.neighbourhood_rule(self.step, self.direction)
 
                 # remove neighbors which are out of grid
                 neighbourhood = neighbourhood[
@@ -102,7 +91,7 @@ class Agent(Iterator[np.ndarray], Iterable[np.ndarray]):
 
                     self.output_grid[self.step[:, 0], self.step[:, 1]] = next(self.colors)
                     self.direction = direction
-                    self.step = self.step + direction_to_unit_vector(self.direction)
+                    self.step = self.step + direction_to_unit_vector(self.direction) * self.step_size
 
                     if self.charge > 0:
                         self.charge -= 1

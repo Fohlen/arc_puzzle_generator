@@ -194,3 +194,18 @@ def starting_point(
             return np.array([start_pos + (direction_to_unit_vector("top_right") * i) for i in range(point_width)])
 
     raise ValueError("Unknown direction {}".format(direction))
+
+
+def bounding_box_to_points(bounding_box: np.ndarray) -> np.ndarray:
+    """
+    Converts a bounding box to points assuming rectangular bounding box.
+    :param bounding_box: The bounding box to convert.
+    :return: The points assuming rectangular bounding box.
+    """
+
+    points = []
+    for x in range(bounding_box[2, 0], bounding_box[0, 0] + 1):
+        for y in range(bounding_box[0, 1], bounding_box[3, 1] + 1):
+            points.append((x, y))
+
+    return np.array(sorted(points))
