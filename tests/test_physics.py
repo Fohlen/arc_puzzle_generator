@@ -134,10 +134,26 @@ class PhysicsTestCase(unittest.TestCase):
         ))
 
     def test_bounding_box_to_points(self):
-        point = np.array([[5, 3], [5, 3], [5, 3], [5, 3]])
-        points = np.array([[5, 3]])
+        points_a = np.array([[5, 3], [5, 3], [5, 3], [5, 3]])
+        box_points_a = np.array([[5, 3]])
 
         self.assertTrue(np.array_equal(
-            points,
-            bounding_box_to_points(point)
+            box_points_a,
+            bounding_box_to_points(points_a)
+        ))
+
+        points_b = np.array([[5, 3], [5, 3], [5, 4], [5, 4]])
+        box_points_b = np.array([[5, 3], [5, 4]])
+
+        self.assertTrue(np.array_equal(
+            box_points_b,
+            bounding_box_to_points(points_b)
+        ))
+
+        points_c = np.array([[5, 3], [4, 3], [4, 4], [5, 4]])
+        box_points_c = np.array(sorted([[5, 3], [4, 3], [4, 4], [5, 4]]))
+
+        self.assertTrue(np.array_equal(
+            box_points_c,
+            bounding_box_to_points(points_c)
         ))
