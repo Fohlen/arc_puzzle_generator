@@ -2,8 +2,7 @@ from typing import Iterable, Iterator, Optional
 
 import numpy as np
 
-from arc_puzzle_generator.collisions import CollisionRule, NeighbourhoodRule, \
-    directional_neighbourhood, moore_neighbourhood, axis_neighbourhood
+from arc_puzzle_generator.collisions import CollisionRule, NeighbourhoodRule, directional_neighbourhood
 from arc_puzzle_generator.physics import Direction, direction_to_unit_vector
 
 
@@ -44,17 +43,6 @@ class Agent(Iterator[np.ndarray], Iterable[np.ndarray]):
         self.neighbourhood_rule = neighbourhood_rule
         self.terminated = False
 
-    def _neighbours(self) -> np.ndarray:
-        if self.neighbourhood_rule == directional_neighbourhood:
-            # calculate the neighborhood of the step dependent on the direction
-            return directional_neighbourhood(self.step, self.direction)
-        elif self.neighbourhood_rule == axis_neighbourhood:
-            return axis_neighbourhood(self.step, self.direction, self.output_grid.shape)
-        elif self.neighbourhood_rule == moore_neighbourhood:
-            return moore_neighbourhood(self.step)
-        else:
-            return np.empty((0, 2))
-
     def __iter__(self) -> Iterator[np.ndarray]:
         return self
 
@@ -74,7 +62,7 @@ class Agent(Iterator[np.ndarray], Iterable[np.ndarray]):
 
             if self.collision_rule is not None:
                 # calculate the neighbourhood
-                neighbourhood = self._neighbours()
+                neighbourhood = self.neighbourhood_rule(self.step, self.direction)
 
                 # remove neighbors which are out of grid
                 neighbourhood = neighbourhood[
