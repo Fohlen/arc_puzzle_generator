@@ -4,7 +4,7 @@ import numpy as np
 
 from arc_puzzle_generator.collisions import CollisionRule, NeighbourhoodRule, \
     directional_neighbourhood, moore_neighbourhood, axis_neighbourhood
-from arc_puzzle_generator.physics import Direction, starting_point, direction_to_unit_vector
+from arc_puzzle_generator.physics import Direction, direction_to_unit_vector
 
 
 class Agent(Iterator[np.ndarray], Iterable[np.ndarray]):
