@@ -1,8 +1,7 @@
 from itertools import chain
 from typing import Protocol
 
-Point = tuple[int, int]
-PointSet = set[Point]
+from abm.geometry import Point, PointSet
 
 
 class Neighbourhood(Protocol):
