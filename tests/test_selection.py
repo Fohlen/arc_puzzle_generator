@@ -1,7 +1,7 @@
 from unittest import TestCase
 
 from abm.neighbourhood import moore_neighbours
-from abm.selectors import top_selector, bottom_selector, left_selector, right_selector
+from abm.selection import top_selector, bottom_selector, left_selector, right_selector, resolve_point_set_selectors
 
 
 class SelectorsTestCase(TestCase):
@@ -29,3 +29,11 @@ class SelectorsTestCase(TestCase):
         combined = top_selector(self.point, self.neighbourhood) | bottom_selector(self.point, self.neighbourhood) | \
             left_selector(self.point, self.neighbourhood) | right_selector(self.point, self.neighbourhood)
         self.assertEqual(self.neighbourhood, combined)
+
+    def test_resolve_point_set_selectors(self):
+        expected_top = {(0, 0), (0, 1), (0, 2)}
+        self.assertEqual(expected_top, resolve_point_set_selectors({self.point}, self.neighbourhood, top_selector))
+
+        expected_bottom =  {(2, 0), (2, 1), (2, 2)}
+        self.assertEqual(expected_bottom, resolve_point_set_selectors({self.point}, self.neighbourhood, bottom_selector))
+
