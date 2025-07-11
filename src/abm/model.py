@@ -29,7 +29,7 @@ class Model:
     def step(self) -> None:
         for agent in self.agent_set:
             # Select active agents
-            if agent.active():
+            if agent.active:
                 # Calculate the neighbourhood of the agent
                 neighbourhood = resolve_point_set_neighbours(agent.position, agent.neighbourhood)
 
@@ -51,8 +51,9 @@ class Model:
                 position_intersect = cast(PointSet, selection & eligible_positions & future_step)
 
                 # Update the agent's state based on collision positions
-                pos, _, colors, _ = agent.step(position_intersect)
+                for step in agent.steps(position_intersect):
+                    pos, _, colors, _ = step
 
-                # Update the grid
-                position = np.array(list(pos))
-                self.output_grid[position[:, 0], position[:, 1]] = next(colors)
+                    # Update the grid
+                    position = np.array(list(pos))
+                    self.output_grid[position[:, 0], position[:, 1]] = next(colors)

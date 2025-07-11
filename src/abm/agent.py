@@ -34,9 +34,11 @@ class Agent:
         self.colors = colors
         self.charge = charge
 
+    @property
     def active(self) -> bool:
         return self.charge > 0 or self.charge == -1
 
+    @property
     def state(self) -> AgentState:
         return AgentState(
             position=self.position,
@@ -45,5 +47,16 @@ class Agent:
             charge=self.charge
         )
 
-    def step(self, collision: PointSet) -> AgentState:
-        return self.state()
+    def steps(self, collision: PointSet) -> Iterable[AgentState]:
+        states = []
+        action_iter = iter(self.actions)
+        action = next(action_iter)
+        state = action(self.state, collision)
+        states.append(state)
+
+        while state.charge > 0 or state.charge == -1:
+            action = next(action_iter)
+            state = action(state, collision)
+            states.append(state)
+
+        return states
