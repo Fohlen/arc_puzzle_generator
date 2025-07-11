@@ -2,8 +2,9 @@ from collections import OrderedDict
 
 import numpy as np
 
-from abm.action import DirectionAction
+from abm.action import DirectionAction, OutOfGridAction
 from abm.agent import Agent
+from abm.color_sequence_iterator import ColorSequenceIterator
 from abm.geometry import PointSet
 from abm.model import Model
 from abm.neighbourhood import dummy_neighbourhood
@@ -30,13 +31,13 @@ def puzzle_one(input_grid: np.ndarray) -> Simulation:
     if np.all(input_grid[:, :separator_bboxes[0][0, 1]] == background_color):
         direction = "left"
         input_grid = input_grid[:, (separator_bboxes[0][0, 1] + 1):]
-        start_col = separator_bboxes[0][1, 1] - 1
-        charge = separator_bboxes[0][3][1]
+        start_col = (separator_bboxes[0][1, 1] - 1).item()
+        charge = separator_bboxes[0][3][1].item()
     # left-to-right
     else:
         input_grid = input_grid[:, :separator_bboxes[0][0, 1]]
-        start_col = separator_bboxes[0][2, 1] + 1
-        charge = input_grid.shape[1] - separator_bboxes[0][3][1] - 1
+        start_col = (separator_bboxes[0][2, 1] + 1).item()
+        charge = (input_grid.shape[1] - separator_bboxes[0][3][1] - 1).item()
     for index, row in enumerate(input_grid):
         color_order = OrderedDict()  # { color: count }
 
@@ -58,14 +59,15 @@ def puzzle_one(input_grid: np.ndarray) -> Simulation:
     return Simulation(Model(
         output_grid=output_grid,
         agents=[Agent(
-            position=PointSet((row, start_col)),
+            position=PointSet([(row, start_col)]),
             direction=direction,
             label="puzzle_one_agent",
             topology=identity_topology,
             neighbourhood=dummy_neighbourhood,
             selector=dummy_selector,
-            actions=[DirectionAction(identity_direction_rule), ],
+            actions=[DirectionAction(identity_direction_rule),
+                     OutOfGridAction(identity_direction_rule, output_grid.shape)],
             charge=charge,
-            colors=ColorIterator(color_sequence, background_color),
+            colors=ColorSequenceIterator(color_sequence, background_color),
         ) for row, color_sequence in color_sequences]
     ), -1)

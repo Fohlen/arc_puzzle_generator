@@ -48,13 +48,16 @@ class Agent:
     def steps(self, collision: PointSet) -> Iterable[AgentState]:
         states = []
         action_iter = iter(self.actions)
-        action = next(action_iter)
-        state = action(self.state, collision)
-        states.append(state)
 
-        while state.charge > 0 or state.charge == -1:
-            action = next(action_iter)
-            state = action(state, collision)
-            states.append(state)
+        for action in action_iter:
+            state = action(self.state, collision)
 
+            # If the action returns a valid state, update the agent's attributes
+            if state is not None:
+                self.position = state.position
+                self.direction = state.direction
+                self.colors = state.colors
+                self.charge = state.charge
+
+                states.append(state)
         return states

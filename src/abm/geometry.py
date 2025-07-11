@@ -30,7 +30,7 @@ def unmask(input_mask: np.ndarray) -> PointSet:
     return PointSet((cast(int, x), cast(int, y)) for x, y in zip(*np.where(input_mask)))
 
 
-def mask(point_set: PointSet, grid_size: tuple[int, int]) -> np.ndarray:
+def mask(point_set: PointSet, grid_size: Point) -> np.ndarray:
     """
     Convert a set of points to a mask of booleans.
     :param point_set:
