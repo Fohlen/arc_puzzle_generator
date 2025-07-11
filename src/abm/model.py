@@ -1,6 +1,6 @@
 from collections import defaultdict
 from itertools import chain
-from typing import cast
+from typing import cast, Iterator, Iterable
 
 import numpy as np
 
@@ -11,7 +11,7 @@ from abm.physics import direction_to_unit_vector
 from abm.selection import resolve_point_set_selectors
 
 
-class Model:
+class Model(Iterator[np.ndarray], Iterable[np.ndarray]):
     def __init__(
             self,
             output_grid: np.ndarray,
@@ -22,9 +22,16 @@ class Model:
         self.agents_by_label = defaultdict(list)
         self.labels = set(agent.label for agent in agent_set)
         self.steps = [output_grid.copy()]
+        self.step_iterator = iter(self.steps)
 
         for agent in agent_set:
             self.agents_by_label[agent.label].append(agent)
+
+    def __iter__(self) -> 'Model':
+        return self
+
+    def __next__(self) -> np.ndarray:
+        return next(self.step_iterator)
 
     def step(self) -> None:
         for agent in self.agent_set:
@@ -57,3 +64,4 @@ class Model:
                     # Update the grid
                     position = np.array(list(pos))
                     self.output_grid[position[:, 0], position[:, 1]] = next(colors)
+                    self.steps.append(self.output_grid.copy())
