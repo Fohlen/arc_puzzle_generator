@@ -25,6 +25,8 @@ class Model(Iterator[np.ndarray], Iterable[np.ndarray]):
 
         for agent in agents:
             self.agents_by_label[agent.label].append(agent)
+            position = np.array(list(agent.position))
+            self.output_grid[position[:, 0], position[:, 1]] = next(agent.colors)
 
     @property
     def active(self) -> bool:
@@ -61,9 +63,10 @@ class Model(Iterator[np.ndarray], Iterable[np.ndarray]):
 
                 # Update the agent's state based on collision positions
                 for step in agent.steps(position_intersect):
-                    pos, _, colors, _ = step
+                    pos, _, colors, charge = step
 
-                    # Update the grid
-                    position = np.array(list(pos))
-                    self.output_grid[position[:, 0], position[:, 1]] = next(colors)
-                    self.steps.append(self.output_grid.copy())
+                    # If the agent is still active after the step, update the output grid
+                    if charge > 0 or charge == -1:
+                        position = np.array(list(pos))
+                        self.output_grid[position[:, 0], position[:, 1]] = next(colors)
+                        self.steps.append(self.output_grid.copy())

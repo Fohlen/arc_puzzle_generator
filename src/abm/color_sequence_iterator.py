@@ -24,7 +24,6 @@ class ColorSequenceIterator(Iterator[int], Iterable[int]):
             if (self.index - 1) % count == 0:
                 self.index += 1
                 return color
-
-        self.index += 1
-
-        return self.background_color
+        else:
+            self.index += 1
+            return self.background_color

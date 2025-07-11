@@ -11,7 +11,6 @@ from abm.neighbourhood import dummy_neighbourhood
 from abm.physics import Direction, identity_direction_rule
 from abm.selection import dummy_selector
 from abm.simulation import Simulation
-from abm.state import ColorIterator
 from abm.topology import identity_topology
 from arc_puzzle_generator.entities import colour_count, find_connected_objects
 
@@ -65,8 +64,10 @@ def puzzle_one(input_grid: np.ndarray) -> Simulation:
             topology=identity_topology,
             neighbourhood=dummy_neighbourhood,
             selector=dummy_selector,
-            actions=[DirectionAction(identity_direction_rule),
-                     OutOfGridAction(identity_direction_rule, output_grid.shape)],
+            actions=[
+                OutOfGridAction(identity_direction_rule, output_grid.shape),
+                DirectionAction(identity_direction_rule),
+            ],
             charge=charge,
             colors=ColorSequenceIterator(color_sequence, background_color),
         ) for row, color_sequence in color_sequences]
