@@ -18,6 +18,15 @@ class PointSet(set[tuple[int, int]]):
         }
         return PointSet(positions)
 
+    @staticmethod
+    def from_numpy(array: np.ndarray) -> 'PointSet':
+        """
+        Convert a numpy array of points to a PointSet.
+
+        :return: A PointSet containing the points from the numpy array.
+        """
+        return PointSet((x.item(), y.item()) for x, y in array)
+
 
 def unmask(input_mask: np.ndarray) -> PointSet:
     """

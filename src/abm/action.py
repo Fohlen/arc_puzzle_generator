@@ -59,8 +59,7 @@ class OutOfGridAction(Action):
     An action that removes the agent if the next step is out of grid, by setting its charge to 0.
     """
 
-    def __init__(self, direction_rule: DirectionRule, grid_size: Point) -> None:
-        self.direction_rule = direction_rule
+    def __init__(self, grid_size: Point) -> None:
         self.grid_size = grid_size
 
     def __call__(self, state: AgentState, collision: PointSet) -> Optional[AgentState]:
@@ -72,13 +71,12 @@ class OutOfGridAction(Action):
         :return: None, indicating that the agent is removed from the grid.
         """
 
-        new_direction = self.direction_rule(state.direction)
-        new_position = state.position + direction_to_unit_vector(new_direction)
+        next_position = state.position + direction_to_unit_vector(state.direction)
 
-        min_x = min(pos[0] for pos in new_position)
-        max_x = max(pos[0] for pos in new_position)
-        min_y = min(pos[1] for pos in new_position)
-        max_y = max(pos[1] for pos in new_position)
+        min_x = min(pos[0] for pos in next_position)
+        max_x = max(pos[0] for pos in next_position)
+        min_y = min(pos[1] for pos in next_position)
+        max_y = max(pos[1] for pos in next_position)
 
         if min_x < 0 or max_x >= self.grid_size[0] or \
                 min_y < 0 or max_y >= self.grid_size[1]:
@@ -87,6 +85,39 @@ class OutOfGridAction(Action):
                 direction=state.direction,
                 colors=state.colors,
                 charge=0  # Set charge to 0 to indicate removal
+            )
+
+        return None
+
+
+class CollisionAction(Action):
+    """
+    An action that handles collisions by applying a direction rule on collision.
+    """
+
+    def __init__(self, direction_rule: DirectionRule) -> None:
+        self.direction_rule = direction_rule
+
+    def __call__(self, state: AgentState, collision: PointSet) -> Optional[AgentState]:
+        """
+        Handle the collision by returning the current state unchanged.
+
+        :param state: The current state of the agent.
+        :param collision: The set of points that are in collision with the agent.
+        :return: The same state as the input.
+        """
+
+        next_position = state.position + direction_to_unit_vector(state.direction)
+
+        if len(next_position & collision) > 0:
+            new_direction = self.direction_rule(state.direction)
+            new_position = state.position + direction_to_unit_vector(new_direction)
+
+            return AgentState(
+                position=new_position,
+                direction=new_direction,
+                colors=state.colors,
+                charge=state.charge - 1 if state.charge > 0 else state.charge
             )
 
         return None

@@ -3,8 +3,7 @@ from typing import Iterator, Iterable
 from abm.action import Action
 from abm.geometry import PointSet
 from abm.neighbourhood import Neighbourhood
-from abm.physics import Direction, DirectionRule
-from abm.selection import Selector
+from abm.physics import Direction
 from abm.state import AgentState
 from abm.topology import Topology
 
@@ -17,7 +16,6 @@ class Agent:
             label: str,
             topology: Topology,
             neighbourhood: Neighbourhood,
-            selector: Selector,
             actions: Iterable[Action],
             colors: Iterator[int],
             charge: int = 0,
@@ -27,7 +25,6 @@ class Agent:
         self.label = label
         self.topology = topology
         self.neighbourhood = neighbourhood
-        self.selector = selector
         self.actions = actions
         self.colors = colors
         self.charge = charge

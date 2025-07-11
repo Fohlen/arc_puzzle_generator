@@ -2,7 +2,7 @@ from collections import OrderedDict
 
 import numpy as np
 
-from abm.action import DirectionAction, OutOfGridAction
+from abm.action import DirectionAction
 from abm.agent import Agent
 from abm.color_sequence_iterator import ColorSequenceIterator
 from abm.geometry import PointSet
