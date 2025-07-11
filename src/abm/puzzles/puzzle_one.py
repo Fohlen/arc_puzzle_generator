@@ -36,7 +36,8 @@ def puzzle_one(input_grid: np.ndarray) -> Simulation:
     else:
         input_grid = input_grid[:, :separator_bboxes[0][0, 1]]
         start_col = (separator_bboxes[0][2, 1] + 1).item()
-        charge = (input_grid.shape[1] - separator_bboxes[0][3][1] - 1).item()
+        charge = (output_grid.shape[1] - separator_bboxes[0][3][1] - 1).item()
+
     for index, row in enumerate(input_grid):
         color_order = OrderedDict()  # { color: count }
 
@@ -65,7 +66,6 @@ def puzzle_one(input_grid: np.ndarray) -> Simulation:
             neighbourhood=dummy_neighbourhood,
             selector=dummy_selector,
             actions=[
-                OutOfGridAction(identity_direction_rule, output_grid.shape),
                 DirectionAction(identity_direction_rule),
             ],
             charge=charge,
