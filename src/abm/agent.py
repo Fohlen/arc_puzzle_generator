@@ -14,7 +14,6 @@ class Agent:
             self,
             position: PointSet,
             direction: Direction,
-            direction_rule: DirectionRule,
             label: str,
             topology: Topology,
             neighbourhood: Neighbourhood,
@@ -25,7 +24,6 @@ class Agent:
     ):
         self.position = position
         self.direction = direction
-        self.direction_rule = direction_rule
         self.label = label
         self.topology = topology
         self.neighbourhood = neighbourhood

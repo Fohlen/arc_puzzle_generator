@@ -43,3 +43,13 @@ class DirectionRule(Protocol):
 
     def __call__(self, direction: Direction, *args, **kwargs) -> Direction:
         pass
+
+
+def identity_direction_rule(direction: Direction) -> Direction:
+    """
+    A direction rule that returns the same direction.
+    :param direction: The direction to follow.
+    :return: A direction rule that returns the same direction.
+    """
+
+    return direction

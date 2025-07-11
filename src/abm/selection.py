@@ -64,6 +64,17 @@ def right_selector(point: Point, point_set: PointSet) -> PointSet:
     return PointSet((x, y) for (x, y) in point_set if y > point[1])
 
 
+def dummy_selector(point: Point, point_set: PointSet) -> PointSet:
+    """
+    A dummy selector that returns an empty set of points.
+    :param point: The reference point (not used).
+    :param point_set: The set of points to select from (not used).
+    :return: An empty PointSet.
+    """
+
+    return PointSet()
+
+
 def resolve_point_set_selectors(point_set: PointSet, neighbourhood: PointSet, selector: Selector) -> PointSet:
     """
     Resolves a point set using a selector function.

@@ -2,6 +2,7 @@ import unittest
 
 import numpy as np
 
+from abm.puzzles.puzzle_one import puzzle_one
 from arc_puzzle_generator.data_loader import load_puzzle
 from arc_puzzle_generator.generators.puzzle_one import PuzzleOnePuzzleGenerator
 from tests.utils import test_dir
@@ -11,6 +12,11 @@ class PuzzleOneTestCase(unittest.TestCase):
     def setUp(self):
         file_path = test_dir / "data" / "1ae2feb7.json"
         self.puzzle = load_puzzle(file_path)
+
+    def test_generate_one_abm(self):
+        simulation = puzzle_one(self.puzzle.train[0].input)
+        *_, output_grid = simulation.run()
+        self.assertTrue(np.array_equal(output_grid, self.puzzle.train[0].output))
 
     def test_generate_1ae2feb7(self):
         generator = PuzzleOnePuzzleGenerator(self.puzzle.train[0].input)

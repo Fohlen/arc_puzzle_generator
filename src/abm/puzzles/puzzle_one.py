@@ -1,0 +1,71 @@
+from collections import OrderedDict
+
+import numpy as np
+
+from abm.action import DirectionAction
+from abm.agent import Agent
+from abm.geometry import PointSet
+from abm.model import Model
+from abm.neighbourhood import dummy_neighbourhood
+from abm.physics import Direction, identity_direction_rule
+from abm.selection import dummy_selector
+from abm.simulation import Simulation
+from abm.state import ColorIterator
+from abm.topology import identity_topology
+from arc_puzzle_generator.entities import colour_count, find_connected_objects
+
+
+def puzzle_one(input_grid: np.ndarray) -> Simulation:
+    output_grid = input_grid.copy()
+    sorted_colors = colour_count(input_grid)
+    color_sequences: list[tuple[int, list[tuple[int, int]]]] = []  # [(row, [color, count]]
+    background_color = sorted_colors[0][0]
+    charge: int
+    direction: Direction = "right"
+
+    line_color = sorted_colors[1][0]
+
+    separator_labels, separator_bboxes, separator_count = find_connected_objects(input_grid == line_color)
+    # right-to-left
+    if np.all(input_grid[:, :separator_bboxes[0][0, 1]] == background_color):
+        direction = "left"
+        input_grid = input_grid[:, (separator_bboxes[0][0, 1] + 1):]
+        start_col = separator_bboxes[0][1, 1] - 1
+        charge = separator_bboxes[0][3][1]
+    # left-to-right
+    else:
+        input_grid = input_grid[:, :separator_bboxes[0][0, 1]]
+        start_col = separator_bboxes[0][2, 1] + 1
+        charge = input_grid.shape[1] - separator_bboxes[0][3][1] - 1
+    for index, row in enumerate(input_grid):
+        color_order = OrderedDict()  # { color: count }
+
+        # empty row
+        if np.all(row == background_color):
+            continue
+
+        colors = row if direction == "right" else row[::-1]
+        for color in colors:
+            if color != background_color:
+
+                if color not in color_order:
+                    color_order[color] = 0
+                color_order[color] += 1
+
+        color_sequence = color_order.items() if direction == "left" else reversed(color_order.items())
+        color_sequences.append((index, list(color_sequence)))
+
+    return Simulation(Model(
+        output_grid=output_grid,
+        agents=[Agent(
+            position=PointSet((row, start_col)),
+            direction=direction,
+            label="puzzle_one_agent",
+            topology=identity_topology,
+            neighbourhood=dummy_neighbourhood,
+            selector=dummy_selector,
+            actions=[DirectionAction(identity_direction_rule), ],
+            charge=charge,
+            colors=ColorIterator(color_sequence, background_color),
+        ) for row, color_sequence in color_sequences]
+    ), -1)

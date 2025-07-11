@@ -50,6 +50,15 @@ def moore_neighbours(point: Point) -> PointSet:
     ])
 
 
+def dummy_neighbourhood(point: Point) -> PointSet:
+    """
+    Return an empty neighbourhood for any given point.
+    :param point: The input point for which to return an empty neighbourhood.
+    :return: An empty PointSet.
+    """
+    return PointSet()
+
+
 def resolve_point_set_neighbours(point_set: PointSet, neighbourhood: Neighbourhood) -> PointSet:
     """
     Return a neighbourhood that returns the points in the point set.
