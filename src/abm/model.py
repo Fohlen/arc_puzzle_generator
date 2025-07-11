@@ -1,11 +1,13 @@
 from collections import defaultdict
 from itertools import chain
-from typing import Literal
+from typing import cast
 
 import numpy as np
 
 from abm.agent import Agent
+from abm.geometry import PointSet
 from abm.neighbourhood import resolve_point_set_neighbours
+from abm.physics import direction_to_unit_vector
 from abm.selection import resolve_point_set_selectors
 
 
@@ -24,7 +26,7 @@ class Model:
         for agent in agent_set:
             self.agents_by_label[agent.label].append(agent)
 
-    def step(self):
+    def step(self) -> None:
         for agent in self.agent_set:
             # Select active agents
             if agent.active():
@@ -44,5 +46,13 @@ class Model:
                 eligible_positions = set.union(*[agent.position for agent in eligible_agents])
 
                 # Calculate the collision positions
-                position_intersect = selection.intersection(eligible_positions)
+                future_direction = agent.direction_rule(agent.direction, agent.position)
+                future_step = agent.position + direction_to_unit_vector(future_direction)
+                position_intersect = cast(PointSet, selection & eligible_positions & future_step)
 
+                # Update the agent's state based on collision positions
+                pos, _, colors, _ = agent.step(position_intersect)
+
+                # Update the grid
+                position = np.array(list(pos))
+                self.output_grid[position[:, 0], position[:, 1]] = next(colors)

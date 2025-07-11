@@ -1,4 +1,4 @@
-from typing import Literal
+from typing import Literal, Protocol
 
 from abm.geometry import Point
 
@@ -34,3 +34,12 @@ def direction_to_unit_vector(direction: Direction) -> Point:
             return 1, 1
 
     raise ValueError("Unknown direction {}".format(direction))
+
+
+class DirectionRule(Protocol):
+    """
+    A direction rule determines the future direction of an agent based on the current direction and additional parameters.
+    """
+
+    def __call__(self, direction: Direction, *args, **kwargs) -> Direction:
+        pass

@@ -1,5 +1,5 @@
 from itertools import chain
-from typing import Protocol
+from typing import Protocol, cast
 
 from abm.geometry import Point, PointSet
 
@@ -22,12 +22,12 @@ def von_neumann_neighbours(point: Point) -> PointSet:
 
     x, y = point
 
-    return {
+    return PointSet([
         (x - 1, y),  # Left
         (x + 1, y),  # Right
         (x, y - 1),  # Up
         (x, y + 1),  # Down
-    }
+    ])
 
 
 def moore_neighbours(point: Point) -> PointSet:
@@ -38,7 +38,7 @@ def moore_neighbours(point: Point) -> PointSet:
     """
     x, y = point
 
-    return {
+    return PointSet([
         (x - 1, y - 1),  # Top-left
         (x - 1, y),  # Left
         (x - 1, y + 1),  # Bottom-left
@@ -47,7 +47,7 @@ def moore_neighbours(point: Point) -> PointSet:
         (x + 1, y - 1),  # Top-right
         (x + 1, y),  # Right
         (x + 1, y + 1),  # Bottom-right
-    }
+    ])
 
 
 def resolve_point_set_neighbours(point_set: PointSet, neighbourhood: Neighbourhood) -> PointSet:
@@ -60,4 +60,4 @@ def resolve_point_set_neighbours(point_set: PointSet, neighbourhood: Neighbourho
     """
 
     point_neighbours = set(chain.from_iterable([neighbourhood(point) for point in point_set]))
-    return point_neighbours - point_set
+    return cast(PointSet, point_neighbours - point_set)

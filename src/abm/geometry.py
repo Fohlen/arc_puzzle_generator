@@ -1,7 +1,22 @@
+from typing import cast
+
 import numpy as np
 
 Point = tuple[int, int]
-PointSet = set[Point]
+
+
+class PointSet(set[tuple[int, int]]):
+    """
+    A set of points represented as tuples of (x, y) coordinates.
+    This class provides methods to move the points by adding or subtracting another point.
+    """
+
+    def __add__(self, other: 'Point') -> 'PointSet':
+        positions = {
+            (position[0] + other[0], position[1] + other[1])
+            for position in self
+        }
+        return PointSet(positions)
 
 
 def unmask(input_mask: np.ndarray) -> PointSet:
@@ -12,7 +27,7 @@ def unmask(input_mask: np.ndarray) -> PointSet:
     :return: A set of points (x, y) where the mask is True.
     """
 
-    return {(x, y) for x, y in zip(*np.where(input_mask))}
+    return PointSet((cast(int, x), cast(int, y)) for x, y in zip(*np.where(input_mask)))
 
 
 def mask(point_set: PointSet, grid_size: tuple[int, int]) -> np.ndarray:
