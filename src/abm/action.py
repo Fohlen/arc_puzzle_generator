@@ -4,7 +4,9 @@ from typing import Protocol, Optional, Mapping
 from abm.geometry import PointSet, Point
 from abm.physics import direction_to_unit_vector, collision_axis
 from abm.direction import DirectionRule
-from abm.state import AgentState, AgentStateMapping
+from abm.state import AgentState, AgentStateMapping, ColorIterator
+
+ActionResult = Optional[tuple[AgentState, ColorIterator]]
 
 
 class Action(Protocol):
@@ -15,9 +17,10 @@ class Action(Protocol):
     def __call__(
             self,
             state: AgentState,
+            colors: ColorIterator,
             collision: PointSet,
             collision_map: AgentStateMapping
-    ) -> Optional[AgentState]:
+    ) -> ActionResult:
         pass
 
 
@@ -40,7 +43,7 @@ class DirectionAction(Action):
     def __init__(self, direction_rule: DirectionRule) -> None:
         self.direction_rule = direction_rule
 
-    def __call__(self, state: AgentState, collision: PointSet, *args) -> Optional[AgentState]:
+    def __call__(self, state: AgentState, colors: ColorIterator, collision: PointSet, *args) -> ActionResult:
         """
         Change the direction of the agent based on the direction rule.
 
@@ -56,9 +59,9 @@ class DirectionAction(Action):
             return AgentState(
                 position=new_position,
                 direction=new_direction,
-                colors=state.colors,
+                color=next(colors),
                 charge=state.charge - 1 if state.charge > 0 else state.charge
-            )
+            ), colors
 
         return None
 
@@ -71,7 +74,7 @@ class OutOfGridAction(Action):
     def __init__(self, grid_size: Point) -> None:
         self.grid_size = grid_size
 
-    def __call__(self, state: AgentState, collision: PointSet, *args) -> Optional[AgentState]:
+    def __call__(self, state: AgentState, colors: ColorIterator, collision: PointSet, *args) -> ActionResult:
         """
         Remove the agent from the grid.
 
@@ -92,9 +95,9 @@ class OutOfGridAction(Action):
             return AgentState(
                 position=state.position,
                 direction=state.direction,
-                colors=state.colors,
+                color=next(colors),
                 charge=0  # Set charge to 0 to indicate removal
-            )
+            ), colors
 
         return None
 
@@ -110,9 +113,10 @@ class CollisionDirectionAction(Action):
     def __call__(
             self,
             state: AgentState,
+            colors: ColorIterator,
             collision: PointSet,
             collision_mapping: AgentStateMapping
-    ) -> Optional[AgentState]:
+    ) -> ActionResult:
         """
         Handle the collision by returning the current state unchanged.
 
@@ -130,18 +134,19 @@ class CollisionDirectionAction(Action):
             return AgentState(
                 position=new_position,
                 direction=new_direction,
-                colors=state.colors,
+                color=next(colors),
                 charge=state.charge - 1 if state.charge > 0 else state.charge
-            )
+            ), colors
 
         return None
 
 
 def collision_color_mapping(
         state: AgentState,
+        colors: ColorIterator,
         collision: PointSet,
         collision_mapping: AgentStateMapping
-) -> Optional[AgentState]:
+) -> ActionResult:
     """
     Handle the collision by updating the agent's colors based on the collision points.
 
@@ -156,9 +161,9 @@ def collision_color_mapping(
         return AgentState(
             position=state.position,
             direction=state.direction,
-            colors=new_colors,
+            color=next(new_colors),
             charge=state.charge
-        )
+        ), new_colors
 
     return None
 
@@ -174,9 +179,10 @@ class TrappedCollisionAction(Action):
     def __call__(
             self,
             state: AgentState,
+            colors: ColorIterator,
             collision: PointSet,
             collision_mapping: AgentStateMapping
-    ) -> Optional[AgentState]:
+    ) -> ActionResult:
         """
         Terminate the agent if it is trapped in a collision.
 
@@ -195,9 +201,9 @@ class TrappedCollisionAction(Action):
                 return AgentState(
                     position=state.position,
                     direction=state.direction,
-                    colors=state.colors,
+                    color=next(colors),
                     charge=0  # Set charge to 0 to indicate termination
-                )
+                ), colors
         return None
 
 
@@ -208,28 +214,30 @@ class CollisionBorderAction(Action):
     def __call__(
             self,
             state: AgentState,
+            colors: ColorIterator,
             collision: PointSet,
             collision_mapping: AgentStateMapping,
-    ) -> Optional[AgentState]:
+    ) -> ActionResult:
         if len(collision) == 1:
             # If the agent collides with the border, change its color to the border color
-            new_colors = chain([self.border_color], state.colors)
+            new_colors = chain([self.border_color], colors)
 
             return AgentState(
                 position=PointSet(collision),
                 direction=state.direction,
-                colors=new_colors,
+                color=next(new_colors),
                 charge=state.charge
-            )
+            ), new_colors
 
         return None
 
 
 def backtrack_action(
         state: AgentState,
+        colors: ColorIterator,
         collision: PointSet,
         collision_mapping: AgentStateMapping
-) -> Optional[AgentState]:
+) -> ActionResult:
     """
     Backtrack the agent to its previous position.
 
@@ -246,8 +254,8 @@ def backtrack_action(
         return AgentState(
             position=previous_position,
             direction=state.direction,
-            colors=state.colors,
+            color=next(colors),
             charge=state.charge
-        )
+        ), colors
 
     return None

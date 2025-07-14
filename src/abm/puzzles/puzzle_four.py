@@ -49,9 +49,9 @@ def puzzle_four(input_grid: np.ndarray) -> Simulation:
         topology=identity_topology,
         neighbourhood=IdentityPointSetNeighbourhood(zero_neighbours),
         actions=[],
-        colors=cycle([]),
+        colors=cycle([target_color]),
         charge=0
-    ) for _, bbox in blocks]
+    ) for target_color, bbox in blocks]
 
     topology = FixedGroupTopology(group={"bbox"})
     actions = [

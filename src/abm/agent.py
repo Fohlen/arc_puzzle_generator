@@ -28,6 +28,7 @@ class Agent:
         self.actions = actions
         self.colors = colors
         self.charge = charge
+        self.color = next(colors)
 
     @property
     def active(self) -> bool:
@@ -38,7 +39,7 @@ class Agent:
         return AgentState(
             position=self.position,
             direction=self.direction,
-            colors=self.colors,
+            color=self.color,
             charge=self.charge
         )
 
@@ -51,14 +52,16 @@ class Agent:
         action_iter = iter(self.actions)
 
         for action in action_iter:
-            state = action(self.state, collision, collision_mapping)
+            result = action(self.state, self.colors, collision, collision_mapping)
 
-            # If the action returns a valid state, update the agent's attributes
-            if state is not None:
+            if result is not None:
+                state, colors = result
+
                 self.position = state.position
                 self.direction = state.direction
-                self.colors = state.colors
+                self.color = state.color
                 self.charge = state.charge
+                self.colors = colors
 
                 states.append(state)
         return states

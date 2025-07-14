@@ -9,7 +9,7 @@ ColorIterator = Iterator[int]
 class AgentState(NamedTuple):
     position: PointSet
     direction: Direction
-    colors: ColorIterator
+    color: int
     charge: int
 
 
