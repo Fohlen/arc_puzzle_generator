@@ -1,7 +1,11 @@
 from typing import Literal, Protocol
 
 from abm.geometry import Point, PointSet
-from arc_puzzle_generator.physics import Axis
+
+Axis = Literal["horizontal", "vertical", "diagonal"]
+"""
+The axis of a line.
+"""
 
 Direction = Literal["left", "right", "up", "down", "top_left", "top_right", "bottom_left", "bottom_right"]
 """
@@ -87,3 +91,38 @@ def snake_direction_rule(direction: Direction, *args, **kwargs) -> Direction:
         return "up"
 
     return "right"
+
+
+def orthogonal_direction(direction: Direction, axis: Axis = "horizontal") -> Direction:
+    """
+    Returns the orthogonal direction of the given direction based on a collision axis.
+    :param direction: The direction to convert.
+    :param axis: The collision axis.
+    :return: The orthogonal direction of the given direction.
+    """
+
+    match axis:
+        case "vertical":
+            # For vertical collisions (hitting vertical walls)
+            match direction:
+                case "bottom_left":
+                    return "bottom_right"
+                case "bottom_right":
+                    return "bottom_left"
+                case "top_left":
+                    return "top_right"
+                case "top_right":
+                    return "top_left"
+        case "horizontal":
+            # For horizontal collisions (hitting horizontal walls)
+            match direction:
+                case "bottom_left":
+                    return "top_left"
+                case "bottom_right":
+                    return "top_right"
+                case "top_left":
+                    return "bottom_left"
+                case "top_right":
+                    return "bottom_right"
+
+    raise ValueError("Unknown axis {}".format(axis))

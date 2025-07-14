@@ -3,7 +3,7 @@ from typing import Iterable
 
 import numpy as np
 
-from arc_puzzle_generator.color_iterator import ColorIterator
+from abm.color_sequence_iterator import ColorSequenceIterator
 from abm.entities import colour_count, find_connected_objects
 from arc_puzzle_generator.agent import Agent
 from arc_puzzle_generator.puzzle_generator import PuzzleGenerator
@@ -59,5 +59,5 @@ class PuzzleOnePuzzleGenerator(PuzzleGenerator):
             step=np.array([[row, start_col]]),
             charge=charge,
             direction=direction,
-            colors=ColorIterator(color_sequence, background_color),
+            colors=ColorSequenceIterator(color_sequence, background_color),
         ) for row, color_sequence in color_sequences]

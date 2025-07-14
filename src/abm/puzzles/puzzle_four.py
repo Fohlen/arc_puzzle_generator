@@ -8,12 +8,11 @@ from abm.agent import Agent
 from abm.geometry import PointSet
 from abm.model import Model
 from abm.neighbourhood import dummy_neighbourhood, moore_neighbours
-from abm.physics import Direction, identity_direction_rule
+from abm.physics import Direction, identity_direction_rule, orthogonal_direction
 from abm.simulation import Simulation
 from abm.topology import FixedGroupTopology, identity_topology
-from arc_puzzle_generator.collisions import orthogonal_direction
 from abm.entities import find_colors, find_connected_objects, is_l_shape
-from arc_puzzle_generator.grid_utils import make_smallest_square_from_mask
+from abm.grid_utils import make_smallest_square_from_mask
 from arc_puzzle_generator.physics import starting_point
 
 

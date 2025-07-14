@@ -2,7 +2,7 @@ from typing import Optional, Iterator, Protocol
 
 import numpy as np
 
-from arc_puzzle_generator.physics import Direction, Axis
+from arc_puzzle_generator.physics import Direction
 
 
 class NeighbourhoodRule(Protocol):
@@ -57,41 +57,6 @@ class AxisNeighbourHood(NeighbourhoodRule):
                 neighbours.update([(i, y) for i in range(0, self.grid_size[1])])
 
         return np.array(sorted(neighbours - points))
-
-
-def orthogonal_direction(direction: Direction, axis: Axis = "horizontal") -> Direction:
-    """
-    Returns the orthogonal direction of the given direction based on a collision axis.
-    :param direction: The direction to convert.
-    :param axis: The collision axis.
-    :return: The orthogonal direction of the given direction.
-    """
-
-    match axis:
-        case "vertical":
-            # For vertical collisions (hitting vertical walls)
-            match direction:
-                case "bottom_left":
-                    return "bottom_right"
-                case "bottom_right":
-                    return "bottom_left"
-                case "top_left":
-                    return "top_right"
-                case "top_right":
-                    return "top_left"
-        case "horizontal":
-            # For horizontal collisions (hitting horizontal walls)
-            match direction:
-                case "bottom_left":
-                    return "top_left"
-                case "bottom_right":
-                    return "top_right"
-                case "top_left":
-                    return "bottom_left"
-                case "top_right":
-                    return "bottom_right"
-
-    raise ValueError("Unknown axis {}".format(axis))
 
 
 CollisionResult = tuple[bool, Iterator[int], Direction, Optional[np.ndarray]]

@@ -4,11 +4,11 @@ from typing import Iterable
 
 import numpy as np
 
-from arc_puzzle_generator.color_iterator import ColorIterator
+from abm.color_sequence_iterator import ColorSequenceIterator
 from abm.entities import colour_count, find_connected_objects
 from arc_puzzle_generator.agent import Agent
-from arc_puzzle_generator.puzzle_generator import PuzzleGenerator
 from arc_puzzle_generator.physics import Direction, relative_box_direction, box_distance, starting_point
+from arc_puzzle_generator.puzzle_generator import PuzzleGenerator
 
 
 class PuzzleTwoPuzzleGenerator(PuzzleGenerator):
@@ -92,7 +92,7 @@ class PuzzleTwoPuzzleGenerator(PuzzleGenerator):
                 point_width=beam_width
             ),
             direction=direction,
-            colors=ColorIterator(
+            colors=ColorSequenceIterator(
                 [(box_color, distance), (boxes[box1][1], 1)],
                 background_color=background_color
             ),
