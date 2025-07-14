@@ -48,6 +48,7 @@ class DirectionAction(Action):
         Change the direction of the agent based on the direction rule.
 
         :param state: The current state of the agent.
+        :param colors: An iterator over the agent's colors.
         :param collision: The set of points that are in collision with the agent.
         :return: A new state with the updated direction.
         """
@@ -79,6 +80,7 @@ class OutOfGridAction(Action):
         Remove the agent from the grid.
 
         :param state: The current state of the agent.
+        :param colors: An iterator over the agent's colors.
         :param collision: The set of points that are in collision with the agent.
         :return: None, indicating that the agent is removed from the grid.
         """
@@ -121,6 +123,7 @@ class CollisionDirectionAction(Action):
         Handle the collision by returning the current state unchanged.
 
         :param state: The current state of the agent.
+        :param colors: An iterator over the agent's colors.
         :param collision: The set of points that are in collision with the agent.
         :param collision_mapping: The mapping between collision points and the agent's colors.
         :return: The same state as the input.
@@ -151,6 +154,7 @@ def collision_color_mapping(
     Handle the collision by updating the agent's colors based on the collision points.
 
     :param state: The current state of the agent.
+    :param colors: An iterator over the agent's colors.
     :param collision: The set of points that are in collision with the agent.
     :param collision_mapping: The mapping between collision points and the agent's colors.
     :return: A new state with updated colors.
@@ -188,6 +192,7 @@ class TrappedCollisionAction(Action):
         Terminate the agent if it is trapped in a collision.
 
         :param state: The current state of the agent.
+        :param colors: An iterator over the agent's colors.
         :param collision: The set of points that are in collision with the agent.
         :param collision_mapping: The mapping between collision points and the agent's colors.
         :return: Terminates the agent at the current state if trapped, otherwise returns None.
@@ -243,6 +248,7 @@ def backtrack_action(
     Backtrack the agent to its previous position.
 
     :param state: The current state of the agent.
+    :param colors: An iterator over the agent's colors.
     :param collision: The set of points that are in collision with the agent.
     :param collision_mapping: The mapping between collision points and the agent's colors.
     :return: A new state with the position set to the previous position.
