@@ -1,6 +1,6 @@
 from collections import defaultdict
 from itertools import chain
-from typing import cast, Iterator, Iterable
+from typing import cast, Iterator, Iterable, Callable
 
 import numpy as np
 
@@ -39,6 +39,8 @@ class Model(Iterator[np.ndarray], Iterable[np.ndarray]):
         return self
 
     def __next__(self) -> np.ndarray:
+        if self.active:
+            self.step()
         return next(self.step_iterator)
 
     def step(self) -> None:
@@ -83,3 +85,6 @@ class Model(Iterator[np.ndarray], Iterable[np.ndarray]):
                         print(pos, color)
                         self.output_grid[position[:, 0], position[:, 1]] = color
                         self.steps.append(self.output_grid.copy())
+
+
+ModelSetup = Callable[[np.ndarray], Model]

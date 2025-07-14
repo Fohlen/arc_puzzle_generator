@@ -7,16 +7,15 @@ import numpy as np
 from abm.action import OutOfGridAction, TrappedCollisionAction, CollisionDirectionAction, DirectionAction, \
     CollisionBorderAction, backtrack_action, Action
 from abm.agent import Agent
+from abm.direction import identity_direction_rule, snake_direction_rule
 from abm.geometry import PointSet, unmask
 from abm.model import Model
-from abm.neighbourhood import zero_neighbours, directional_neighbours, Neighbourhood, IdentityPointSetNeighbourhood
-from abm.simulation import Simulation
+from abm.neighbourhood import zero_neighbours, directional_neighbours, IdentityPointSetNeighbourhood
 from abm.topology import FixedGroupTopology, identity_topology
-from abm.direction import identity_direction_rule, snake_direction_rule
 from abm.utils.entities import colour_count, find_colors, find_connected_objects
 
 
-def puzzle_ten(input_grid: np.ndarray) -> Simulation:
+def puzzle_ten(input_grid: np.ndarray) -> Model:
     start_rows: list[int] = []
     start_col = input_grid[:, 0]
     start_col_colors = colour_count(start_col)
@@ -79,7 +78,7 @@ def puzzle_ten(input_grid: np.ndarray) -> Simulation:
         charge=-1,
     ) for row in start_rows]
 
-    return Simulation(Model(
+    return Model(
         input_grid.copy(),
         agents=agents,
-    ), -1)
+    )

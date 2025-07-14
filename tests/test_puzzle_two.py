@@ -13,26 +13,26 @@ class PuzzleTwoTestCase(unittest.TestCase):
         self.puzzle = load_puzzle(file_path)
 
     def test_generate_3e6067c3(self):
-        simulator = puzzle_two(self.puzzle.train[0].input)
-        *_, output_grid = simulator.run()
+        model = puzzle_two(self.puzzle.train[0].input)
+        *_, output_grid = model
         self.assertTrue(np.array_equal(output_grid, self.puzzle.train[0].output))
 
     def test_generate_3e6067c3_second(self):
-        simulator = puzzle_two(self.puzzle.train[1].input)
-        *_, output_grid = simulator.run()
+        model = puzzle_two(self.puzzle.train[1].input)
+        *_, output_grid = model
         self.assertTrue(np.array_equal(output_grid, self.puzzle.train[1].output))
 
     def test_generate_3e6067c3_third(self):
-        simulator = puzzle_two(self.puzzle.train[2].input)
-        *_, output_grid = simulator.run()
+        model = puzzle_two(self.puzzle.train[2].input)
+        *_, output_grid = model
         self.assertTrue(np.array_equal(output_grid, self.puzzle.train[2].output))
 
     def test_generate_3e6067c3_prompt(self):
-        simulator = puzzle_two(self.puzzle.test[0].input)
-        *_, output_grid = simulator.run()
+        model = puzzle_two(self.puzzle.test[0].input)
+        *_, output_grid = model
         self.assertTrue(np.array_equal(output_grid, self.puzzle.test[0].output))
 
     def test_generate_3e6067c3_prompt_second(self):
-        simulator = puzzle_two(self.puzzle.test[1].input)
-        *_, output_grid = simulator.run()
+        model = puzzle_two(self.puzzle.test[1].input)
+        *_, output_grid = model
         self.assertTrue(np.array_equal(output_grid, self.puzzle.test[1].output))

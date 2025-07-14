@@ -10,12 +10,11 @@ from abm.model import Model
 from abm.neighbourhood import zero_neighbours, IdentityPointSetNeighbourhood
 from abm.physics import Direction
 from abm.direction import identity_direction_rule
-from abm.simulation import Simulation
 from abm.topology import identity_topology
 from abm.utils.entities import colour_count, find_connected_objects
 
 
-def puzzle_one(input_grid: np.ndarray) -> Simulation:
+def puzzle_one(input_grid: np.ndarray) -> Model:
     output_grid = input_grid.copy()
     sorted_colors = colour_count(input_grid)
     color_sequences: list[tuple[int, list[tuple[int, int]]]] = []  # [(row, [color, count]]
@@ -56,7 +55,7 @@ def puzzle_one(input_grid: np.ndarray) -> Simulation:
         color_sequence = color_order.items() if direction == "left" else reversed(color_order.items())
         color_sequences.append((index, list(color_sequence)))
 
-    return Simulation(Model(
+    return Model(
         output_grid=output_grid,
         agents=[Agent(
             position=PointSet([(row, start_col)]),
@@ -70,4 +69,4 @@ def puzzle_one(input_grid: np.ndarray) -> Simulation:
             charge=charge,
             colors=ColorSequenceIterator(color_sequence, background_color),
         ) for row, color_sequence in color_sequences]
-    ), -1)
+    )

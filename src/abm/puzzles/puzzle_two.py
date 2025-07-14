@@ -11,13 +11,12 @@ from abm.model import Model
 from abm.neighbourhood import zero_neighbours, IdentityPointSetNeighbourhood
 from abm.physics import Direction
 from abm.direction import identity_direction_rule
-from abm.simulation import Simulation
 from abm.topology import identity_topology
 from abm.utils.entities import colour_count, find_connected_objects
 from arc_puzzle_generator.physics import relative_box_direction, box_distance, starting_point
 
 
-def puzzle_two(input_grid: np.ndarray) -> Simulation:
+def puzzle_two(input_grid: np.ndarray) -> Model:
     """
     Solve the second puzzle by creating a simulation based on the input grid.
 
@@ -97,7 +96,7 @@ def puzzle_two(input_grid: np.ndarray) -> Simulation:
     beam_width = ceil(box_size / 2)
     steps = max([distance for _, _, distance in box_order])
 
-    return Simulation(Model(
+    return Model(
         output_grid=input_grid.copy(),
         agents=[
             Agent(
@@ -119,4 +118,4 @@ def puzzle_two(input_grid: np.ndarray) -> Simulation:
                 ),
             ) for box1, direction, distance in box_order
         ]
-    ), steps)
+    )

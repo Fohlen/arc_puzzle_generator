@@ -10,14 +10,13 @@ from abm.model import Model
 from abm.neighbourhood import zero_neighbours, moore_neighbours, IdentityPointSetNeighbourhood
 from abm.physics import Direction
 from abm.direction import identity_direction_rule, orthogonal_direction
-from abm.simulation import Simulation
 from abm.topology import FixedGroupTopology, identity_topology
 from abm.utils.entities import find_colors, find_connected_objects, is_l_shape
 from abm.utils.grid import make_smallest_square_from_mask
 from arc_puzzle_generator.physics import starting_point
 
 
-def puzzle_four(input_grid: np.ndarray) -> Simulation:
+def puzzle_four(input_grid: np.ndarray) -> Model:
     """
 
     :param input_grid:
@@ -78,10 +77,7 @@ def puzzle_four(input_grid: np.ndarray) -> Simulation:
         charge=-1,
     ) for color, bbox, direction in l_shapes]
 
-    return Simulation(
-        Model(
-            output_grid=input_grid.copy(),
-            agents=agents,
-        ),
-        -1
+    return Model(
+        output_grid=input_grid.copy(),
+        agents=agents,
     )
