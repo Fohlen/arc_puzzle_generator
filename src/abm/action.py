@@ -5,7 +5,6 @@ from abm.geometry import PointSet, Point
 from abm.physics import direction_to_unit_vector, collision_axis
 from abm.direction import DirectionRule
 from abm.state import AgentState, AgentStateMapping
-from abm.utils.color_sequence_iterator import duplicate_first
 
 
 class Action(Protocol):
@@ -247,7 +246,7 @@ def backtrack_action(
         return AgentState(
             position=previous_position,
             direction=state.direction,
-            colors=duplicate_first(state.colors),
+            colors=state.colors,
             charge=state.charge
         )
 

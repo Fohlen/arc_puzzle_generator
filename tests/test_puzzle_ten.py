@@ -15,7 +15,8 @@ class PuzzleTenTestCase(unittest.TestCase):
 
     def test_generate_195c6913(self):
         simulation = puzzle_ten(self.puzzle.train[0].input)
-        *_, output_grid = simulation.run()
+        steps = simulation.run()
+        output_grid = steps[-1]
         self.assertTrue(np.array_equal(output_grid, self.puzzle.train[0].output))
 
     def test_generate_195c6913_second(self):

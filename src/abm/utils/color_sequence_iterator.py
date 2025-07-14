@@ -27,19 +27,3 @@ class ColorSequenceIterator(Iterator[int], Iterable[int]):
         else:
             self.index += 1
             return self.background_color
-
-
-def duplicate_first(iterable: Iterable[int]) -> Iterator[int]:
-    """
-    Returns an iterator that yields the first element of the iterable twice, followed by the rest of the elements.
-    :param iterable: The iterable to duplicate the first element from.
-    :return: A generator that yields the first element twice, then the rest of the elements.
-    """
-    it = iter(iterable)
-    try:
-        first = next(it)
-        yield first
-        yield first
-    except StopIteration:
-        return
-    yield from it
