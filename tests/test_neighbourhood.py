@@ -1,6 +1,6 @@
 from unittest import TestCase
 
-from abm.neighbourhood import von_neumann_neighbours, moore_neighbours, resolve_point_set_neighbours
+from abm.neighbourhood import von_neumann_neighbours, moore_neighbours, IdentityPointSetNeighbourhood
 
 
 class NeighbourhoodTestCase(TestCase):
@@ -29,6 +29,6 @@ class NeighbourhoodTestCase(TestCase):
             (2, 1), (2, 2)
         }
 
-        self.assertEqual(expected_van_moore, resolve_point_set_neighbours(
-            point_set, von_neumann_neighbours
-        ))
+        multi_point_neighbourhood = IdentityPointSetNeighbourhood(von_neumann_neighbours)
+
+        self.assertEqual(expected_van_moore, multi_point_neighbourhood(point_set))

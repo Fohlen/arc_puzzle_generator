@@ -1,8 +1,8 @@
 from typing import Iterator, Iterable, Mapping
 
 from abm.action import Action
-from abm.geometry import PointSet, Point
-from abm.neighbourhood import Neighbourhood
+from abm.geometry import PointSet
+from abm.neighbourhood import PointSetNeighbourhood
 from abm.physics import Direction
 from abm.state import AgentState, AgentStateMapping
 from abm.topology import Topology
@@ -15,7 +15,7 @@ class Agent:
             direction: Direction,
             label: str,
             topology: Topology,
-            neighbourhood: Neighbourhood,
+            neighbourhood: PointSetNeighbourhood,
             actions: Iterable[Action],
             colors: Iterator[int],
             charge: int = 0,

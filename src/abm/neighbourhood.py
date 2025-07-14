@@ -8,12 +8,12 @@ from abm.physics import Direction
 class Neighbourhood(Protocol):
     """Protocol for neighbourhoods."""
 
-    def __call__(self, point: Point, direction: Direction) -> PointSet:
+    def __call__(self, point: Point) -> PointSet:
         """Return the neighbourhood of a point."""
         pass
 
 
-def von_neumann_neighbours(point: Point, *args, **kwargs) -> PointSet:
+def von_neumann_neighbours(point: Point) -> PointSet:
     """
     Return the Von Neumann neighbourhood of a point.
 
@@ -31,7 +31,7 @@ def von_neumann_neighbours(point: Point, *args, **kwargs) -> PointSet:
     ])
 
 
-def moore_neighbours(point: Point, *args, **kwargs) -> PointSet:
+def moore_neighbours(point: Point) -> PointSet:
     """
     Return the Moore neighbourhood of a point.
     :param point: A tuple representing the point (x, y).
@@ -51,7 +51,7 @@ def moore_neighbours(point: Point, *args, **kwargs) -> PointSet:
     ])
 
 
-def zero_neighbours(point: Point, *args, **kwargs) -> PointSet:
+def zero_neighbours(point: Point) -> PointSet:
     """
     Return an empty neighbourhood for any given point.
     :param point: The input point for which to return an empty neighbourhood.
@@ -60,32 +60,47 @@ def zero_neighbours(point: Point, *args, **kwargs) -> PointSet:
     return PointSet()
 
 
-def resolve_point_set_neighbours(point_set: PointSet, direction: Direction, neighbourhood: Neighbourhood) -> PointSet:
-    """
-    Return a neighbourhood that returns the points in the point set.
+class PointSetNeighbourhood(Protocol):
+    """Protocol for neighbourhoods that can handle multiple points."""
 
-    :param point_set: The point set for which to resolve neighbours.
-    :param direction: The direction to resolve the neighbourhood in.
-    :param neighbourhood: The neighbourhood function to use.
-    :return: All neighbours of all given points in a point set.
-    """
-
-    point_neighbours = set(chain.from_iterable([neighbourhood(point, direction) for point in point_set]))
-    return cast(PointSet, point_neighbours - point_set)
+    def __call__(self, point_set: PointSet, *args, **kwargs) -> PointSet:
+        """Return the neighbourhood of a set of points."""
+        pass
 
 
-def directional_neighbours(point: PointSet, direction: Direction) -> PointSet:
+class IdentityPointSetNeighbourhood(PointSetNeighbourhood):
+    def __init__(self, neighbourhood: Neighbourhood) -> None:
+        """
+        Initialize the IdentityNeighbourhood with a neighbourhood function.
+
+        :param neighbourhood: The neighbourhood function to use.
+        """
+        self.neighbourhood = neighbourhood
+
+    def __call__(self, point_set: PointSet, *args, **kwargs) -> PointSet:
+        """
+        Return a neighbourhood that returns the points in the point set.
+
+        :param point_set: The point set for which to resolve neighbours.
+        :return: All neighbours of all given points in a point set.
+        """
+
+        point_neighbours = set(chain.from_iterable([self.neighbourhood(point) for point in point_set]))
+        return cast(PointSet, point_neighbours - point_set)
+
+
+def directional_neighbours(points: PointSet, direction: Direction, *args, **kwargs) -> PointSet:
     """
     Determines the neighborhood of a point based on a direction (Berger neighborhood).
-    :param point: The point to determine the neighborhood for.
+    :param points: The point to determine the neighborhood for.
     :param direction: The direction to determine the neighborhood into.
     :return: A 2D array of neighborhood coordinates.
     """
 
     # NOTE: Diagonal points will validate the tip of the step
 
-    xs = set(p[0] for p in point)
-    ys = set(p[1] for p in point)
+    xs = set(point[0] for point in points)
+    ys = set(point[1] for point in points)
     y_min = min(ys)
     y_max = max(ys)
     x_min = min(xs)
