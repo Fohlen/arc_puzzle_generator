@@ -1,6 +1,6 @@
 from unittest import TestCase
 
-from abm.color_sequence_iterator import ColorSequenceIterator
+from abm.utils.color_sequence_iterator import ColorSequenceIterator
 
 class ColorSequenceIteratorTestCase(TestCase):
 

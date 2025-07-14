@@ -5,7 +5,7 @@ import numpy as np
 
 from abm.action import DirectionAction
 from abm.agent import Agent
-from abm.color_sequence_iterator import ColorSequenceIterator
+from abm.utils.color_sequence_iterator import ColorSequenceIterator
 from abm.geometry import PointSet
 from abm.model import Model
 from abm.neighbourhood import zero_neighbourhood
@@ -13,7 +13,7 @@ from abm.physics import Direction
 from abm.direction import identity_direction_rule
 from abm.simulation import Simulation
 from abm.topology import identity_topology
-from abm.entities import colour_count, find_connected_objects
+from abm.utils.entities import colour_count, find_connected_objects
 from arc_puzzle_generator.physics import relative_box_direction, box_distance, starting_point
 
 

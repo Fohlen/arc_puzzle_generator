@@ -3,7 +3,7 @@ import unittest
 import numpy as np
 
 from abm.puzzles.puzzle_two import puzzle_two
-from abm.data_loader import load_puzzle
+from abm.utils.data_loader import load_puzzle
 from tests.utils import test_dir
 
 

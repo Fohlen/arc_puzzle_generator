@@ -18,7 +18,7 @@ from matplotlib.colors import ListedColormap
 from matplotlib.figure import Figure
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 
-from abm.data_loader import load_puzzle, Puzzle
+from abm.utils.data_loader import load_puzzle, Puzzle
 from arc_puzzle_generator.puzzle_generator import PuzzleGenerator
 
 

@@ -5,10 +5,10 @@ import numpy as np
 
 from arc_puzzle_generator.collision_rules.BoundingBoxRule import BoundingBoxRule
 from abm.direction import orthogonal_direction
-from abm.entities import find_colors, find_connected_objects, is_l_shape
+from abm.utils.entities import find_colors, find_connected_objects, is_l_shape
 from arc_puzzle_generator.agent import Agent
 from arc_puzzle_generator.puzzle_generator import PuzzleGenerator
-from abm.grid_utils import make_smallest_square_from_mask
+from abm.utils.grid import make_smallest_square_from_mask
 from arc_puzzle_generator.physics import Direction, starting_point
 
 

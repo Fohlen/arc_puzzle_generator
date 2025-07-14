@@ -5,7 +5,7 @@ from abm.direction import identity_direction_rule
 from arc_puzzle_generator.agent import Agent
 from arc_puzzle_generator.collision_rules.FillColorRule import FillColorRule
 from arc_puzzle_generator.collisions import AxisNeighbourHood
-from abm.entities import find_connected_objects
+from abm.utils.entities import find_connected_objects
 from arc_puzzle_generator.physics import Direction, bounding_box_to_points
 from arc_puzzle_generator.puzzle_generator import PuzzleGenerator
 

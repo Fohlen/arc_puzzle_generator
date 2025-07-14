@@ -3,8 +3,8 @@ from typing import Iterable
 
 import numpy as np
 
-from abm.color_sequence_iterator import ColorSequenceIterator
-from abm.entities import colour_count, find_connected_objects
+from abm.utils.color_sequence_iterator import ColorSequenceIterator
+from abm.utils.entities import colour_count, find_connected_objects
 from arc_puzzle_generator.agent import Agent
 from arc_puzzle_generator.puzzle_generator import PuzzleGenerator
 from arc_puzzle_generator.physics import Direction

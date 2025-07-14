@@ -2,7 +2,7 @@ import unittest
 
 import numpy as np
 
-from abm.data_loader import load_puzzle
+from abm.utils.data_loader import load_puzzle
 from arc_puzzle_generator.generators import PuzzleFourteenPuzzleGenerator
 from tests.utils import test_dir
 
