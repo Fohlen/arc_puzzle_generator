@@ -24,6 +24,7 @@ class Model(Iterator[np.ndarray], Iterable[np.ndarray]):
 
         for agent in agents:
             self.agents_by_label[agent.label].append(agent)
+
             if agent.active:
                 position = np.array(list(agent.position))
                 self.output_grid[position[:, 0], position[:, 1]] = next(agent.colors)
@@ -49,12 +50,17 @@ class Model(Iterator[np.ndarray], Iterable[np.ndarray]):
                 # Filter eligible agents based on the agent's topology
                 topology_labels = agent.topology(agent.label, self.labels)
                 eligible_agents = set(chain.from_iterable(self.agents_by_label[label] for label in topology_labels))
-                eligible_positions = set.union(*[agent.position for agent in eligible_agents])
+                agent_position_mapping = {
+                    point: agent.state
+                    for agent in eligible_agents
+                    for point in agent.position
+                }
+                eligible_positions = set(agent_position_mapping.keys())
 
                 # Calculate the collision positions
                 position_intersect = cast(PointSet, eligible_positions & neighbourhood)
                 position_intersect_mapping = {
-                    point: self.output_grid[point[0], point[1]].item()
+                    point: (agent_position_mapping[point], self.output_grid[point[0], point[1]].item())
                     for point in position_intersect
                 }
 

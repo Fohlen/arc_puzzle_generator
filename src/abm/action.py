@@ -1,9 +1,9 @@
 from itertools import chain
-from typing import Protocol, Optional
+from typing import Protocol, Optional, Mapping
 
-from abm.geometry import PointSet, Point, ColorMapping
+from abm.geometry import PointSet, Point
 from abm.physics import DirectionRule, direction_to_unit_vector
-from abm.state import AgentState
+from abm.state import AgentState, AgentStateMapping
 
 
 class Action(Protocol):
@@ -15,17 +15,16 @@ class Action(Protocol):
             self,
             state: AgentState,
             collision: PointSet,
-            collision_map: Optional[ColorMapping] = None
+            collision_map: AgentStateMapping
     ) -> Optional[AgentState]:
         pass
 
 
-def identity_action(state: AgentState, collision: PointSet, *args) -> AgentState:
+def identity_action(state: AgentState, *args) -> AgentState:
     """
     An identity action that returns the state unchanged.
 
     :param state: The current state of the agent.
-    :param collision: The set of points that are in collision with the agent.
     :return: The same state as the input.
     """
 
@@ -130,7 +129,7 @@ class CollisionDirectionAction(Action):
 def collision_color_mapping(
         state: AgentState,
         collision: PointSet,
-        collision_mapping: ColorMapping
+        collision_mapping: AgentStateMapping
 ) -> Optional[AgentState]:
     """
     Handle the collision by updating the agent's colors based on the collision points.
@@ -142,7 +141,7 @@ def collision_color_mapping(
     """
 
     if len(collision) > 0:
-        new_colors = chain([collision_mapping[collision] for collision in collision], state.colors)
+        new_colors = chain([collision_mapping[collision][1] for collision in collision], state.colors)
         return AgentState(
             position=state.position,
             direction=state.direction,
@@ -151,4 +150,3 @@ def collision_color_mapping(
         )
 
     return None
-

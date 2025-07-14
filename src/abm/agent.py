@@ -1,10 +1,10 @@
-from typing import Iterator, Iterable
+from typing import Iterator, Iterable, Mapping
 
 from abm.action import Action
-from abm.geometry import PointSet, ColorMapping
+from abm.geometry import PointSet, Point
 from abm.neighbourhood import Neighbourhood
 from abm.physics import Direction
-from abm.state import AgentState
+from abm.state import AgentState, AgentStateMapping
 from abm.topology import Topology
 
 
@@ -42,7 +42,11 @@ class Agent:
             charge=self.charge
         )
 
-    def steps(self, collision: PointSet, collision_mapping: ColorMapping) -> Iterable[AgentState]:
+    def steps(
+            self,
+            collision: PointSet,
+            collision_mapping: AgentStateMapping,
+    ) -> Iterable[AgentState]:
         states = []
         action_iter = iter(self.actions)
 
