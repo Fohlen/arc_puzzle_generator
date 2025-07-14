@@ -199,4 +199,25 @@ class TrappedCollisionAction(Action):
 
 
 class CollisionBorderAction(Action):
-    pass
+    def __init__(self, border_color: int) -> None:
+        self.border_color = border_color
+
+    def __call__(
+            self,
+            state: AgentState,
+            collision: PointSet,
+            collision_mapping: AgentStateMapping,
+            *args,
+            **kwargs
+    ) -> Optional[AgentState]:
+        if len(collision) == 1:
+            # If the agent collides with the border, change its color to the border color
+            new_colors = chain([self.border_color], state.colors)
+            return AgentState(
+                position=PointSet(collision),
+                direction=state.direction,
+                colors=new_colors,
+                charge=state.charge
+            )
+
+        return None
