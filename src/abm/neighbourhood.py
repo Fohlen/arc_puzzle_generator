@@ -1,7 +1,10 @@
 from itertools import chain
 from typing import Protocol, cast
 
+import numpy as np
+
 from abm.geometry import Point, PointSet
+from abm.physics import Direction
 
 
 class Neighbourhood(Protocol):
@@ -70,3 +73,59 @@ def resolve_point_set_neighbours(point_set: PointSet, neighbourhood: Neighbourho
 
     point_neighbours = set(chain.from_iterable([neighbourhood(point) for point in point_set]))
     return cast(PointSet, point_neighbours - point_set)
+
+
+def directional_neighbourhood(point: np.ndarray, direction: Direction) -> np.ndarray:
+    """
+    Determines the neighborhood of a point based on a direction (Berger neighborhood).
+    :param point: The point to determine the neighborhood for.
+    :param direction: The direction to determine the neighborhood into.
+    :return: A 2D array of neighborhood coordinates.
+    """
+
+    # NOTE: Diagonal points will validate the tip of the step
+
+    y_min = point[:, 1].min()
+    y_max = point[:, 1].max()
+    x_min = point[:, 0].min()
+    x_max = point[:, 0].max()
+
+    match direction:
+        case "right":
+            return np.array([
+                [x, y_max + 1]
+                for x in range(x_min, x_max + 1)
+            ])
+        case "left":
+            return np.array([
+                [x, y_min - 1]
+                for x in range(x_min, x_max + 1)
+            ])
+        case "up":
+            return np.array([
+                [x_min - 1, y]
+                for y in range(y_min, y_max + 1)
+            ])
+        case "down":
+            return np.array([
+                [x_max + 1, y]
+                for y in range(y_min, y_max + 1)
+            ])
+        case "top_left":
+            return np.array([
+                (x_min - 1, y_min - 1), (x_min - 1, y_min), (x_min, y_min - 1)
+            ])
+        case "top_right":
+            return np.array([
+                (x_min - 1, y_max), (x_min - 1, y_max + 1), (x_min, y_max + 1)
+            ])
+        case "bottom_left":
+            return np.array([
+                (x_min, y_min - 1), (x_min + 1, y_min - 1), (x_min + 1, y_min)
+            ])
+        case "bottom_right":
+            return np.array([
+                (x_max, y_max + 1), (x_max + 1, y_max), (x_max + 1, y_max + 1)
+            ])
+
+    raise ValueError(f"Invalid direction: {direction}")

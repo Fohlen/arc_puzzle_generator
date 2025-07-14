@@ -11,7 +11,7 @@ from abm.model import Model
 from abm.neighbourhood import von_neumann_neighbours, dummy_neighbourhood
 from abm.simulation import Simulation
 from abm.topology import FixedGroupTopology, identity_topology
-from arc_puzzle_generator.collisions import snake_direction, identity_direction
+from abm.physics import snake_direction_rule, identity_direction_rule
 from abm.entities import colour_count, find_colors, find_connected_objects
 
 
@@ -60,9 +60,9 @@ def puzzle_ten(input_grid: np.ndarray) -> Simulation:
 
     actions = [
         OutOfGridAction(grid_size=(input_grid.shape[0], input_grid.shape[1])),
-        TrappedCollisionAction(direction_rule=snake_direction),
-        CollisionDirectionAction(direction_rule=snake_direction),
-        DirectionAction(direction_rule=identity_direction),
+        TrappedCollisionAction(direction_rule=snake_direction_rule),
+        CollisionDirectionAction(direction_rule=snake_direction_rule),
+        DirectionAction(direction_rule=identity_direction_rule),
     ]
 
     agents += [Agent(

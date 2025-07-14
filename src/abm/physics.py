@@ -46,7 +46,7 @@ class DirectionRule(Protocol):
         pass
 
 
-def identity_direction_rule(direction: Direction) -> Direction:
+def identity_direction_rule(direction: Direction, *args, **kwargs) -> Direction:
     """
     A direction rule that returns the same direction.
     :param direction: The direction to follow.
@@ -75,3 +75,15 @@ def collision_axis(collision_position: PointSet) -> Axis:
         return "vertical"
     else:
         raise ValueError("Collision point cannot be the same as agent position.")
+
+
+def snake_direction_rule(direction: Direction, *args, **kwargs) -> Direction:
+    """
+    Returns the opposite direction of the given direction, moving in a snake pattern.
+    :param direction: The input direction
+    :return: the opposite direction
+    """
+    if direction == "right":
+        return "up"
+
+    return "right"

@@ -9,10 +9,9 @@ from abm.color_sequence_iterator import ColorSequenceIterator
 from abm.geometry import PointSet
 from abm.model import Model
 from abm.neighbourhood import dummy_neighbourhood
-from abm.physics import Direction
+from abm.physics import Direction, identity_direction_rule
 from abm.simulation import Simulation
 from abm.topology import identity_topology
-from arc_puzzle_generator.collisions import identity_direction
 from abm.entities import colour_count, find_connected_objects
 from arc_puzzle_generator.physics import relative_box_direction, box_distance, starting_point
 
@@ -110,7 +109,7 @@ def puzzle_two(input_grid: np.ndarray) -> Simulation:
                 topology=identity_topology,
                 neighbourhood=dummy_neighbourhood,
                 actions=[
-                    DirectionAction(identity_direction)
+                    DirectionAction(identity_direction_rule)
                 ],
                 charge=distance,
                 colors=ColorSequenceIterator(

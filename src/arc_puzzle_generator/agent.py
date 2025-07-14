@@ -2,7 +2,8 @@ from typing import Iterable, Iterator, Optional
 
 import numpy as np
 
-from arc_puzzle_generator.collisions import CollisionRule, NeighbourhoodRule, directional_neighbourhood
+from arc_puzzle_generator.collisions import CollisionRule, NeighbourhoodRule
+from abm.neighbourhood import directional_neighbourhood
 from arc_puzzle_generator.physics import Direction, direction_to_unit_vector
 
 

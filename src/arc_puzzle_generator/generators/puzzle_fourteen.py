@@ -1,9 +1,10 @@
 from itertools import cycle
 from typing import Iterable
 
+from abm.physics import identity_direction_rule
 from arc_puzzle_generator.agent import Agent
 from arc_puzzle_generator.collision_rules.FillColorRule import FillColorRule
-from arc_puzzle_generator.collisions import identity_direction, AxisNeighbourHood
+from arc_puzzle_generator.collisions import AxisNeighbourHood
 from abm.entities import find_connected_objects
 from arc_puzzle_generator.physics import Direction, bounding_box_to_points
 from arc_puzzle_generator.puzzle_generator import PuzzleGenerator
@@ -45,7 +46,7 @@ class PuzzleFourteenPuzzleGenerator(PuzzleGenerator):
             collision_rule=FillColorRule(
                 background_color=background_color,
                 fill_color=fill_color,
-                direction_rule=identity_direction,
+                direction_rule=identity_direction_rule,
             ),
             neighbourhood_rule=AxisNeighbourHood(self.input_grid.shape),
         )]
