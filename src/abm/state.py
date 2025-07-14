@@ -13,7 +13,7 @@ class AgentState(NamedTuple):
     charge: int
 
 
-AgentStateMapping = Mapping[Point, tuple[AgentState, int]]
+AgentStateMapping = Mapping[Point, AgentState]
 """
-Maps a point to a tuple containing the agent's state and an integer representing the color of the grid at the current step.
+Maps a point to a tuple containing the agent's state at the current step.
 """

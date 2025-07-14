@@ -7,6 +7,7 @@ import numpy as np
 from abm.agent import Agent
 from abm.geometry import PointSet
 from abm.neighbourhood import directional_neighbours
+from abm.state import AgentState
 
 
 class Model(Iterator[np.ndarray], Iterable[np.ndarray]):
@@ -63,7 +64,12 @@ class Model(Iterator[np.ndarray], Iterable[np.ndarray]):
                 # Calculate the collision positions
                 position_intersect = cast(PointSet, eligible_positions & neighbourhood)
                 position_intersect_mapping = {
-                    point: (agent_position_mapping[point], self.output_grid[point[0], point[1]].item())
+                    point: AgentState(
+                        position=agent_position_mapping[point].position,
+                        direction=agent_position_mapping[point].direction,
+                        color=self.output_grid[point[0], point[1]].item(),
+                        charge=agent_position_mapping[point].charge
+                    )
                     for point in position_intersect
                 }
 

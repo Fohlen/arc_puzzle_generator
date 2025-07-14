@@ -157,7 +157,8 @@ def collision_color_mapping(
     """
 
     if len(collision) > 0:
-        new_colors = cycle([collision_mapping[collision][1] for collision in collision])
+        new_colors = cycle([collision_mapping[collision].color for collision in collision])
+
         return AgentState(
             position=state.position,
             direction=state.direction,
