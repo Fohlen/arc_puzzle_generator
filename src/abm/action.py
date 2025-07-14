@@ -40,7 +40,7 @@ class DirectionAction(Action):
     def __init__(self, direction_rule: DirectionRule) -> None:
         self.direction_rule = direction_rule
 
-    def __call__(self, state: AgentState, collision: PointSet, *args) -> AgentState:
+    def __call__(self, state: AgentState, collision: PointSet, *args) -> Optional[AgentState]:
         """
         Change the direction of the agent based on the direction rule.
 
@@ -49,15 +49,18 @@ class DirectionAction(Action):
         :return: A new state with the updated direction.
         """
 
-        new_direction = self.direction_rule(state.direction)
-        new_position = state.position.shift(direction_to_unit_vector(new_direction))
+        if len(collision) == 0:
+            new_direction = self.direction_rule(state.direction)
+            new_position = state.position.shift(direction_to_unit_vector(new_direction))
 
-        return AgentState(
-            position=new_position,
-            direction=new_direction,
-            colors=state.colors,
-            charge=state.charge - 1 if state.charge > 0 else state.charge
-        )
+            return AgentState(
+                position=new_position,
+                direction=new_direction,
+                colors=state.colors,
+                charge=state.charge - 1 if state.charge > 0 else state.charge
+            )
+
+        return None
 
 
 class OutOfGridAction(Action):
@@ -211,6 +214,7 @@ class CollisionBorderAction(Action):
         if len(collision) == 1:
             # If the agent collides with the border, change its color to the border color
             new_colors = chain([self.border_color], state.colors)
+
             return AgentState(
                 position=PointSet(collision),
                 direction=state.direction,
