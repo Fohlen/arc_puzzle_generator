@@ -5,7 +5,7 @@ from typing import Mapping, cast
 import numpy as np
 
 from abm.action import OutOfGridAction, TrappedCollisionAction, CollisionDirectionAction, DirectionAction, \
-    CollisionBorderAction
+    CollisionBorderAction, backtrack_action
 from abm.agent import Agent
 from abm.geometry import PointSet, unmask
 from abm.model import Model
@@ -62,6 +62,7 @@ def puzzle_ten(input_grid: np.ndarray) -> Simulation:
     actions = [
         OutOfGridAction(grid_size=(input_grid.shape[0], input_grid.shape[1])),
         CollisionBorderAction(border_color=border_color),
+        backtrack_action,
         TrappedCollisionAction(direction_rule=snake_direction_rule),
         CollisionDirectionAction(direction_rule=snake_direction_rule),
         DirectionAction(direction_rule=identity_direction_rule),

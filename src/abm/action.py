@@ -219,3 +219,31 @@ class CollisionBorderAction(Action):
             )
 
         return None
+
+
+def backtrack_action(
+        state: AgentState,
+        collision: PointSet,
+        collision_mapping: AgentStateMapping
+) -> Optional[AgentState]:
+    """
+    Backtrack the agent to its previous position.
+
+    :param state: The current state of the agent.
+    :param collision: The set of points that are in collision with the agent.
+    :param collision_mapping: The mapping between collision points and the agent's colors.
+    :return: A new state with the position set to the previous position.
+    """
+
+    if any(point in collision for point in state.position):
+        direction_vector = direction_to_unit_vector(state.direction)
+        previous_position = state.position.shift((direction_vector[0] * -1, direction_vector[1] * -1))
+
+        return AgentState(
+            position=previous_position,
+            direction=state.direction,
+            colors=state.colors,
+            charge=state.charge
+        )
+
+    return None
