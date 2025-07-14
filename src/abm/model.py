@@ -74,5 +74,6 @@ class Model(Iterator[np.ndarray], Iterable[np.ndarray]):
                     # If the agent is still active after the step, update the output grid
                     if charge > 0 or charge == -1:
                         position = np.array(list(pos))
-                        self.output_grid[position[:, 0], position[:, 1]] = next(colors)
+                        color = next(colors)
+                        self.output_grid[position[:, 0], position[:, 1]] = color
                         self.steps.append(self.output_grid.copy())
