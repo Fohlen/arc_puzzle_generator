@@ -1,7 +1,7 @@
 from itertools import cycle
 from typing import Iterable
 
-from abm.physics import identity_direction_rule
+from abm.direction import identity_direction_rule
 from arc_puzzle_generator.agent import Agent
 from arc_puzzle_generator.collision_rules.FillColorRule import FillColorRule
 from arc_puzzle_generator.collisions import AxisNeighbourHood

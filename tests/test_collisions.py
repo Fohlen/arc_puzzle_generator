@@ -3,7 +3,7 @@ from unittest import TestCase
 import numpy as np
 
 from abm.neighbourhood import directional_neighbourhood
-from abm.physics import identity_direction_rule
+from abm.direction import identity_direction_rule
 from arc_puzzle_generator.collisions import moore_neighbourhood, \
     AxisNeighbourHood
 

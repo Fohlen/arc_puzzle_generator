@@ -8,7 +8,8 @@ from abm.agent import Agent
 from abm.geometry import PointSet
 from abm.model import Model
 from abm.neighbourhood import dummy_neighbourhood, moore_neighbours
-from abm.physics import Direction, identity_direction_rule, orthogonal_direction
+from abm.physics import Direction
+from abm.direction import identity_direction_rule, orthogonal_direction
 from abm.simulation import Simulation
 from abm.topology import FixedGroupTopology, identity_topology
 from abm.entities import find_colors, find_connected_objects, is_l_shape

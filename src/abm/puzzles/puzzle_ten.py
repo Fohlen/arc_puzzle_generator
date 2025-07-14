@@ -11,7 +11,7 @@ from abm.model import Model
 from abm.neighbourhood import von_neumann_neighbours, dummy_neighbourhood
 from abm.simulation import Simulation
 from abm.topology import FixedGroupTopology, identity_topology
-from abm.physics import snake_direction_rule, identity_direction_rule
+from abm.direction import identity_direction_rule, snake_direction_rule
 from abm.entities import colour_count, find_colors, find_connected_objects
 
 

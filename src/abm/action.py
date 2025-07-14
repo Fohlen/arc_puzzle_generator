@@ -2,7 +2,8 @@ from itertools import chain, cycle
 from typing import Protocol, Optional, Mapping
 
 from abm.geometry import PointSet, Point
-from abm.physics import DirectionRule, direction_to_unit_vector, collision_axis
+from abm.physics import direction_to_unit_vector, collision_axis
+from abm.direction import DirectionRule
 from abm.state import AgentState, AgentStateMapping
 
 

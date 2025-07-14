@@ -8,7 +8,8 @@ from abm.color_sequence_iterator import ColorSequenceIterator
 from abm.geometry import PointSet
 from abm.model import Model
 from abm.neighbourhood import dummy_neighbourhood
-from abm.physics import Direction, identity_direction_rule
+from abm.physics import Direction
+from abm.direction import identity_direction_rule
 from abm.simulation import Simulation
 from abm.topology import identity_topology
 from abm.entities import colour_count, find_connected_objects

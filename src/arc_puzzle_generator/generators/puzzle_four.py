@@ -4,7 +4,7 @@ from typing import Iterable
 import numpy as np
 
 from arc_puzzle_generator.collision_rules.BoundingBoxRule import BoundingBoxRule
-from abm.physics import orthogonal_direction
+from abm.direction import orthogonal_direction
 from abm.entities import find_colors, find_connected_objects, is_l_shape
 from arc_puzzle_generator.agent import Agent
 from arc_puzzle_generator.puzzle_generator import PuzzleGenerator
