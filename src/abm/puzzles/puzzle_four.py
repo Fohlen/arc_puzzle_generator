@@ -2,7 +2,7 @@ from itertools import cycle
 
 import numpy as np
 
-from abm.action import OutOfGridAction, CollisionAction, DirectionAction
+from abm.action import OutOfGridAction, CollisionDirectionAction, DirectionAction
 from abm.agent import Agent
 from abm.geometry import PointSet
 from abm.model import Model
@@ -55,7 +55,7 @@ def puzzle_four(input_grid: np.ndarray) -> Simulation:
     topology = FixedGroupTopology(group={"bbox"})
     actions = [
         OutOfGridAction(grid_size=(input_grid.shape[0], input_grid.shape[1])),
-        CollisionAction(orthogonal_direction),
+        CollisionDirectionAction(orthogonal_direction),
         DirectionAction(identity_direction_rule)
     ]
 

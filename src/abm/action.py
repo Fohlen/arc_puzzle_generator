@@ -90,7 +90,7 @@ class OutOfGridAction(Action):
         return None
 
 
-class CollisionAction(Action):
+class CollisionDirectionAction(Action):
     """
     An action that handles collisions by applying a direction rule on collision.
     """
@@ -107,9 +107,7 @@ class CollisionAction(Action):
         :return: The same state as the input.
         """
 
-        next_position = state.position + direction_to_unit_vector(state.direction)
-
-        if len(next_position & collision) > 0:
+        if len(collision) > 0:
             new_direction = self.direction_rule(state.direction)
             new_position = state.position + direction_to_unit_vector(new_direction)
 
