@@ -50,7 +50,7 @@ class DirectionAction(Action):
         """
 
         new_direction = self.direction_rule(state.direction)
-        new_position = state.position + direction_to_unit_vector(new_direction)
+        new_position = state.position.shift(direction_to_unit_vector(new_direction))
 
         return AgentState(
             position=new_position,
@@ -77,7 +77,7 @@ class OutOfGridAction(Action):
         :return: None, indicating that the agent is removed from the grid.
         """
 
-        next_position = state.position + direction_to_unit_vector(state.direction)
+        next_position = state.position.shift(direction_to_unit_vector(state.direction))
 
         min_x = min(pos[0] for pos in next_position)
         max_x = max(pos[0] for pos in next_position)
@@ -122,7 +122,7 @@ class CollisionDirectionAction(Action):
         if len(collision) > 0:
             axis = collision_axis(collision)
             new_direction = self.direction_rule(state.direction, axis)
-            new_position = state.position + direction_to_unit_vector(new_direction)
+            new_position = state.position.shift(direction_to_unit_vector(new_direction))
 
             return AgentState(
                 position=new_position,
@@ -185,7 +185,7 @@ class TrappedCollisionAction(Action):
 
         if len(collision) > 0:
             next_direction = self.direction_rule(state.direction)
-            next_position = state.position + direction_to_unit_vector(next_direction)
+            next_position = state.position.shift(direction_to_unit_vector(next_direction))
 
             next_collision = next_position & collision
             if len(next_collision) > 0:
@@ -207,8 +207,6 @@ class CollisionBorderAction(Action):
             state: AgentState,
             collision: PointSet,
             collision_mapping: AgentStateMapping,
-            *args,
-            **kwargs
     ) -> Optional[AgentState]:
         if len(collision) == 1:
             # If the agent collides with the border, change its color to the border color
