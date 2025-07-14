@@ -48,12 +48,11 @@ class Agent:
             collision: PointSet,
             collision_mapping: AgentStateMapping,
     ) -> Iterable[AgentState]:
-        history = [self.state]
-        states = []
+        states = [self.state]
         action_iter = iter(self.actions)
 
         for action in action_iter:
-            result = action(history, self.colors, collision, collision_mapping)
+            result = action(states, self.colors, collision, collision_mapping)
 
             if result is not None:
                 state, colors = result
@@ -65,5 +64,5 @@ class Agent:
                 self.colors = colors
 
                 states.append(state)
-                history.append(state)
-        return states
+
+        return states[:-1]
