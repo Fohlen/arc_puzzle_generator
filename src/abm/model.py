@@ -53,9 +53,13 @@ class Model(Iterator[np.ndarray], Iterable[np.ndarray]):
 
                 # Calculate the collision positions
                 position_intersect = cast(PointSet, eligible_positions & neighbourhood)
+                position_intersect_mapping = {
+                    point: self.output_grid[point[0], point[1]].item()
+                    for point in position_intersect
+                }
 
                 # Update the agent's state based on collision positions
-                for step in agent.steps(position_intersect):
+                for step in agent.steps(position_intersect, position_intersect_mapping):
                     pos, _, colors, charge = step
 
                     # If the agent is still active after the step, update the output grid

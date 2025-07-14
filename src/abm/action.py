@@ -1,6 +1,7 @@
+from itertools import chain
 from typing import Protocol, Optional
 
-from abm.geometry import PointSet, Point
+from abm.geometry import PointSet, Point, ColorMapping
 from abm.physics import DirectionRule, direction_to_unit_vector
 from abm.state import AgentState
 
@@ -10,11 +11,16 @@ class Action(Protocol):
     An action is a callable that takes the current position and state of an agent and returns a new state.
     """
 
-    def __call__(self, state: AgentState, collision: PointSet) -> Optional[AgentState]:
+    def __call__(
+            self,
+            state: AgentState,
+            collision: PointSet,
+            collision_map: Optional[ColorMapping] = None
+    ) -> Optional[AgentState]:
         pass
 
 
-def identity_action(state: AgentState, collision: PointSet) -> AgentState:
+def identity_action(state: AgentState, collision: PointSet, *args) -> AgentState:
     """
     An identity action that returns the state unchanged.
 
@@ -34,7 +40,7 @@ class DirectionAction(Action):
     def __init__(self, direction_rule: DirectionRule) -> None:
         self.direction_rule = direction_rule
 
-    def __call__(self, state: AgentState, collision: PointSet) -> AgentState:
+    def __call__(self, state: AgentState, collision: PointSet, *args) -> AgentState:
         """
         Change the direction of the agent based on the direction rule.
 
@@ -62,7 +68,7 @@ class OutOfGridAction(Action):
     def __init__(self, grid_size: Point) -> None:
         self.grid_size = grid_size
 
-    def __call__(self, state: AgentState, collision: PointSet) -> Optional[AgentState]:
+    def __call__(self, state: AgentState, collision: PointSet, *args) -> Optional[AgentState]:
         """
         Remove the agent from the grid.
 
@@ -98,7 +104,7 @@ class CollisionDirectionAction(Action):
     def __init__(self, direction_rule: DirectionRule) -> None:
         self.direction_rule = direction_rule
 
-    def __call__(self, state: AgentState, collision: PointSet) -> Optional[AgentState]:
+    def __call__(self, state: AgentState, collision: PointSet, *args) -> Optional[AgentState]:
         """
         Handle the collision by returning the current state unchanged.
 
@@ -119,3 +125,30 @@ class CollisionDirectionAction(Action):
             )
 
         return None
+
+
+def collision_color_mapping(
+        state: AgentState,
+        collision: PointSet,
+        collision_mapping: ColorMapping
+) -> Optional[AgentState]:
+    """
+    Handle the collision by updating the agent's colors based on the collision points.
+
+    :param state: The current state of the agent.
+    :param collision: The set of points that are in collision with the agent.
+    :param collision_mapping: The mapping between collision points and the agent's colors.
+    :return: A new state with updated colors.
+    """
+
+    if len(collision) > 0:
+        new_colors = chain([collision_mapping[collision] for collision in collision], state.colors)
+        return AgentState(
+            position=state.position,
+            direction=state.direction,
+            colors=new_colors,
+            charge=state.charge
+        )
+
+    return None
+

@@ -9,7 +9,6 @@ from abm.geometry import PointSet
 from abm.model import Model
 from abm.neighbourhood import dummy_neighbourhood
 from abm.physics import Direction, identity_direction_rule
-from abm.selection import dummy_selector
 from abm.simulation import Simulation
 from abm.topology import identity_topology
 from arc_puzzle_generator.entities import colour_count, find_connected_objects
@@ -64,7 +63,6 @@ def puzzle_one(input_grid: np.ndarray) -> Simulation:
             label="puzzle_one_agent",
             topology=identity_topology,
             neighbourhood=dummy_neighbourhood,
-            selector=dummy_selector,
             actions=[
                 DirectionAction(identity_direction_rule),
             ],

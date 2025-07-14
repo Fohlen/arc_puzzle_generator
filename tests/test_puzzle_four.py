@@ -19,8 +19,8 @@ class PuzzleFourTestCase(unittest.TestCase):
         self.assertTrue(np.array_equal(output_grid, self.puzzle.train[0].output))
 
     def test_generate_48d8fb45_second(self):
-        generator = PuzzleFourPuzzleGenerator(self.puzzle.train[1].input)
-        *_, output_grid = generator
+        simulator = puzzle_four(self.puzzle.train[1].input)
+        *_, output_grid = simulator.run()
         self.assertTrue(np.array_equal(output_grid, self.puzzle.train[1].output))
 
     def test_generate_48d8fb45_third(self):

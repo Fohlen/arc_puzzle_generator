@@ -1,7 +1,7 @@
 from typing import Iterator, Iterable
 
 from abm.action import Action
-from abm.geometry import PointSet
+from abm.geometry import PointSet, ColorMapping
 from abm.neighbourhood import Neighbourhood
 from abm.physics import Direction
 from abm.state import AgentState
@@ -42,12 +42,12 @@ class Agent:
             charge=self.charge
         )
 
-    def steps(self, collision: PointSet) -> Iterable[AgentState]:
+    def steps(self, collision: PointSet, collision_mapping: ColorMapping) -> Iterable[AgentState]:
         states = []
         action_iter = iter(self.actions)
 
         for action in action_iter:
-            state = action(self.state, collision)
+            state = action(self.state, collision, collision_mapping)
 
             # If the action returns a valid state, update the agent's attributes
             if state is not None:

@@ -1,8 +1,9 @@
-from typing import cast
+from typing import cast, Mapping
 
 import numpy as np
 
 Point = tuple[int, int]
+ColorMapping = Mapping[Point, int]
 
 
 class PointSet(set[tuple[int, int]]):

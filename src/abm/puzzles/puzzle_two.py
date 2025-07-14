@@ -110,7 +110,6 @@ def puzzle_two(input_grid: np.ndarray) -> Simulation:
                 label="puzzle_two_agent",
                 topology=identity_topology,
                 neighbourhood=dummy_neighbourhood,
-                selector=dummy_selector,
                 actions=[
                     DirectionAction(identity_direction)
                 ],
