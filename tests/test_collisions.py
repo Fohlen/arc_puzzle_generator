@@ -2,7 +2,7 @@ from unittest import TestCase
 
 import numpy as np
 
-from abm.neighbourhood import directional_neighbourhood
+from abm.neighbourhood import directional_neighbours
 from abm.direction import identity_direction_rule
 from arc_puzzle_generator.collisions import moore_neighbourhood, \
     AxisNeighbourHood
@@ -22,7 +22,7 @@ class CollisionTest(TestCase):
         step = np.array([[5, 4]])
         self.assertTrue(np.array_equal(
             np.array([[5, 5]]),
-            directional_neighbourhood(step, "right")
+            directional_neighbours(step, "right")
         ))
 
         step_two = np.array([
@@ -30,7 +30,7 @@ class CollisionTest(TestCase):
         ])
         self.assertTrue(np.array_equal(
             np.array([[5, 5]]),
-            directional_neighbourhood(step_two, "right")
+            directional_neighbours(step_two, "right")
         ))
 
         step_three = np.array([
@@ -42,14 +42,14 @@ class CollisionTest(TestCase):
                 [4, 4],
                 [5, 4]
             ]),
-            directional_neighbourhood(step_three, "right")
+            directional_neighbours(step_three, "right")
         ))
 
     def test_collision_direction_left(self):
         step = np.array([[5, 3]])
         self.assertTrue(np.array_equal(
             [[5, 2]],
-            directional_neighbourhood(step, "left")
+            directional_neighbours(step, "left")
         ))
 
         step_two = np.array([
@@ -58,7 +58,7 @@ class CollisionTest(TestCase):
         ])
         self.assertTrue(np.array_equal(
             [[5, 2]],
-            directional_neighbourhood(step_two, "left")
+            directional_neighbours(step_two, "left")
         ))
 
         step_three = np.array([
@@ -67,14 +67,14 @@ class CollisionTest(TestCase):
         ])
         self.assertTrue(np.array_equal(
             [[4, 2], [5, 2]],
-            directional_neighbourhood(step_three, "left")
+            directional_neighbours(step_three, "left")
         ))
 
     def test_collision_direction_up(self):
         step = np.array([[5, 3]])
         self.assertTrue(np.array_equal(
             [[4, 3]],
-            directional_neighbourhood(step, "up")
+            directional_neighbours(step, "up")
         ))
 
         step_two = np.array([
@@ -83,7 +83,7 @@ class CollisionTest(TestCase):
         ])
         self.assertTrue(np.array_equal(
             [[3, 3]],
-            directional_neighbourhood(step_two, "up")
+            directional_neighbours(step_two, "up")
         ))
 
         step_three = np.array([
@@ -91,14 +91,14 @@ class CollisionTest(TestCase):
         ])
         self.assertTrue(np.array_equal(
             [[3, 3], [3, 4]],
-            directional_neighbourhood(step_three, "up")
+            directional_neighbours(step_three, "up")
         ))
 
     def test_collision_direction_down(self):
         step = np.array([[5, 3]])
         self.assertTrue(np.array_equal(
             [[6, 3]],
-            directional_neighbourhood(step, "down")
+            directional_neighbours(step, "down")
         ))
 
         step_two = np.array([
@@ -107,7 +107,7 @@ class CollisionTest(TestCase):
         ])
         self.assertTrue(np.array_equal(
             [[6, 3]],
-            directional_neighbourhood(step_two, "down")
+            directional_neighbours(step_two, "down")
         ))
 
         step_three = np.array([
@@ -115,7 +115,7 @@ class CollisionTest(TestCase):
         ])
         self.assertTrue(np.array_equal(
             [[6, 3], [6, 4]],
-            directional_neighbourhood(step_three, "down")
+            directional_neighbours(step_three, "down")
         ))
 
     def test_collision_direction_top_left(self):
@@ -123,7 +123,7 @@ class CollisionTest(TestCase):
 
         self.assertTrue(np.array_equal(
             [[4, 2], [4, 3], [5, 2]],
-            directional_neighbourhood(step, "top_left")
+            directional_neighbours(step, "top_left")
         ))
 
         step_two = np.array([
@@ -133,7 +133,7 @@ class CollisionTest(TestCase):
 
         self.assertTrue(np.array_equal(
             [[4, 2], [4, 3], [5, 2]],
-            directional_neighbourhood(step_two, "top_left")
+            directional_neighbours(step_two, "top_left")
         ))
 
     def test_collision_direction_top_right(self):
@@ -141,7 +141,7 @@ class CollisionTest(TestCase):
 
         self.assertTrue(np.array_equal(
             [[4, 3], [4, 4], [5, 4]],
-            directional_neighbourhood(step, "top_right")
+            directional_neighbours(step, "top_right")
         ))
 
         step_two = np.array([
@@ -150,21 +150,21 @@ class CollisionTest(TestCase):
         ])
         self.assertTrue(np.array_equal(
             [[4, 3], [4, 4], [5, 4]],
-            directional_neighbourhood(step_two, "top_right")
+            directional_neighbours(step_two, "top_right")
         ))
 
     def test_collision_direction_bottom_left(self):
         step = np.array([[5, 3]])
         self.assertTrue(np.array_equal(
             [[5, 2], [6, 2], [6, 3]],
-            directional_neighbourhood(step, "bottom_left")
+            directional_neighbours(step, "bottom_left")
         ))
 
     def test_collision_direction_bottom_right(self):
         step = np.array([[5, 3]])
         self.assertTrue(np.array_equal(
             [[5, 4], [6, 3], [6, 4]],
-            directional_neighbourhood(step, "bottom_right")
+            directional_neighbours(step, "bottom_right")
         ))
 
     def test_identity_direction(self):

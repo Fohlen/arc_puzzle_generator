@@ -45,7 +45,7 @@ class Model(Iterator[np.ndarray], Iterable[np.ndarray]):
             # Select active agents
             if agent.active:
                 # Calculate the neighbourhood of the agent
-                neighbourhood = resolve_point_set_neighbours(agent.position, agent.neighbourhood)
+                neighbourhood = resolve_point_set_neighbours(agent.position, agent.direction, agent.neighbourhood)
 
                 # Filter eligible agents based on the agent's topology
                 topology_labels = agent.topology(agent.label, self.labels)
