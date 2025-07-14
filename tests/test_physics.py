@@ -3,6 +3,8 @@ from unittest import TestCase
 
 import numpy as np
 
+from abm.geometry import PointSet
+from abm.physics import collision_axis
 from arc_puzzle_generator.physics import direction_to_unit_vector, contained, box_distance, relative_box_direction, \
     starting_point, bounding_box_to_points
 
@@ -157,3 +159,10 @@ class PhysicsTestCase(unittest.TestCase):
             box_points_c,
             bounding_box_to_points(points_c)
         ))
+
+    def test_collision_axis(self):
+        agent = PointSet({(0, 0)})
+        collision = PointSet({(0, 1)})
+        orientation = collision_axis(agent, collision)
+
+        self.assertEqual("horizontal", orientation)

@@ -4,7 +4,6 @@ import numpy as np
 
 from abm.puzzles.puzzle_four import puzzle_four
 from arc_puzzle_generator.data_loader import load_puzzle
-from arc_puzzle_generator.generators.puzzle_four import PuzzleFourPuzzleGenerator
 from tests.utils import test_dir
 
 
@@ -24,17 +23,16 @@ class PuzzleFourTestCase(unittest.TestCase):
         self.assertTrue(np.array_equal(output_grid, self.puzzle.train[1].output))
 
     def test_generate_48d8fb45_third(self):
-        generator = PuzzleFourPuzzleGenerator(self.puzzle.train[2].input)
-        *_, output_grid = generator
+        simulator = puzzle_four(self.puzzle.train[2].input)
+        *_, output_grid = simulator.run()
         self.assertTrue(np.array_equal(output_grid, self.puzzle.train[2].output))
 
     def test_generate_48d8fb45_prompt(self):
-        generator = PuzzleFourPuzzleGenerator(self.puzzle.test[0].input)
-        *_, output_grid = generator
+        simulator = puzzle_four(self.puzzle.test[0].input)
+        *_, output_grid = simulator.run()
         self.assertTrue(np.array_equal(output_grid, self.puzzle.test[0].output))
 
     def test_generate_48d8fb45_prompt_second(self):
-        generator = PuzzleFourPuzzleGenerator(self.puzzle.test[1].input)
-        generator.setup()
-        *_, output_grid = generator
+        simulator = puzzle_four(self.puzzle.test[1].input)
+        *_, output_grid = simulator.run()
         self.assertTrue(np.array_equal(output_grid, self.puzzle.test[1].output))
