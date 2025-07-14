@@ -92,6 +92,7 @@ def directional_neighbourhood(point: np.ndarray, direction: Direction) -> np.nda
 
     raise ValueError(f"Invalid direction: {direction}")
 
+
 class AxisNeighbourHood(NeighbourhoodRule):
     def __init__(self, grid_size: tuple[int, int]) -> None:
         self.grid_size = grid_size
@@ -149,7 +150,7 @@ def orthogonal_direction(direction: Direction, axis: Axis = "horizontal") -> Dir
     raise ValueError("Unknown axis {}".format(axis))
 
 
-def snake_direction(direction: Direction) -> Direction:
+def snake_direction(direction: Direction, *args, **kwargs) -> Direction:
     """
     Returns the opposite direction of the given direction, moving in a snake pattern.
     :param direction: The input direction
@@ -161,7 +162,7 @@ def snake_direction(direction: Direction) -> Direction:
     return "right"
 
 
-def identity_direction(direction: Direction) -> Direction:
+def identity_direction(direction: Direction, *args, **kwargs) -> Direction:
     """
     Continues eternally in the same direction.
     :param direction: The input direction.

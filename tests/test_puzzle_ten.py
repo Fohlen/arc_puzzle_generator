@@ -2,6 +2,7 @@ import unittest
 
 import numpy as np
 
+from abm.puzzles.puzzle_ten import puzzle_ten
 from arc_puzzle_generator.data_loader import load_puzzle
 from arc_puzzle_generator.generators.puzzle_ten import PuzzleTenPuzzleGenerator
 from tests.utils import test_dir
@@ -13,8 +14,8 @@ class PuzzleTenTestCase(unittest.TestCase):
         self.puzzle = load_puzzle(file_path)
 
     def test_generate_195c6913(self):
-        generator = PuzzleTenPuzzleGenerator(self.puzzle.train[0].input)
-        *_, output_grid = generator
+        simulation = puzzle_ten(self.puzzle.train[0].input)
+        *_, output_grid = simulation.run()
         self.assertTrue(np.array_equal(output_grid, self.puzzle.train[0].output))
 
     def test_generate_195c6913_second(self):

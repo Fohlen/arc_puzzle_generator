@@ -4,7 +4,7 @@ from typing import Mapping
 
 import numpy as np
 
-from abm.action import OutOfGridAction, TrappedCollisionAction, CollisionDirectionAction
+from abm.action import OutOfGridAction, TrappedCollisionAction, CollisionDirectionAction, DirectionAction
 from abm.agent import Agent
 from abm.geometry import PointSet, unmask
 from abm.model import Model
@@ -46,9 +46,9 @@ def puzzle_ten(input_grid: np.ndarray) -> Simulation:
 
     topology = FixedGroupTopology(group={"foreground"})
 
-    outside_color_position = unmask(np.where(input_grid == outside_color))
+    foreground_position = unmask(input_grid == outside_color)
     agents = [Agent(
-        position=outside_color_position,
+        position=foreground_position,
         direction="right",
         label="foreground",
         topology=identity_topology,
@@ -62,7 +62,7 @@ def puzzle_ten(input_grid: np.ndarray) -> Simulation:
         OutOfGridAction(grid_size=(input_grid.shape[0], input_grid.shape[1])),
         TrappedCollisionAction(direction_rule=snake_direction),
         CollisionDirectionAction(direction_rule=snake_direction),
-        identity_direction,
+        DirectionAction(direction_rule=identity_direction),
     ]
 
     agents += [Agent(

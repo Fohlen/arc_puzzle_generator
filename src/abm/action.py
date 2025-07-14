@@ -194,3 +194,4 @@ class TrappedCollisionAction(Action):
                     colors=state.colors,
                     charge=0  # Set charge to 0 to indicate termination
                 )
+        return None

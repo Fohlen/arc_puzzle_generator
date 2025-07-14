@@ -37,7 +37,9 @@ def unmask(input_mask: np.ndarray) -> PointSet:
     :return: A set of points (x, y) where the mask is True.
     """
 
-    return PointSet((cast(int, x), cast(int, y)) for x, y in zip(*np.where(input_mask)))
+    indices = np.where(input_mask)
+
+    return PointSet(list(zip(indices[0].tolist(), indices[1].tolist())))
 
 
 def mask(point_set: PointSet, grid_size: Point) -> np.ndarray:
