@@ -157,3 +157,40 @@ def collision_color_mapping(
         )
 
     return None
+
+
+class TrappedCollisionAction(Action):
+    """
+    An action that terminates the agent if it is trapped in a collision.
+    """
+
+    def __init__(self, direction_rule: DirectionRule) -> None:
+        self.direction_rule = direction_rule
+
+    def __call__(
+            self,
+            state: AgentState,
+            collision: PointSet,
+            collision_mapping: AgentStateMapping
+    ) -> Optional[AgentState]:
+        """
+        Terminate the agent if it is trapped in a collision.
+
+        :param state: The current state of the agent.
+        :param collision: The set of points that are in collision with the agent.
+        :param collision_mapping: The mapping between collision points and the agent's colors.
+        :return: Terminates the agent at the current state if trapped, otherwise returns None.
+        """
+
+        if len(collision) > 0:
+            next_direction = self.direction_rule(state.direction)
+            next_position = state.position + direction_to_unit_vector(next_direction)
+
+            next_collision = next_position & collision
+            if len(next_collision) > 0:
+                return AgentState(
+                    position=state.position,
+                    direction=state.direction,
+                    colors=state.colors,
+                    charge=0  # Set charge to 0 to indicate termination
+                )
