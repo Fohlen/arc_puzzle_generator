@@ -18,7 +18,7 @@ This will give you access to individual generators and the functions that power 
 
 ```python
 from pathlib import Path
-from arc_puzzle_generator.data_loader import load_puzzle
+from abm.data_loader import load_puzzle
 from arc_puzzle_generator.generators import PuzzleTwoPuzzleGenerator
 
 file_path = Path("3e6067c3.json")
