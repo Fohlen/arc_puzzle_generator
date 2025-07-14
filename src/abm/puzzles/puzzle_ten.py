@@ -12,7 +12,7 @@ from abm.neighbourhood import von_neumann_neighbours, dummy_neighbourhood
 from abm.simulation import Simulation
 from abm.topology import FixedGroupTopology, identity_topology
 from arc_puzzle_generator.collisions import snake_direction, identity_direction
-from arc_puzzle_generator.entities import colour_count, find_colors, find_connected_objects
+from abm.entities import colour_count, find_colors, find_connected_objects
 
 
 def puzzle_ten(input_grid: np.ndarray) -> Simulation:

@@ -11,7 +11,7 @@ from abm.neighbourhood import dummy_neighbourhood
 from abm.physics import Direction, identity_direction_rule
 from abm.simulation import Simulation
 from abm.topology import identity_topology
-from arc_puzzle_generator.entities import colour_count, find_connected_objects
+from abm.entities import colour_count, find_connected_objects
 
 
 def puzzle_one(input_grid: np.ndarray) -> Simulation:

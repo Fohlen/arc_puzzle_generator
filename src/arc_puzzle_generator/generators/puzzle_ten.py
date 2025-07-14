@@ -6,7 +6,7 @@ import numpy as np
 
 from arc_puzzle_generator.collision_rules.BackgroundColorRule import BackgroundColorRule
 from arc_puzzle_generator.collisions import snake_direction
-from arc_puzzle_generator.entities import colour_count, find_colors, find_connected_objects
+from abm.entities import colour_count, find_colors, find_connected_objects
 from arc_puzzle_generator.agent import Agent
 from arc_puzzle_generator.puzzle_generator import PuzzleGenerator
 

@@ -3,7 +3,7 @@ import unittest
 import numpy as np
 
 from arc_puzzle_generator.data_loader import load_puzzle
-from arc_puzzle_generator.entities import find_connected_objects, is_l_shape, find_colors
+from abm.entities import find_connected_objects, is_l_shape, find_colors
 from tests.utils import test_dir
 
 

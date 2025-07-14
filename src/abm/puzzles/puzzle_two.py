@@ -10,11 +10,10 @@ from abm.geometry import PointSet
 from abm.model import Model
 from abm.neighbourhood import dummy_neighbourhood
 from abm.physics import Direction
-from abm.selection import dummy_selector
 from abm.simulation import Simulation
 from abm.topology import identity_topology
 from arc_puzzle_generator.collisions import identity_direction
-from arc_puzzle_generator.entities import colour_count, find_connected_objects
+from abm.entities import colour_count, find_connected_objects
 from arc_puzzle_generator.physics import relative_box_direction, box_distance, starting_point
 
 

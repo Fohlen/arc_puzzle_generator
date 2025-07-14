@@ -4,7 +4,7 @@ from typing import Iterable
 from arc_puzzle_generator.agent import Agent
 from arc_puzzle_generator.collision_rules.FillColorRule import FillColorRule
 from arc_puzzle_generator.collisions import identity_direction, AxisNeighbourHood
-from arc_puzzle_generator.entities import find_connected_objects
+from abm.entities import find_connected_objects
 from arc_puzzle_generator.physics import Direction, bounding_box_to_points
 from arc_puzzle_generator.puzzle_generator import PuzzleGenerator
 
