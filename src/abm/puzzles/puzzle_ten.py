@@ -8,7 +8,7 @@ from abm.action import OutOfGridAction, TrappedCollisionAction, CollisionDirecti
 from abm.agent import Agent
 from abm.geometry import PointSet, unmask
 from abm.model import Model
-from abm.neighbourhood import von_neumann_neighbours, dummy_neighbourhood
+from abm.neighbourhood import von_neumann_neighbours, zero_neighbourhood
 from abm.simulation import Simulation
 from abm.topology import FixedGroupTopology, identity_topology
 from abm.direction import identity_direction_rule, snake_direction_rule
@@ -52,7 +52,7 @@ def puzzle_ten(input_grid: np.ndarray) -> Simulation:
         direction="right",
         label="foreground",
         topology=identity_topology,
-        neighbourhood=dummy_neighbourhood,
+        neighbourhood=zero_neighbourhood,
         actions=[],
         colors=iter([]),
         charge=0,

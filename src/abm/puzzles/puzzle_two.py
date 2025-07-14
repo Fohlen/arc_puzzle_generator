@@ -8,7 +8,7 @@ from abm.agent import Agent
 from abm.color_sequence_iterator import ColorSequenceIterator
 from abm.geometry import PointSet
 from abm.model import Model
-from abm.neighbourhood import dummy_neighbourhood
+from abm.neighbourhood import zero_neighbourhood
 from abm.physics import Direction
 from abm.direction import identity_direction_rule
 from abm.simulation import Simulation
@@ -108,7 +108,7 @@ def puzzle_two(input_grid: np.ndarray) -> Simulation:
                 direction=direction,
                 label="puzzle_two_agent",
                 topology=identity_topology,
-                neighbourhood=dummy_neighbourhood,
+                neighbourhood=zero_neighbourhood,
                 actions=[
                     DirectionAction(identity_direction_rule)
                 ],
