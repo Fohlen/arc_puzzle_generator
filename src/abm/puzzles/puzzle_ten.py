@@ -27,7 +27,7 @@ def puzzle_ten(input_grid: np.ndarray) -> Simulation:
             start_rows.append(index)
 
     # this is primitive but works
-    outside_color = input_grid[0, 0]
+    outside_color = input_grid[0, 0].item()
     inside_color: int = input_grid[start_rows[0], 1]  # type: ignore
 
     color_boxes: Mapping[int, list[tuple[int, int]]] = defaultdict(list)  # { row: [(col, color)] }
@@ -55,7 +55,7 @@ def puzzle_ten(input_grid: np.ndarray) -> Simulation:
         topology=identity_topology,
         neighbourhood=IdentityPointSetNeighbourhood(zero_neighbours),
         actions=[],
-        colors=iter([]),
+        colors=cycle([outside_color]),
         charge=0,
     )]
 

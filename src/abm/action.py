@@ -1,5 +1,5 @@
 from itertools import chain, cycle
-from typing import Protocol, Optional, Mapping
+from typing import Protocol, Optional, Iterable, Sequence
 
 from abm.geometry import PointSet, Point
 from abm.physics import direction_to_unit_vector, collision_axis
@@ -16,7 +16,7 @@ class Action(Protocol):
 
     def __call__(
             self,
-            state: AgentState,
+            states: Sequence[AgentState],
             colors: ColorIterator,
             collision: PointSet,
             collision_map: AgentStateMapping
@@ -24,15 +24,16 @@ class Action(Protocol):
         pass
 
 
-def identity_action(state: AgentState, *args) -> AgentState:
+def identity_action(states: Sequence[AgentState], colors: ColorIterator, *args) -> ActionResult:
     """
     An identity action that returns the state unchanged.
 
-    :param state: The current state of the agent.
+    :param states: The current states of the agent.
+    :param colors: An iterator over the agent's colors.
     :return: The same state as the input.
     """
 
-    return state
+    return states[-1], colors
 
 
 class DirectionAction(Action):
@@ -43,25 +44,31 @@ class DirectionAction(Action):
     def __init__(self, direction_rule: DirectionRule) -> None:
         self.direction_rule = direction_rule
 
-    def __call__(self, state: AgentState, colors: ColorIterator, collision: PointSet, *args) -> ActionResult:
+    def __call__(
+            self,
+            states: Sequence[AgentState],
+            colors: ColorIterator,
+            collision: PointSet,
+            *args
+    ) -> ActionResult:
         """
         Change the direction of the agent based on the direction rule.
 
-        :param state: The current state of the agent.
+        :param states: The current states of the agent.
         :param colors: An iterator over the agent's colors.
         :param collision: The set of points that are in collision with the agent.
         :return: A new state with the updated direction.
         """
 
         if len(collision) == 0:
-            new_direction = self.direction_rule(state.direction)
-            new_position = state.position.shift(direction_to_unit_vector(new_direction))
+            new_direction = self.direction_rule(states[-1].direction)
+            new_position = states[-1].position.shift(direction_to_unit_vector(new_direction))
 
             return AgentState(
                 position=new_position,
                 direction=new_direction,
                 color=next(colors),
-                charge=state.charge - 1 if state.charge > 0 else state.charge
+                charge=states[-1].charge - 1 if states[-1].charge > 0 else states[-1].charge
             ), colors
 
         return None
@@ -75,17 +82,17 @@ class OutOfGridAction(Action):
     def __init__(self, grid_size: Point) -> None:
         self.grid_size = grid_size
 
-    def __call__(self, state: AgentState, colors: ColorIterator, collision: PointSet, *args) -> ActionResult:
+    def __call__(self, states: Sequence[AgentState], colors: ColorIterator, collision: PointSet, *args) -> ActionResult:
         """
         Remove the agent from the grid.
 
-        :param state: The current state of the agent.
+        :param states: The current states of the agent.
         :param colors: An iterator over the agent's colors.
         :param collision: The set of points that are in collision with the agent.
         :return: None, indicating that the agent is removed from the grid.
         """
 
-        next_position = state.position.shift(direction_to_unit_vector(state.direction))
+        next_position = states[-1].position.shift(direction_to_unit_vector(states[-1].direction))
 
         min_x = min(pos[0] for pos in next_position)
         max_x = max(pos[0] for pos in next_position)
@@ -95,8 +102,8 @@ class OutOfGridAction(Action):
         if min_x < 0 or max_x >= self.grid_size[0] or \
                 min_y < 0 or max_y >= self.grid_size[1]:
             return AgentState(
-                position=state.position,
-                direction=state.direction,
+                position=states[-1].position,
+                direction=states[-1].direction,
                 color=next(colors),
                 charge=0  # Set charge to 0 to indicate removal
             ), colors
@@ -114,7 +121,7 @@ class CollisionDirectionAction(Action):
 
     def __call__(
             self,
-            state: AgentState,
+            states: Sequence[AgentState],
             colors: ColorIterator,
             collision: PointSet,
             collision_mapping: AgentStateMapping
@@ -122,7 +129,7 @@ class CollisionDirectionAction(Action):
         """
         Handle the collision by returning the current state unchanged.
 
-        :param state: The current state of the agent.
+        :param states: The current states of the agent.
         :param colors: An iterator over the agent's colors.
         :param collision: The set of points that are in collision with the agent.
         :param collision_mapping: The mapping between collision points and the agent's colors.
@@ -131,21 +138,21 @@ class CollisionDirectionAction(Action):
 
         if len(collision) > 0:
             axis = collision_axis(collision)
-            new_direction = self.direction_rule(state.direction, axis)
-            new_position = state.position.shift(direction_to_unit_vector(new_direction))
+            new_direction = self.direction_rule(states[-1].direction, axis)
+            new_position = states[-1].position.shift(direction_to_unit_vector(new_direction))
 
             return AgentState(
                 position=new_position,
                 direction=new_direction,
                 color=next(colors),
-                charge=state.charge - 1 if state.charge > 0 else state.charge
+                charge=states[-1].charge - 1 if states[-1].charge > 0 else states[-1].charge
             ), colors
 
         return None
 
 
 def collision_color_mapping(
-        state: AgentState,
+        states: Sequence[AgentState],
         colors: ColorIterator,
         collision: PointSet,
         collision_mapping: AgentStateMapping
@@ -153,7 +160,7 @@ def collision_color_mapping(
     """
     Handle the collision by updating the agent's colors based on the collision points.
 
-    :param state: The current state of the agent.
+    :param states: The current states of the agent.
     :param colors: An iterator over the agent's colors.
     :param collision: The set of points that are in collision with the agent.
     :param collision_mapping: The mapping between collision points and the agent's colors.
@@ -164,10 +171,10 @@ def collision_color_mapping(
         new_colors = cycle([collision_mapping[collision].color for collision in collision])
 
         return AgentState(
-            position=state.position,
-            direction=state.direction,
+            position=states[-1].position,
+            direction=states[-1].direction,
             color=next(new_colors),
-            charge=state.charge
+            charge=states[-1].charge
         ), new_colors
 
     return None
@@ -183,7 +190,7 @@ class TrappedCollisionAction(Action):
 
     def __call__(
             self,
-            state: AgentState,
+            states: Sequence[AgentState],
             colors: ColorIterator,
             collision: PointSet,
             collision_mapping: AgentStateMapping
@@ -191,7 +198,7 @@ class TrappedCollisionAction(Action):
         """
         Terminate the agent if it is trapped in a collision.
 
-        :param state: The current state of the agent.
+        :param states: The current states of the agent.
         :param colors: An iterator over the agent's colors.
         :param collision: The set of points that are in collision with the agent.
         :param collision_mapping: The mapping between collision points and the agent's colors.
@@ -199,14 +206,14 @@ class TrappedCollisionAction(Action):
         """
 
         if len(collision) > 0:
-            next_direction = self.direction_rule(state.direction)
-            next_position = state.position.shift(direction_to_unit_vector(next_direction))
+            next_direction = self.direction_rule(states[-1].direction)
+            next_position = states[-1].position.shift(direction_to_unit_vector(next_direction))
 
             next_collision = next_position & collision
             if len(next_collision) > 0:
                 return AgentState(
-                    position=state.position,
-                    direction=state.direction,
+                    position=states[-1].position,
+                    direction=states[-1].direction,
                     color=next(colors),
                     charge=0  # Set charge to 0 to indicate termination
                 ), colors
@@ -219,7 +226,7 @@ class CollisionBorderAction(Action):
 
     def __call__(
             self,
-            state: AgentState,
+            states: Sequence[AgentState],
             colors: ColorIterator,
             collision: PointSet,
             collision_mapping: AgentStateMapping,
@@ -230,16 +237,16 @@ class CollisionBorderAction(Action):
 
             return AgentState(
                 position=PointSet(collision),
-                direction=state.direction,
+                direction=states[-1].direction,
                 color=next(new_colors),
-                charge=state.charge
+                charge=states[-1].charge
             ), new_colors
 
         return None
 
 
 def backtrack_action(
-        state: AgentState,
+        states: Sequence[AgentState],
         colors: ColorIterator,
         collision: PointSet,
         collision_mapping: AgentStateMapping
@@ -247,22 +254,14 @@ def backtrack_action(
     """
     Backtrack the agent to its previous position.
 
-    :param state: The current state of the agent.
+    :param states: The current states of the agent.
     :param colors: An iterator over the agent's colors.
     :param collision: The set of points that are in collision with the agent.
     :param collision_mapping: The mapping between collision points and the agent's colors.
     :return: A new state with the position set to the previous position.
     """
 
-    if any(point in collision for point in state.position):
-        direction_vector = direction_to_unit_vector(state.direction)
-        previous_position = state.position.shift((direction_vector[0] * -1, direction_vector[1] * -1))
-
-        return AgentState(
-            position=previous_position,
-            direction=state.direction,
-            color=next(colors),
-            charge=state.charge
-        ), colors
+    if any(point in collision for point in states[-1].position):
+        return states[-2], colors
 
     return None
