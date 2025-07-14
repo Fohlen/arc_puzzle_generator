@@ -89,18 +89,18 @@ class IdentityPointSetNeighbourhood(PointSetNeighbourhood):
         return cast(PointSet, point_neighbours - point_set)
 
 
-def directional_neighbours(points: PointSet, direction: Direction, *args, **kwargs) -> PointSet:
+def directional_neighbours(point_set: PointSet, direction: Direction, *args, **kwargs) -> PointSet:
     """
     Determines the neighborhood of a point based on a direction (Berger neighborhood).
-    :param points: The point to determine the neighborhood for.
+    :param point_set: The point to determine the neighborhood for.
     :param direction: The direction to determine the neighborhood into.
     :return: A 2D array of neighborhood coordinates.
     """
 
     # NOTE: Diagonal points will validate the tip of the step
 
-    xs = set(point[0] for point in points)
-    ys = set(point[1] for point in points)
+    xs = set(point[0] for point in point_set)
+    ys = set(point[1] for point in point_set)
     y_min = min(ys)
     y_max = max(ys)
     x_min = min(xs)

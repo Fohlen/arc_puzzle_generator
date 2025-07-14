@@ -196,3 +196,7 @@ class TrappedCollisionAction(Action):
                     charge=0  # Set charge to 0 to indicate termination
                 )
         return None
+
+
+class CollisionBorderAction(Action):
+    pass
