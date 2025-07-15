@@ -40,20 +40,3 @@ def unmask(input_mask: np.ndarray) -> PointSet:
     indices = np.where(input_mask)
 
     return PointSet(list(zip(indices[0].tolist(), indices[1].tolist())))
-
-
-def mask(point_set: PointSet, grid_size: Point) -> np.ndarray:
-    """
-    Convert a set of points to a mask of booleans.
-    :param point_set:
-    :param grid_size:
-    :return:
-    """
-
-    mask_array = np.full(grid_size, False)
-
-    for x, y in point_set:
-        if 0 <= x < grid_size[0] and 0 <= y < grid_size[1]:
-            mask_array[x, y] = True
-
-    return mask_array
