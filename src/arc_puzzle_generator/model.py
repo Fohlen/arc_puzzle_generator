@@ -4,6 +4,8 @@ from typing import cast, Iterator, Iterable, Callable
 
 import numpy as np
 
+import logging
+
 from arc_puzzle_generator.agent import Agent
 from arc_puzzle_generator.geometry import PointSet
 from arc_puzzle_generator.neighbourhood import resolve_point_set_neighbourhood
@@ -81,7 +83,7 @@ class Model(Iterator[np.ndarray], Iterable[np.ndarray]):
                     # If the agent is still active after the step, update the output grid
                     if charge > 0 or charge == -1:
                         position = np.array(list(pos))
-                        print(pos, color)
+                        logging.debug("Position: %s, Color: %s", pos, color)
                         self.output_grid[position[:, 0], position[:, 1]] = color
                         self.steps.append(self.output_grid.copy())
 
