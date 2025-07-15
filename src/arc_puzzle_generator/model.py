@@ -4,10 +4,10 @@ from typing import cast, Iterator, Iterable, Callable
 
 import numpy as np
 
-from abm.agent import Agent
-from abm.geometry import PointSet
-from abm.neighbourhood import resolve_point_set_neighbourhood
-from abm.state import AgentState
+from arc_puzzle_generator.agent import Agent
+from arc_puzzle_generator.geometry import PointSet
+from arc_puzzle_generator.neighbourhood import resolve_point_set_neighbourhood
+from arc_puzzle_generator.state import AgentState
 
 
 class Model(Iterator[np.ndarray], Iterable[np.ndarray]):

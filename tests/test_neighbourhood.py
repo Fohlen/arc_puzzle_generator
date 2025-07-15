@@ -1,7 +1,7 @@
 from unittest import TestCase
 
-from abm.geometry import PointSet
-from abm.neighbourhood import von_neumann_neighbours, moore_neighbours, resolve_point_set_neighbourhood
+from arc_puzzle_generator.geometry import PointSet
+from arc_puzzle_generator.neighbourhood import von_neumann_neighbours, moore_neighbours, resolve_point_set_neighbourhood
 
 
 class NeighbourhoodTestCase(TestCase):

@@ -1,11 +1,11 @@
 from itertools import chain, cycle
 from typing import Protocol, Optional, Sequence, Callable, Iterator
 
-from abm.direction import DirectionRule
-from abm.geometry import PointSet, Point
-from abm.physics import direction_to_unit_vector, collision_axis
-from abm.selection import resolve_point_set_selectors_with_direction
-from abm.state import AgentState, AgentStateMapping, ColorIterator
+from arc_puzzle_generator.direction import DirectionRule
+from arc_puzzle_generator.geometry import PointSet, Point
+from arc_puzzle_generator.physics import direction_to_unit_vector, collision_axis
+from arc_puzzle_generator.selection import resolve_point_set_selectors_with_direction
+from arc_puzzle_generator.state import AgentState, AgentStateMapping, ColorIterator
 
 ActionResult = Optional[tuple[AgentState, ColorIterator]]
 

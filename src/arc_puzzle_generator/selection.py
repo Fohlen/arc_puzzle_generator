@@ -1,7 +1,7 @@
 from typing import Protocol
 
-from abm.geometry import Point, PointSet
-from abm.physics import Direction
+from arc_puzzle_generator.geometry import Point, PointSet
+from arc_puzzle_generator.physics import Direction
 
 
 class Selector(Protocol):

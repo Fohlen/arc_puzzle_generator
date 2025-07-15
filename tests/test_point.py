@@ -1,6 +1,6 @@
 from unittest import TestCase
 
-from abm.geometry import Point, PointSet
+from arc_puzzle_generator.geometry import Point, PointSet
 
 
 class PointTestCase(TestCase):

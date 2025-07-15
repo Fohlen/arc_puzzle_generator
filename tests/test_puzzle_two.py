@@ -2,8 +2,8 @@ import unittest
 
 import numpy as np
 
-from abm.puzzles.puzzle_two import puzzle_two
-from abm.utils.data_loader import load_puzzle
+from arc_puzzle_generator.puzzles.puzzle_two import puzzle_two
+from arc_puzzle_generator.utils.data_loader import load_puzzle
 from tests.utils import test_dir
 
 

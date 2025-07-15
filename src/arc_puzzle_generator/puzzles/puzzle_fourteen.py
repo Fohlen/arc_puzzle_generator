@@ -3,16 +3,16 @@ from typing import cast
 
 import numpy as np
 
-from abm.action import ActionNode, OutOfGridAction, CollisionFillAction, backtrack_action, Action, identity_action, \
+from arc_puzzle_generator.action import ActionNode, OutOfGridAction, CollisionFillAction, backtrack_action, Action, identity_action, \
     DirectionAction
-from abm.agent import Agent
-from abm.direction import identity_direction_rule
-from abm.geometry import unmask
-from abm.model import Model
-from abm.neighbourhood import zero_neighbours, AxisNeighbourhood
-from abm.physics import Direction
-from abm.topology import identity_topology, FixedGroupTopology
-from abm.utils.entities import find_connected_objects
+from arc_puzzle_generator.agent import Agent
+from arc_puzzle_generator.direction import identity_direction_rule
+from arc_puzzle_generator.geometry import unmask
+from arc_puzzle_generator.model import Model
+from arc_puzzle_generator.neighbourhood import zero_neighbours, AxisNeighbourhood
+from arc_puzzle_generator.physics import Direction
+from arc_puzzle_generator.topology import identity_topology, FixedGroupTopology
+from arc_puzzle_generator.utils.entities import find_connected_objects
 
 
 def puzzle_fourteen(input_grid: np.ndarray) -> Model:

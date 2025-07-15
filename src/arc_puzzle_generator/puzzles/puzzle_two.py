@@ -3,16 +3,16 @@ from math import ceil
 
 import numpy as np
 
-from abm.action import DirectionAction, ActionNode
-from abm.agent import Agent
-from abm.utils.color_sequence_iterator import ColorSequenceIterator
-from abm.geometry import PointSet
-from abm.model import Model
-from abm.neighbourhood import zero_neighbours
-from abm.physics import Direction, box_distance, relative_box_direction, starting_point
-from abm.direction import identity_direction_rule
-from abm.topology import identity_topology
-from abm.utils.entities import colour_count, find_connected_objects
+from arc_puzzle_generator.action import DirectionAction, ActionNode
+from arc_puzzle_generator.agent import Agent
+from arc_puzzle_generator.utils.color_sequence_iterator import ColorSequenceIterator
+from arc_puzzle_generator.geometry import PointSet
+from arc_puzzle_generator.model import Model
+from arc_puzzle_generator.neighbourhood import zero_neighbours
+from arc_puzzle_generator.physics import Direction, box_distance, relative_box_direction, starting_point
+from arc_puzzle_generator.direction import identity_direction_rule
+from arc_puzzle_generator.topology import identity_topology
+from arc_puzzle_generator.utils.entities import colour_count, find_connected_objects
 
 
 def puzzle_two(input_grid: np.ndarray) -> Model:

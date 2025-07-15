@@ -1,7 +1,7 @@
 from unittest import TestCase
 
-from abm.neighbourhood import moore_neighbours
-from abm.selection import up_selector, down_selector, left_selector, right_selector, resolve_point_set_selectors
+from arc_puzzle_generator.neighbourhood import moore_neighbours
+from arc_puzzle_generator.selection import up_selector, down_selector, left_selector, right_selector, resolve_point_set_selectors
 
 
 class SelectorsTestCase(TestCase):

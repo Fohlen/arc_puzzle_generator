@@ -4,15 +4,15 @@ from typing import Mapping, cast
 
 import numpy as np
 
-from abm.action import OutOfGridAction, TrappedCollisionAction, CollisionDirectionAction, DirectionAction, \
+from arc_puzzle_generator.action import OutOfGridAction, TrappedCollisionAction, CollisionDirectionAction, DirectionAction, \
     CollisionBorderAction, backtrack_action, Action, ActionNode, identity_action
-from abm.agent import Agent
-from abm.direction import identity_direction_rule, snake_direction_rule
-from abm.geometry import PointSet, unmask
-from abm.model import Model
-from abm.neighbourhood import zero_neighbours, von_neumann_neighbours
-from abm.topology import FixedGroupTopology, identity_topology
-from abm.utils.entities import colour_count, find_colors, find_connected_objects
+from arc_puzzle_generator.agent import Agent
+from arc_puzzle_generator.direction import identity_direction_rule, snake_direction_rule
+from arc_puzzle_generator.geometry import PointSet, unmask
+from arc_puzzle_generator.model import Model
+from arc_puzzle_generator.neighbourhood import zero_neighbours, von_neumann_neighbours
+from arc_puzzle_generator.topology import FixedGroupTopology, identity_topology
+from arc_puzzle_generator.utils.entities import colour_count, find_colors, find_connected_objects
 
 
 def puzzle_ten(input_grid: np.ndarray) -> Model:

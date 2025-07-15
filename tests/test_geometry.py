@@ -2,7 +2,7 @@ from unittest import TestCase
 
 import numpy as np
 
-from abm.geometry import unmask, mask
+from arc_puzzle_generator.geometry import unmask, mask
 
 
 class GeometryTestCase(TestCase):

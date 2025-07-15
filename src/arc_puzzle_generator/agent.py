@@ -1,11 +1,11 @@
 from typing import Iterator, Iterable
 
-from abm.action import ActionNode
-from abm.geometry import PointSet
-from abm.neighbourhood import Neighbourhood
-from abm.physics import Direction
-from abm.state import AgentState, AgentStateMapping
-from abm.topology import Topology
+from arc_puzzle_generator.action import ActionNode
+from arc_puzzle_generator.geometry import PointSet
+from arc_puzzle_generator.neighbourhood import Neighbourhood
+from arc_puzzle_generator.physics import Direction
+from arc_puzzle_generator.state import AgentState, AgentStateMapping
+from arc_puzzle_generator.topology import Topology
 
 
 class Agent:

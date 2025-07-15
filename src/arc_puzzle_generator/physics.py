@@ -7,7 +7,7 @@ from typing import Literal
 
 import numpy as np
 
-from abm.geometry import Point, PointSet
+from arc_puzzle_generator.geometry import Point, PointSet
 
 Axis = Literal["horizontal", "vertical", "diagonal"]
 """

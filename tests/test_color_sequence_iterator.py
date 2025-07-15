@@ -1,6 +1,6 @@
 from unittest import TestCase
 
-from abm.utils.color_sequence_iterator import ColorSequenceIterator
+from arc_puzzle_generator.utils.color_sequence_iterator import ColorSequenceIterator
 
 class ColorSequenceIteratorTestCase(TestCase):
 

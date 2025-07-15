@@ -1,7 +1,7 @@
 from typing import NamedTuple, Iterator, Mapping
 
-from abm.geometry import PointSet, Point
-from abm.physics import Direction
+from arc_puzzle_generator.geometry import PointSet, Point
+from arc_puzzle_generator.physics import Direction
 
 ColorIterator = Iterator[int]
 

@@ -1,6 +1,6 @@
 import unittest
 
-from abm.utils.data_loader import load_puzzle
+from arc_puzzle_generator.utils.data_loader import load_puzzle
 from tests.utils import test_dir
 
 
