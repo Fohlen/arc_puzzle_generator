@@ -3,14 +3,15 @@ from typing import cast
 
 import numpy as np
 
-from arc_puzzle_generator.action import OutOfGridAction, CollisionDirectionAction, DirectionAction, collision_color_mapping, Action, \
+from arc_puzzle_generator.action import OutOfGridAction, CollisionDirectionAction, DirectionAction, \
+    collision_color_mapping, Action, \
     ActionNode, identity_action
 from arc_puzzle_generator.agent import Agent
+from arc_puzzle_generator.direction import identity_direction_rule, orthogonal_direction
 from arc_puzzle_generator.geometry import PointSet
 from arc_puzzle_generator.model import Model
 from arc_puzzle_generator.neighbourhood import zero_neighbours, moore_neighbours
 from arc_puzzle_generator.physics import Direction, starting_point
-from arc_puzzle_generator.direction import identity_direction_rule, orthogonal_direction
 from arc_puzzle_generator.topology import FixedGroupTopology, identity_topology
 from arc_puzzle_generator.utils.entities import find_colors, find_connected_objects, is_l_shape
 from arc_puzzle_generator.utils.grid import make_smallest_square_from_mask

@@ -1,8 +1,8 @@
 arc_puzzle_generator
 --------------------
 
-This repository contains a puzzle generator for
-the [Abstraction and Reasoning Corpus](https://github.com/arcprize/ARC-AGI-2).
+This repository contains a general purpose agentic model framework suitable for
+the [Abstraction and Reasoning Corpus](https://github.com/arcprize/ARC-AGI-2) puzzles.
 
 [![CI](https://github.com/Fohlen/arc_puzzle_generator/actions/workflows/ci.yml/badge.svg)](https://github.com/Fohlen/arc_puzzle_generator/actions/workflows/ci.yml)
 
@@ -14,28 +14,27 @@ One can install the package using pip:
 pip install -e .
 ```
 
-This will give you access to individual generators and the functions that power them, for instance:
+This will give you access to individual puzzles and the functions that power them, for instance:
 
 ```python
 from pathlib import Path
-from abm.utils.data_loader import load_puzzle
-from arc_puzzle_generator.generators import PuzzleTwoPuzzleGenerator
+from arc_puzzle_generator.utils.data_loader import load_puzzle
+from arc_puzzle_generator.puzzles import puzzle_two
 
 file_path = Path("3e6067c3.json")
 puzzle = load_puzzle(file_path)
 
-generator = PuzzleTwoPuzzleGenerator(puzzle.train[0].input)
-generator.setup()
-*_, output_grid = generator
+model = puzzle_two(puzzle.train[0].input)
+*_, output_grid = model
 ```
 
-The generator creates an `Iterable[np.ndarray]` which will yield one output grid for every agentic step taken on the
+The model creates an `Iterable[np.ndarray]` which will yield one output grid for every agentic step taken on the
 input grid.
 The last state corresponds to the final solution.
 
 ## Visualization
 
-This package comes with a simple visualization tool that can be used to visualize the output of the generators.
+This package comes with a simple visualization tool that can be used to visualize the output of the models.
 You can install it by using `pip` and a package manager of your choice:
 
 ```shell
@@ -46,7 +45,7 @@ pip install -e ".[vis]"
 Once dependencies for `tkinter` are satisfied, you can run the visualization tool by running:
 
 ```shell
-python3 -m arc_puzzle_generator.visualization PuzzleTwoPuzzleGenerator 142ca369
+python3 -m arc_puzzle_generator.visualization puzzle_two 3e6067c3
 ```
 
 The `--help` flag will give you more information about the tool.
