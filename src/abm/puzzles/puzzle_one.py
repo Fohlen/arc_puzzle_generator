@@ -2,7 +2,7 @@ from collections import OrderedDict
 
 import numpy as np
 
-from abm.action import DirectionAction
+from abm.action import DirectionAction, ActionNode
 from abm.agent import Agent
 from abm.utils.color_sequence_iterator import ColorSequenceIterator
 from abm.geometry import PointSet
@@ -63,9 +63,7 @@ def puzzle_one(input_grid: np.ndarray) -> Model:
             label="puzzle_one_agent",
             topology=identity_topology,
             neighbourhood=zero_neighbours,
-            actions=[
-                DirectionAction(identity_direction_rule),
-            ],
+            node=ActionNode(DirectionAction(identity_direction_rule)),
             charge=charge,
             colors=ColorSequenceIterator(color_sequence, background_color),
         ) for row, color_sequence in color_sequences]

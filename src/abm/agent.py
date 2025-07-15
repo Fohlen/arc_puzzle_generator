@@ -1,6 +1,6 @@
-from typing import Iterator, Iterable, Mapping
+from typing import Iterator, Iterable
 
-from abm.action import Action
+from abm.action import ActionNode
 from abm.geometry import PointSet
 from abm.neighbourhood import Neighbourhood
 from abm.physics import Direction
@@ -16,7 +16,7 @@ class Agent:
             label: str,
             topology: Topology,
             neighbourhood: Neighbourhood,
-            actions: Iterable[Action],
+            node: ActionNode,
             colors: Iterator[int],
             charge: int = 0,
     ):
@@ -25,7 +25,7 @@ class Agent:
         self.label = label
         self.topology = topology
         self.neighbourhood = neighbourhood
-        self.actions = actions
+        self.node = node
         self.colors = colors
         self.charge = charge
         self.color = next(colors)
@@ -49,10 +49,15 @@ class Agent:
             collision_mapping: AgentStateMapping,
     ) -> Iterable[AgentState]:
         states = [self.state]
-        action_iter = iter(self.actions)
 
-        for action in action_iter:
-            result = action(states, self.colors, collision, collision_mapping)
+        if self.node is None:
+            return []
+
+        stack = [self.node]
+
+        while stack:
+            curr = stack.pop()
+            result = curr.action(states, self.colors, collision, collision_mapping)
 
             if result is not None:
                 state, colors = result
@@ -62,7 +67,11 @@ class Agent:
                 self.color = state.color
                 self.charge = state.charge
                 self.colors = colors
-
                 states.append(state)
+
+                if curr.next_node is not None:
+                    stack.append(curr.next_node)
+            elif curr.alternative_node is not None:
+                stack.append(curr.alternative_node)
 
         return states[:-1]

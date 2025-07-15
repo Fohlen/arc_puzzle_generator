@@ -3,7 +3,7 @@ from math import ceil
 
 import numpy as np
 
-from abm.action import DirectionAction
+from abm.action import DirectionAction, ActionNode
 from abm.agent import Agent
 from abm.utils.color_sequence_iterator import ColorSequenceIterator
 from abm.geometry import PointSet
@@ -108,9 +108,7 @@ def puzzle_two(input_grid: np.ndarray) -> Model:
                 label="puzzle_two_agent",
                 topology=identity_topology,
                 neighbourhood=zero_neighbours,
-                actions=[
-                    DirectionAction(identity_direction_rule)
-                ],
+                node=ActionNode(DirectionAction(identity_direction_rule)),
                 charge=distance,
                 colors=ColorSequenceIterator(
                     [(box_color, distance), (boxes[box1][1], 1)],

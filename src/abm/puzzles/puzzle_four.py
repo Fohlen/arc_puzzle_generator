@@ -3,7 +3,8 @@ from typing import cast
 
 import numpy as np
 
-from abm.action import OutOfGridAction, CollisionDirectionAction, DirectionAction, collision_color_mapping, Action
+from abm.action import OutOfGridAction, CollisionDirectionAction, DirectionAction, collision_color_mapping, Action, \
+    ActionNode, identity_action
 from abm.agent import Agent
 from abm.geometry import PointSet
 from abm.model import Model
@@ -47,18 +48,24 @@ def puzzle_four(input_grid: np.ndarray) -> Model:
         label="bbox",
         topology=identity_topology,
         neighbourhood=zero_neighbours,
-        actions=[],
+        node=ActionNode(identity_action),
         colors=cycle([target_color]),
         charge=0
     ) for target_color, bbox in blocks]
 
     topology = FixedGroupTopology(group={"bbox"})
-    actions = [
+    node = ActionNode(
         OutOfGridAction(grid_size=(input_grid.shape[0], input_grid.shape[1])),
-        cast(Action, collision_color_mapping),
-        CollisionDirectionAction(orthogonal_direction),
-        DirectionAction(identity_direction_rule)
-    ]
+        alternative_node=ActionNode(
+            cast(Action, collision_color_mapping),
+            next_node=ActionNode(
+                CollisionDirectionAction(orthogonal_direction),
+            ),
+            alternative_node=ActionNode(
+                DirectionAction(identity_direction_rule),
+            )
+        )
+    )
 
     agents += [Agent(
         position=PointSet.from_numpy(
@@ -72,7 +79,7 @@ def puzzle_four(input_grid: np.ndarray) -> Model:
         label="puzzle_four_agent",
         topology=topology,
         neighbourhood=moore_neighbours,
-        actions=actions,
+        node=node,
         colors=cycle([color]),
         charge=-1,
     ) for color, bbox, direction in l_shapes]

@@ -1,5 +1,5 @@
 from itertools import chain, cycle
-from typing import Protocol, Optional, Sequence
+from typing import Protocol, Optional, Sequence, Callable, Iterator
 
 from abm.direction import DirectionRule
 from abm.geometry import PointSet, Point
@@ -23,6 +23,29 @@ class Action(Protocol):
             collision_map: AgentStateMapping
     ) -> ActionResult:
         pass
+
+
+class ActionNode:
+    """
+    A node in the action chain that contains an action and optional next and alternative nodes.
+    """
+
+    def __init__(
+            self,
+            action: Action,
+            next_node: Optional['ActionNode'] = None,
+            alternative_node: Optional['ActionNode'] = None
+    ) -> None:
+        """
+        Initialize an action node with an action and an optional next node.
+
+        :param action: The action to be performed.
+        :param next_node: The next action node in the chain.
+        :param alternative_node: The alternative next action node in the chain.
+        """
+        self.action = action
+        self.next_node = next_node
+        self.alternative_node = alternative_node
 
 
 def identity_action(states: Sequence[AgentState], colors: ColorIterator, *args) -> ActionResult:
