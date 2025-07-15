@@ -1,12 +1,11 @@
 import unittest
-from unittest import TestCase
 
 import numpy as np
 
 from abm.geometry import PointSet
 from abm.physics import collision_axis
-from arc_puzzle_generator.physics import direction_to_unit_vector, contained, box_distance, relative_box_direction, \
-    starting_point, bounding_box_to_points
+from arc_puzzle_generator.physics import direction_to_unit_vector, box_distance, relative_box_direction, \
+    starting_point
 
 
 class PhysicsTestCase(unittest.TestCase):
@@ -24,33 +23,6 @@ class PhysicsTestCase(unittest.TestCase):
 
         bottom_right = direction_to_unit_vector("bottom_right") + arr
         self.assertTrue(np.array_equal(bottom_right, np.array([5, 5])))
-
-    def test_contained(self):
-        points = np.array([
-            [0, 0],
-            [1, 1],
-            [10, 0]
-        ])
-
-        box = np.array([[
-            [5, 0], [0, 0],
-            [0, 5], [5, 5]
-        ]])
-
-        collisions = contained(points, box)
-        self.assertTrue(np.any(collisions))
-        self.assertFalse(np.all(collisions))
-
-    def test_not_contained(self):
-        point = np.array([[15, 20]])
-
-        box = np.array([[
-            [5, 0], [0, 0],
-            [0, 5], [5, 5]
-        ]])
-
-        collisions = contained(point, box)
-        self.assertFalse(np.any(collisions))
 
     def test_box_distance(self):
         point_a = np.array([[5, 3], [5, 3], [5, 3], [5, 3]])
@@ -133,31 +105,6 @@ class PhysicsTestCase(unittest.TestCase):
         self.assertTrue(np.array_equal(
             starting_point(point_a, "top_left", 2),
             step_f
-        ))
-
-    def test_bounding_box_to_points(self):
-        points_a = np.array([[5, 3], [5, 3], [5, 3], [5, 3]])
-        box_points_a = np.array([[5, 3]])
-
-        self.assertTrue(np.array_equal(
-            box_points_a,
-            bounding_box_to_points(points_a)
-        ))
-
-        points_b = np.array([[5, 3], [5, 3], [5, 4], [5, 4]])
-        box_points_b = np.array([[5, 3], [5, 4]])
-
-        self.assertTrue(np.array_equal(
-            box_points_b,
-            bounding_box_to_points(points_b)
-        ))
-
-        points_c = np.array([[5, 3], [4, 3], [4, 4], [5, 4]])
-        box_points_c = np.array(sorted([[5, 3], [4, 3], [4, 4], [5, 4]]))
-
-        self.assertTrue(np.array_equal(
-            box_points_c,
-            bounding_box_to_points(points_c)
         ))
 
     def test_collision_axis(self):
