@@ -2,28 +2,10 @@
 The physics module contains world *physics*, for instance, calculating direction vectors and other physical properties.
 """
 import math
-from typing import Literal, Protocol
 
 import numpy as np
 
-Axis = Literal["horizontal", "vertical", "diagonal"]
-"""
-The axis of a line.
-"""
-
-Direction = Literal["left", "right", "up", "down", "top_left", "top_right", "bottom_left", "bottom_right"]
-"""
-The possible directions we can go in our universe.
-"""
-
-
-class DirectionRule(Protocol):
-    """
-    A direction rule determines the future direction of an agent based on the current direction and additional parameters.
-    """
-
-    def __call__(self, direction: Direction, *args, **kwargs) -> Direction:
-        pass
+from abm.physics import Direction
 
 
 def direction_to_unit_vector(direction: Direction):
@@ -117,43 +99,6 @@ def relative_box_direction(box1: np.ndarray, box2: np.ndarray) -> Direction:
             raise ValueError("Unknown direction")
 
 
-def contained(point: np.ndarray, bbox: np.ndarray) -> np.ndarray:
-    """
-    Check if any of the points is contained in any of the bounding boxes.
-    :param point: The points to check.
-    :param bbox: The bounding boxes to check.
-    :return: A numpy array of booleans indicating whether the points are contained in the bounding boxes.
-    """
-
-    indexes = np.zeros(point.shape[0], dtype=bool)
-
-    for index, p in enumerate(point):
-        for box in bbox:
-            if box[1][0] <= p[0] <= box[3][0] and box[0][1] <= p[1] <= box[2][1]:
-                indexes[index] = True
-                break
-
-    return indexes
-
-
-def line_axis(box: np.ndarray) -> Axis:
-    """
-    Determines the axis of the line between two N.
-    :param box: The box to determine the axis for.
-    :return: The determined axis.
-    """
-
-    xs = np.unique(box[:, 0])
-    ys = np.unique(box[:, 1])
-
-    if len(xs) == 1 and np.all(xs == box[:, 0]):
-        return "horizontal"
-    elif len(ys) == 1 and np.all(ys == box[:, 1]):
-        return "vertical"
-    else:
-        return "diagonal"
-
-
 def starting_point(
         bounding_box: np.ndarray,
         direction: Direction,
@@ -195,17 +140,3 @@ def starting_point(
 
     raise ValueError("Unknown direction {}".format(direction))
 
-
-def bounding_box_to_points(bounding_box: np.ndarray) -> np.ndarray:
-    """
-    Converts a bounding box to points assuming rectangular bounding box.
-    :param bounding_box: The bounding box to convert.
-    :return: The points assuming rectangular bounding box.
-    """
-
-    points = []
-    for x in range(bounding_box[2, 0], bounding_box[0, 0] + 1):
-        for y in range(bounding_box[0, 1], bounding_box[3, 1] + 1):
-            points.append((x, y))
-
-    return np.array(sorted(points))

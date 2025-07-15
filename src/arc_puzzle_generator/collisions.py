@@ -18,47 +18,6 @@ class NeighbourhoodRule(Protocol):
         pass
 
 
-def moore_neighbourhood(point: np.ndarray, *arg, **kwargs) -> np.ndarray:
-    """
-    Determines the neighborhood of a point using the Moore neighborhood.
-    :param point: A point to determine the neighborhood for.
-    :return: The moore neighborhood of the point.
-    """
-
-    if point.ndim != 1:
-        return np.concat([moore_neighbourhood(p) for p in point])
-
-    x, y = point
-
-    return np.array([
-        (x - 1, y - 1), (x - 1, y), (x - 1, y + 1),
-        (x, y - 1), (x, y + 1),
-        (x + 1, y - 1), (x + 1, y), (x + 1, y + 1)
-    ])
-
-
-class AxisNeighbourHood(NeighbourhoodRule):
-    def __init__(self, grid_size: tuple[int, int]) -> None:
-        self.grid_size = grid_size
-
-    def __call__(self, point: np.ndarray, direction: Direction, *args, **kwargs) -> np.ndarray:
-        points = set(map(tuple, point.tolist()))
-        neighbours = set()
-
-        if direction in ["up", "down"]:
-            xs = point[:, 0].tolist()
-
-            for x in xs:
-                neighbours.update([(x, i) for i in range(0, self.grid_size[0])])
-        else:
-            ys = point[:, 1].tolist()
-
-            for y in ys:
-                neighbours.update([(i, y) for i in range(0, self.grid_size[1])])
-
-        return np.array(sorted(neighbours - points))
-
-
 CollisionResult = tuple[bool, Iterator[int], Direction, Optional[np.ndarray]]
 """
 A tuple containing:
