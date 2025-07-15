@@ -1,9 +1,10 @@
 from itertools import chain, cycle
-from typing import Protocol, Optional, Iterable, Sequence
+from typing import Protocol, Optional, Sequence
 
+from abm.direction import DirectionRule
 from abm.geometry import PointSet, Point
 from abm.physics import direction_to_unit_vector, collision_axis
-from abm.direction import DirectionRule
+from abm.selection import resolve_point_set_selectors_with_direction
 from abm.state import AgentState, AgentStateMapping, ColorIterator
 
 ActionResult = Optional[tuple[AgentState, ColorIterator]]
@@ -41,8 +42,13 @@ class DirectionAction(Action):
     An action that changes the direction of an agent based on the given direction rule.
     """
 
-    def __init__(self, direction_rule: DirectionRule) -> None:
+    def __init__(
+            self,
+            direction_rule: DirectionRule,
+            select_direction: bool = False,
+    ) -> None:
         self.direction_rule = direction_rule
+        self.select_direction = select_direction
 
     def __call__(
             self,
@@ -60,7 +66,11 @@ class DirectionAction(Action):
         :return: A new state with the updated direction.
         """
 
-        if len(collision) == 0:
+        sub_collision = resolve_point_set_selectors_with_direction(
+            states[-1].position, collision, states[-1].direction
+        ) if self.select_direction else collision
+
+        if len(sub_collision) == 0:
             new_direction = self.direction_rule(states[-1].direction)
             new_position = states[-1].position.shift(direction_to_unit_vector(new_direction))
 
@@ -116,8 +126,13 @@ class CollisionDirectionAction(Action):
     An action that handles collisions by applying a direction rule on collision.
     """
 
-    def __init__(self, direction_rule: DirectionRule) -> None:
+    def __init__(
+            self,
+            direction_rule: DirectionRule,
+            select_direction: bool = False,
+    ) -> None:
         self.direction_rule = direction_rule
+        self.select_direction = select_direction
 
     def __call__(
             self,
@@ -136,7 +151,11 @@ class CollisionDirectionAction(Action):
         :return: The same state as the input.
         """
 
-        if len(collision) > 0:
+        sub_collision = resolve_point_set_selectors_with_direction(
+            states[-1].position, collision, states[-1].direction
+        ) if self.select_direction else collision
+
+        if len(sub_collision) > 0:
             axis = collision_axis(collision)
             new_direction = self.direction_rule(states[-1].direction, axis)
             new_position = states[-1].position.shift(direction_to_unit_vector(new_direction))
@@ -221,8 +240,15 @@ class TrappedCollisionAction(Action):
 
 
 class CollisionBorderAction(Action):
-    def __init__(self, border_color: int) -> None:
+    def __init__(
+            self,
+            border_color: int,
+            direction_rule: Optional[DirectionRule] = None,
+            select_direction: bool = False,
+    ) -> None:
         self.border_color = border_color
+        self.direction_rule = direction_rule
+        self.select_direction = select_direction
 
     def __call__(
             self,
@@ -231,12 +257,16 @@ class CollisionBorderAction(Action):
             collision: PointSet,
             collision_mapping: AgentStateMapping,
     ) -> ActionResult:
-        if len(collision) == 1:
+        sub_collision = resolve_point_set_selectors_with_direction(
+            states[-1].position, collision, states[-1].direction
+        ) if self.direction_rule is not None and self.select_direction else collision
+
+        if len(sub_collision) == 1:
             # If the agent collides with the border, change its color to the border color
             new_colors = chain([self.border_color], colors)
 
             return AgentState(
-                position=PointSet(collision),
+                position=PointSet(sub_collision),
                 direction=states[-1].direction,
                 color=next(new_colors),
                 charge=states[-1].charge
