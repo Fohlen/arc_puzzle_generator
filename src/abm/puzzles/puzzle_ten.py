@@ -63,7 +63,7 @@ def puzzle_ten(input_grid: np.ndarray) -> Model:
         OutOfGridAction(grid_size=(input_grid.shape[0], input_grid.shape[1])),
         CollisionBorderAction(border_color=border_color, direction_rule=identity_direction_rule, select_direction=True),
         cast(Action, backtrack_action),
-        TrappedCollisionAction(direction_rule=snake_direction_rule),
+        TrappedCollisionAction(direction_rule=snake_direction_rule, select_direction=True),
         CollisionDirectionAction(direction_rule=snake_direction_rule, select_direction=True),
         DirectionAction(direction_rule=identity_direction_rule, select_direction=True),
     ]

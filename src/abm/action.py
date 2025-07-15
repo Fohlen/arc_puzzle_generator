@@ -156,7 +156,7 @@ class CollisionDirectionAction(Action):
         ) if self.select_direction else collision
 
         if len(sub_collision) > 0:
-            axis = collision_axis(collision)
+            axis = collision_axis(sub_collision)
             new_direction = self.direction_rule(states[-1].direction, axis)
             new_position = states[-1].position.shift(direction_to_unit_vector(new_direction))
 
@@ -204,8 +204,13 @@ class TrappedCollisionAction(Action):
     An action that terminates the agent if it is trapped in a collision.
     """
 
-    def __init__(self, direction_rule: DirectionRule) -> None:
+    def __init__(
+            self,
+            direction_rule: DirectionRule,
+            select_direction: bool = False
+    ) -> None:
         self.direction_rule = direction_rule
+        self.select_direction = select_direction
 
     def __call__(
             self,
@@ -224,11 +229,15 @@ class TrappedCollisionAction(Action):
         :return: Terminates the agent at the current state if trapped, otherwise returns None.
         """
 
-        if len(collision) > 0:
+        sub_collision = resolve_point_set_selectors_with_direction(
+            states[-1].position, collision, states[-1].direction
+        ) if self.select_direction else collision
+
+        if len(sub_collision) > 0:
             next_direction = self.direction_rule(states[-1].direction)
             next_position = states[-1].position.shift(direction_to_unit_vector(next_direction))
 
-            next_collision = next_position & collision
+            next_collision = next_position & sub_collision
             if len(next_collision) > 0:
                 return AgentState(
                     position=states[-1].position,
