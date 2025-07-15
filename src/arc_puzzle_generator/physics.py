@@ -8,7 +8,7 @@ import numpy as np
 from abm.physics import Direction
 
 
-def direction_to_unit_vector(direction: Direction):
+def direction_to_unit_vector(direction: Direction) -> np.ndarray:
     """
     Returns the unit vector corresponding to the given direction.
     :param direction: The direction to convert.

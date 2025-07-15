@@ -48,7 +48,7 @@ def puzzle_four(input_grid: np.ndarray) -> Model:
         label="bbox",
         topology=identity_topology,
         neighbourhood=zero_neighbours,
-        node=ActionNode(identity_action),
+        node=ActionNode(cast(Action, identity_action)),
         colors=cycle([target_color]),
         charge=0
     ) for target_color, bbox in blocks]

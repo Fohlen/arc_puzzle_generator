@@ -59,7 +59,7 @@ def puzzle_ten(input_grid: np.ndarray) -> Model:
         label="foreground",
         topology=identity_topology,
         neighbourhood=zero_neighbours,
-        node=ActionNode(identity_action),
+        node=ActionNode(cast(Action, identity_action)),
         colors=cycle([outside_color]),
         charge=0,
     )]
