@@ -297,15 +297,17 @@ class CollisionBorderAction(Action):
         ) if self.direction_rule is not None and self.select_direction else collision
 
         if len(sub_collision) == 1:
-            # If the agent collides with the border, change its color to the border color
-            new_colors = chain([self.border_color], colors)
+            collision = next(iter(sub_collision))
+            if not collision_mapping[collision].color == self.border_color:
+                # If the agent collides with the border, change its color to the border color
+                new_colors = chain([self.border_color], colors)
 
-            return AgentState(
-                position=PointSet(sub_collision),
-                direction=states[-1].direction,
-                color=next(new_colors),
-                charge=states[-1].charge
-            ), new_colors
+                return AgentState(
+                    position=PointSet(sub_collision),
+                    direction=states[-1].direction,
+                    color=next(new_colors),
+                    charge=states[-1].charge
+                ), new_colors
 
         return None
 

@@ -5,7 +5,7 @@ from typing import Mapping, cast
 import numpy as np
 
 from abm.action import OutOfGridAction, TrappedCollisionAction, CollisionDirectionAction, DirectionAction, \
-    CollisionBorderAction, backtrack_action, Action
+    CollisionBorderAction, backtrack_action, Action, ActionNode, identity_action
 from abm.agent import Agent
 from abm.direction import identity_direction_rule, snake_direction_rule
 from abm.geometry import PointSet, unmask
@@ -53,7 +53,7 @@ def puzzle_ten(input_grid: np.ndarray) -> Model:
         label="foreground",
         topology=identity_topology,
         neighbourhood=zero_neighbours,
-        actions=[],
+        node=ActionNode(identity_action),
         colors=cycle([outside_color]),
         charge=0,
     )]
@@ -67,13 +67,36 @@ def puzzle_ten(input_grid: np.ndarray) -> Model:
         DirectionAction(direction_rule=identity_direction_rule, select_direction=True),
     ]
 
+    node = ActionNode(
+        OutOfGridAction(grid_size=(input_grid.shape[0], input_grid.shape[1])),
+        alternative_node=ActionNode(
+            CollisionBorderAction(
+                border_color=border_color,
+                direction_rule=snake_direction_rule,
+                select_direction=True
+            ),
+            next_node=ActionNode(
+                cast(Action, backtrack_action),
+            ),
+            alternative_node=ActionNode(
+                TrappedCollisionAction(direction_rule=snake_direction_rule, select_direction=True),
+                alternative_node=ActionNode(
+                    CollisionDirectionAction(direction_rule=snake_direction_rule, select_direction=True),
+                    alternative_node=ActionNode(
+                        DirectionAction(direction_rule=identity_direction_rule, select_direction=True)
+                    )
+                )
+            )
+        )
+    )
+
     agents += [Agent(
         position=PointSet([(row, 0)]),
         direction="right",
         label="snake",
         topology=topology,
         neighbourhood=von_neumann_neighbours,
-        actions=actions,
+        node=node,
         colors=cycle(color_sequence),
         charge=-1,
     ) for row in start_rows]
