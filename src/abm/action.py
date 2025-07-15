@@ -236,8 +236,11 @@ class TrappedCollisionAction(Action):
         if len(sub_collision) > 0:
             next_direction = self.direction_rule(states[-1].direction)
             next_position = states[-1].position.shift(direction_to_unit_vector(next_direction))
+            next_sub_collision = resolve_point_set_selectors_with_direction(
+                states[-1].position, collision, next_direction
+            ) if self.select_direction else collision
 
-            next_collision = next_position & sub_collision
+            next_collision = next_position & next_sub_collision
             if len(next_collision) > 0:
                 return AgentState(
                     position=states[-1].position,
