@@ -17,7 +17,7 @@ class PointTestCase(TestCase):
         self.assertNotIn((5, 6), point_set)
         self.assertEqual(2, len(point_set))
 
-        updated = point_set + (1, 1)
+        updated = point_set.shift((1, 1))
         self.assertIn((2, 3), updated)
         self.assertIn((4, 5), updated)
         self.assertNotIn((5, 6), updated)

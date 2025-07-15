@@ -19,9 +19,9 @@ from arc_puzzle_generator.physics import starting_point
 
 def puzzle_four(input_grid: np.ndarray) -> Model:
     """
-
-    :param input_grid:
-    :return:
+    The laser shooter puzzle.
+    :param input_grid: The input grid for the puzzle.
+    :return: A Model object containing the simulation setup for the laser shooter puzzle.
     """
 
     colors = find_colors(input_grid, background=0)

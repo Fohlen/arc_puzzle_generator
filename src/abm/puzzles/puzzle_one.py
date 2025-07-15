@@ -15,6 +15,11 @@ from abm.utils.entities import colour_count, find_connected_objects
 
 
 def puzzle_one(input_grid: np.ndarray) -> Model:
+    """
+    The color iteration puzzle.
+    :param input_grid: The input grid for the puzzle.
+    :return: A Model object containing the simulation setup for the color iteration puzzle.
+    """
     output_grid = input_grid.copy()
     sorted_colors = colour_count(input_grid)
     color_sequences: list[tuple[int, list[tuple[int, int]]]] = []  # [(row, [color, count]]

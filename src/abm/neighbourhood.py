@@ -2,7 +2,7 @@ from itertools import chain
 from typing import Protocol, cast
 
 from abm.geometry import Point, PointSet
-from abm.physics import Direction
+from abm.physics import Axis
 
 
 class Neighbourhood(Protocol):
@@ -58,6 +58,30 @@ def zero_neighbours(point: Point) -> PointSet:
     :return: An empty PointSet.
     """
     return PointSet()
+
+
+class AxisNeighbourhood(Neighbourhood):
+    """
+    A neighbourhood that returns all points in the same row and column as the given point.
+    :param grid_size: The size of the grid as a tuple (rows, columns).
+    :return: A set of points in the same row and column as the given point.
+    """
+
+    def __init__(self, grid_size: tuple[int, int], axis: Axis) -> None:
+        self.grid_size = grid_size
+        self.axis = axis
+
+    def __call__(self, point: Point, *args, **kwargs) -> PointSet:
+        neighbours = set()
+
+        x, y = point
+
+        if self.axis == "horizontal":
+            neighbours.update([(i, y) for i in range(0, self.grid_size[0])])
+        elif self.axis == "vertical":
+            neighbours.update([(x, i) for i in range(0, self.grid_size[0])])
+
+        return PointSet(neighbours)
 
 
 def resolve_point_set_neighbourhood(point_set: PointSet, neighbourhood: Neighbourhood) -> PointSet:

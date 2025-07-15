@@ -18,10 +18,10 @@ from arc_puzzle_generator.physics import relative_box_direction, box_distance, s
 
 def puzzle_two(input_grid: np.ndarray) -> Model:
     """
-    Solve the second puzzle by creating a simulation based on the input grid.
+    The rectangle iteration order puzzle.
 
     :param input_grid: The input grid for the puzzle.
-    :return: A Simulation object containing the model and agents.
+    :return: A Model object containing the simulation setup for the rectangle iteration order puzzle.
     """
 
     boxes: list[tuple[int, int, np.ndarray]] = []  # [(index, target_color, bounding box)]

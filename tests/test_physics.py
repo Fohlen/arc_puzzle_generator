@@ -162,7 +162,6 @@ class PhysicsTestCase(unittest.TestCase):
 
     def test_collision_axis(self):
         agent = PointSet({(0, 0)})
-        collision = PointSet({(0, 1)})
-        orientation = collision_axis(agent, collision)
+        orientation = collision_axis(agent)
 
         self.assertEqual("horizontal", orientation)

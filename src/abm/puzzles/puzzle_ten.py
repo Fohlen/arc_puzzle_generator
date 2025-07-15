@@ -16,6 +16,12 @@ from abm.utils.entities import colour_count, find_colors, find_connected_objects
 
 
 def puzzle_ten(input_grid: np.ndarray) -> Model:
+    """
+    Puzzle 10: The Snake
+    :param input_grid: The input grid for the puzzle.
+    :return: A Model object containing the simulation setup for the snake puzzle.
+    """
+
     start_rows: list[int] = []
     start_col = input_grid[:, 0]
     start_col_colors = colour_count(start_col)
