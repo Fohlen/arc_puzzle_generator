@@ -9,11 +9,10 @@ from abm.utils.color_sequence_iterator import ColorSequenceIterator
 from abm.geometry import PointSet
 from abm.model import Model
 from abm.neighbourhood import zero_neighbours
-from abm.physics import Direction
+from abm.physics import Direction, box_distance, relative_box_direction, starting_point
 from abm.direction import identity_direction_rule
 from abm.topology import identity_topology
 from abm.utils.entities import colour_count, find_connected_objects
-from arc_puzzle_generator.physics import relative_box_direction, box_distance, starting_point
 
 
 def puzzle_two(input_grid: np.ndarray) -> Model:

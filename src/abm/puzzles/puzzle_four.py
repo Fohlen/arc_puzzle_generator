@@ -9,12 +9,11 @@ from abm.agent import Agent
 from abm.geometry import PointSet
 from abm.model import Model
 from abm.neighbourhood import zero_neighbours, moore_neighbours
-from abm.physics import Direction
+from abm.physics import Direction, starting_point
 from abm.direction import identity_direction_rule, orthogonal_direction
 from abm.topology import FixedGroupTopology, identity_topology
 from abm.utils.entities import find_colors, find_connected_objects, is_l_shape
 from abm.utils.grid import make_smallest_square_from_mask
-from arc_puzzle_generator.physics import starting_point
 
 
 def puzzle_four(input_grid: np.ndarray) -> Model:
