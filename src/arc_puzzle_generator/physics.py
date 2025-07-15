@@ -1,10 +1,13 @@
 """
 The physics module contains world *physics*, for instance, calculating direction vectors and other physical properties.
 """
+
 import math
-from typing import Literal, Protocol
+from typing import Literal
 
 import numpy as np
+
+from arc_puzzle_generator.geometry import Point, PointSet
 
 Axis = Literal["horizontal", "vertical", "diagonal"]
 """
@@ -17,16 +20,56 @@ The possible directions we can go in our universe.
 """
 
 
-class DirectionRule(Protocol):
+def direction_to_unit_vector(direction: Direction) -> Point:
     """
-    A direction rule determines the future direction of an agent based on the current direction and additional parameters.
+    Returns the unit vector corresponding to the given direction.
+    :param direction: The direction to convert.
+    :return: A unit vector for the given direction.
     """
 
-    def __call__(self, direction: Direction, *args, **kwargs) -> Direction:
-        pass
+    match direction:
+        case "left":
+            return 0, -1
+        case "right":
+            return 0, 1
+        case "up":
+            return -1, 0
+        case "down":
+            return 1, 0
+        case "bottom_left":
+            return 1, -1
+        case "top_left":
+            return -1, -1
+        case "top_right":
+            return -1, 1
+        case "bottom_right":
+            return 1, 1
+
+    raise ValueError("Unknown direction {}".format(direction))
 
 
-def direction_to_unit_vector(direction: Direction):
+def collision_axis(collision_position: PointSet) -> Axis:
+    """
+    Determines the axis of collision between an agent and a collision point.
+    :param agent_position: The position of the agent.
+    :param collision_position: The collision position.
+    :return: A string representing the axis of collision.
+    """
+
+    xs = set(a[0] for a in collision_position)
+    ys = set(a[1] for a in collision_position)
+
+    if len(xs) == len(ys):
+        return "horizontal"
+    elif len(xs) == 1:
+        return "horizontal"
+    elif len(ys) == 1:
+        return "vertical"
+    else:
+        raise ValueError("Collision point cannot be the same as agent position.")
+
+
+def direction_to_numpy_unit_vector(direction: Direction) -> np.ndarray:
     """
     Returns the unit vector corresponding to the given direction.
     :param direction: The direction to convert.
@@ -117,43 +160,6 @@ def relative_box_direction(box1: np.ndarray, box2: np.ndarray) -> Direction:
             raise ValueError("Unknown direction")
 
 
-def contained(point: np.ndarray, bbox: np.ndarray) -> np.ndarray:
-    """
-    Check if any of the points is contained in any of the bounding boxes.
-    :param point: The points to check.
-    :param bbox: The bounding boxes to check.
-    :return: A numpy array of booleans indicating whether the points are contained in the bounding boxes.
-    """
-
-    indexes = np.zeros(point.shape[0], dtype=bool)
-
-    for index, p in enumerate(point):
-        for box in bbox:
-            if box[1][0] <= p[0] <= box[3][0] and box[0][1] <= p[1] <= box[2][1]:
-                indexes[index] = True
-                break
-
-    return indexes
-
-
-def line_axis(box: np.ndarray) -> Axis:
-    """
-    Determines the axis of the line between two N.
-    :param box: The box to determine the axis for.
-    :return: The determined axis.
-    """
-
-    xs = np.unique(box[:, 0])
-    ys = np.unique(box[:, 1])
-
-    if len(xs) == 1 and np.all(xs == box[:, 0]):
-        return "horizontal"
-    elif len(ys) == 1 and np.all(ys == box[:, 1]):
-        return "vertical"
-    else:
-        return "diagonal"
-
-
 def starting_point(
         bounding_box: np.ndarray,
         direction: Direction,
@@ -182,30 +188,17 @@ def starting_point(
             return np.array([start_pos + [0, i] for i in range(point_width)])
         case "bottom_left":
             start_pos = bounding_box[0]
-            return np.array([start_pos + (direction_to_unit_vector("bottom_right") * i) for i in range(point_width)])
+            return np.array(
+                [start_pos + (direction_to_numpy_unit_vector("bottom_right") * i) for i in range(point_width)])
         case "top_left":
             start_pos = bounding_box[1]
-            return np.array([start_pos + (direction_to_unit_vector("top_right") * i) for i in range(point_width)])
+            return np.array([start_pos + (direction_to_numpy_unit_vector("top_right") * i) for i in range(point_width)])
         case "top_right":
             start_pos = bounding_box[2]
-            return np.array([start_pos + (direction_to_unit_vector("bottom_right") * i) for i in range(point_width)])
+            return np.array(
+                [start_pos + (direction_to_numpy_unit_vector("bottom_right") * i) for i in range(point_width)])
         case "bottom_right":
             start_pos = bounding_box[3]
-            return np.array([start_pos + (direction_to_unit_vector("top_right") * i) for i in range(point_width)])
+            return np.array([start_pos + (direction_to_numpy_unit_vector("top_right") * i) for i in range(point_width)])
 
     raise ValueError("Unknown direction {}".format(direction))
-
-
-def bounding_box_to_points(bounding_box: np.ndarray) -> np.ndarray:
-    """
-    Converts a bounding box to points assuming rectangular bounding box.
-    :param bounding_box: The bounding box to convert.
-    :return: The points assuming rectangular bounding box.
-    """
-
-    points = []
-    for x in range(bounding_box[2, 0], bounding_box[0, 0] + 1):
-        for y in range(bounding_box[0, 1], bounding_box[3, 1] + 1):
-            points.append((x, y))
-
-    return np.array(sorted(points))

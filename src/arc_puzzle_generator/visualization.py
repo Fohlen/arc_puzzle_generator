@@ -5,21 +5,22 @@ This module provides functionality to visualize the output of ARC puzzle generat
 using matplotlib for colorplots and tkinter for an interactive GUI.
 """
 import argparse
+import importlib
 import sys
 import tkinter as tk
-from tkinter import ttk
-import importlib
 from pathlib import Path
+from tkinter import ttk
+from types import FunctionType
 from typing import Optional, Type
 
-import numpy as np
 import matplotlib.pyplot as plt
+import numpy as np
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from matplotlib.colors import ListedColormap
 from matplotlib.figure import Figure
-from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 
-from arc_puzzle_generator.data_loader import load_puzzle, Puzzle
-from arc_puzzle_generator.puzzle_generator import PuzzleGenerator
+from arc_puzzle_generator.model import Model
+from arc_puzzle_generator.utils.data_loader import load_puzzle, Puzzle
 
 
 def plot_grid(grid: np.ndarray, ax: Optional[plt.Axes] = None) -> plt.Axes:
@@ -72,16 +73,16 @@ class GeneratorVisualizer:
     Tkinter-based GUI for visualizing generator steps.
     """
 
-    def __init__(self, generator_class: Type[PuzzleGenerator], puzzle: Puzzle):
+    def __init__(self, model_function: FunctionType, puzzle: Puzzle):
         """
         Initialize the visualizer.
 
-        :arg generator_class: The generator class to use
+        :arg model_function: The model function to use
         :arg puzzle: The puzzle containing train and test examples
         """
-        self.generator_class = generator_class
+        self.model_function = model_function
         self.puzzle = puzzle
-        self.generator = None
+        self.model = None
         self.iterator = None
         self.steps: list[np.ndarray] = []
         self.current_step = 0
@@ -201,10 +202,10 @@ class GeneratorVisualizer:
             input_grid = self.puzzle.test[self.current_example_index].input
 
         # Create a new generator instance with the selected input
-        self.generator = self.generator_class(input_grid)
+        self.model = self.model_function(input_grid)
 
         # Reset steps and current step
-        self.steps = [self.generator.input_grid.copy()] + [step for step in self.generator]
+        self.steps = [step for step in self.model]
         self.current_step = 0
 
         # Update the display
@@ -264,22 +265,22 @@ class GeneratorVisualizer:
         self.root.mainloop()
 
 
-def get_generator_class(generator_name: str) -> Type[PuzzleGenerator]:
+def get_model_function(model_name: str) -> FunctionType:
     """
-    Get a generator class by name.
+    Get a model function by name.
 
-    :param generator_name: Name of the generator class
-    :returns: The generator class
+    :param model_name: Name of the model function
+    :returns: The model function
     """
-    module = importlib.import_module("arc_puzzle_generator.generators")
+    module = importlib.import_module("arc_puzzle_generator.puzzles")
 
     # Look for a class that matches the name
-    if hasattr(module, generator_name):
-        attr = getattr(module, generator_name)
-        if isinstance(attr, type) and issubclass(attr, PuzzleGenerator) and attr != PuzzleGenerator:
+    if hasattr(module, model_name):
+        attr = getattr(module, model_name)
+        if isinstance(attr, FunctionType):
             return attr
 
-    raise AttributeError(f"No generator class found with name '{generator_name}'")
+    raise AttributeError(f"No generator class found with name '{model_name}'")
 
 
 def visualize_generator(generator_name: str, puzzle_id: str, base_dir: str = "tests/data"):
@@ -298,10 +299,10 @@ def visualize_generator(generator_name: str, puzzle_id: str, base_dir: str = "te
     puzzle = load_puzzle(puzzle_path)
 
     # Get the generator class
-    generator_class = get_generator_class(generator_name)
+    model_function = get_model_function(generator_name)
 
     # Create the visualizer with the generator class and puzzle
-    visualizer = GeneratorVisualizer(generator_class, puzzle)
+    visualizer = GeneratorVisualizer(model_function, puzzle)
 
     # Run the visualizer
     visualizer.run()

@@ -1,110 +1,77 @@
-from typing import Iterable, Iterator, Optional
+from typing import Iterator, Iterable
 
-import numpy as np
+from arc_puzzle_generator.action import ActionNode
+from arc_puzzle_generator.geometry import PointSet
+from arc_puzzle_generator.neighbourhood import Neighbourhood
+from arc_puzzle_generator.physics import Direction
+from arc_puzzle_generator.state import AgentState, AgentStateMapping
+from arc_puzzle_generator.topology import Topology
 
-from arc_puzzle_generator.collisions import CollisionRule, NeighbourhoodRule, directional_neighbourhood
-from arc_puzzle_generator.physics import Direction, direction_to_unit_vector
 
-
-class Agent(Iterator[np.ndarray], Iterable[np.ndarray]):
-    """
-    An agent is a generator that iterates over a grid and updates the grid according to the given direction and colors.
-
-    Agents can be bounded by a charge or unbounded, in which case they will continue to run until they reach the end of the grid.
-    A neighbourhood rule determines how the agent calculates collisions, and a collision rule determines how the agent reacts to collisions.
-
-    :param output_grid: The grid to update.
-    :param step: The initial coordinates of the agent.
-    :param direction: The initial direction of the agent.
-    :param colors: The colors of the agent.
-    :param charge: The charge of the agent (-1 for unbounded).
-    :param neighbourhood_rule: The neighbourhood rule of the agent.
-    :param collision_rule: The collision rule of the agent.
-    """
-
+class Agent:
     def __init__(
             self,
-            output_grid: np.ndarray,
-            step: np.ndarray,
+            position: PointSet,
             direction: Direction,
-            colors: Iterable[int],
-            charge: int = -1,
-            step_size: int = 1,
-            neighbourhood_rule: NeighbourhoodRule = directional_neighbourhood,
-            collision_rule: Optional[CollisionRule] = None,
-    ) -> None:
-        self.output_grid = output_grid
+            label: str,
+            topology: Topology,
+            neighbourhood: Neighbourhood,
+            node: ActionNode,
+            colors: Iterator[int],
+            charge: int = 0,
+    ):
+        self.position = position
         self.direction = direction
-        self.colors = iter(colors)
+        self.label = label
+        self.topology = topology
+        self.neighbourhood = neighbourhood
+        self.node = node
+        self.colors = colors
         self.charge = charge
-        self.step = step
-        self.step_size = step_size
-        self.collision_rule = collision_rule
-        self.neighbourhood_rule = neighbourhood_rule
-        self.terminated = False
+        self.color = next(colors)
 
-    def __iter__(self) -> Iterator[np.ndarray]:
-        return self
+    @property
+    def active(self) -> bool:
+        return self.charge > 0 or self.charge == -1
 
-    def __next__(self) -> np.ndarray:
-        while self.charge == -1 or self.charge > 0:
-            # compute the next step
-            step = self.step + direction_to_unit_vector(self.direction) * self.step_size
+    @property
+    def state(self) -> AgentState:
+        return AgentState(
+            position=self.position,
+            direction=self.direction,
+            color=self.color,
+            charge=self.charge
+        )
 
-            # if the agent has previously been terminated
-            if self.terminated:
-                raise StopIteration
+    def steps(
+            self,
+            collision: PointSet,
+            collision_mapping: AgentStateMapping,
+    ) -> Iterable[AgentState]:
+        states = [self.state]
 
-            # if the current step runs out of bounds, terminate the agent
-            if (self.step[:, 0].min() < 0 or self.step[:, 0].max() >= self.output_grid.shape[0]
-                    or self.step[:, 1].min() < 0 or self.step[:, 1].max() >= self.output_grid.shape[1]):
-                raise StopIteration
+        if self.node is None:
+            return []
 
-            if self.collision_rule is not None:
-                # calculate the neighbourhood
-                neighbourhood = self.neighbourhood_rule(self.step, self.direction)
+        stack = [self.node]
 
-                # remove neighbors which are out of grid
-                neighbourhood = neighbourhood[
-                    (neighbourhood[:, 0] > -1) &
-                    (neighbourhood[:, 1] > -1) &
-                    (neighbourhood[:, 0] < self.output_grid.shape[0]) &
-                    (neighbourhood[:, 1] < self.output_grid.shape[1])
-                    ]
+        while stack:
+            curr = stack.pop()
+            result = curr.action(states, self.colors, collision, collision_mapping)
 
-                # mark possible collisions
-                result = self.collision_rule(self.step, neighbourhood, self.colors, self.direction, self.output_grid)
+            if result is not None:
+                state, colors = result
 
-                # if the collision rule found a collision, apply in order
-                # 1) update colors
-                # 2) execute extra steps, if any
-                # 3) run current step
-                # 4) update direction
-                if result is not None:
-                    terminated, colors, direction, extra_steps = result
-                    self.terminated = terminated
-                    self.colors = colors
+                self.position = state.position
+                self.direction = state.direction
+                self.color = state.color
+                self.charge = state.charge
+                self.colors = colors
+                states.append(state)
 
-                    if extra_steps is not None:
-                        for extra_step in extra_steps:
-                            self.output_grid[extra_step[0], extra_step[1]] = next(self.colors)
+                if curr.next_node is not None:
+                    stack.append(curr.next_node)
+            elif curr.alternative_node is not None:
+                stack.append(curr.alternative_node)
 
-                    self.output_grid[self.step[:, 0], self.step[:, 1]] = next(self.colors)
-                    self.direction = direction
-                    self.step = self.step + direction_to_unit_vector(self.direction) * self.step_size
-
-                    if self.charge > 0:
-                        self.charge -= 1
-
-                    return self.output_grid.copy()
-
-            # continue loop
-            self.output_grid[self.step[:, 0], self.step[:, 1]] = next(self.colors)
-            self.step = step
-
-            if self.charge > 0:
-                self.charge -= 1
-
-            return self.output_grid.copy()
-        else:
-            raise StopIteration
+        return states[:-1]

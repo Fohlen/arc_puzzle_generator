@@ -1,54 +1,27 @@
 import unittest
-from unittest import TestCase
 
 import numpy as np
 
-from arc_puzzle_generator.physics import direction_to_unit_vector, contained, box_distance, relative_box_direction, \
-    starting_point, bounding_box_to_points
+from arc_puzzle_generator.geometry import PointSet
+from arc_puzzle_generator.physics import collision_axis, direction_to_numpy_unit_vector, box_distance, relative_box_direction, \
+    starting_point
 
 
 class PhysicsTestCase(unittest.TestCase):
     def test_direction_to_unit_vector(self):
         arr = np.array([4, 4])
 
-        top_left = direction_to_unit_vector("top_left") + arr
+        top_left = direction_to_numpy_unit_vector("top_left") + arr
         self.assertTrue(np.array_equal(top_left, np.array([3, 3])))
 
-        top_right = direction_to_unit_vector("top_right") + arr
+        top_right = direction_to_numpy_unit_vector("top_right") + arr
         self.assertTrue(np.array_equal(top_right, np.array([3, 5])))
 
-        bottom_left = direction_to_unit_vector("bottom_left") + arr
+        bottom_left = direction_to_numpy_unit_vector("bottom_left") + arr
         self.assertTrue(np.array_equal(bottom_left, np.array([5, 3])))
 
-        bottom_right = direction_to_unit_vector("bottom_right") + arr
+        bottom_right = direction_to_numpy_unit_vector("bottom_right") + arr
         self.assertTrue(np.array_equal(bottom_right, np.array([5, 5])))
-
-    def test_contained(self):
-        points = np.array([
-            [0, 0],
-            [1, 1],
-            [10, 0]
-        ])
-
-        box = np.array([[
-            [5, 0], [0, 0],
-            [0, 5], [5, 5]
-        ]])
-
-        collisions = contained(points, box)
-        self.assertTrue(np.any(collisions))
-        self.assertFalse(np.all(collisions))
-
-    def test_not_contained(self):
-        point = np.array([[15, 20]])
-
-        box = np.array([[
-            [5, 0], [0, 0],
-            [0, 5], [5, 5]
-        ]])
-
-        collisions = contained(point, box)
-        self.assertFalse(np.any(collisions))
 
     def test_box_distance(self):
         point_a = np.array([[5, 3], [5, 3], [5, 3], [5, 3]])
@@ -133,27 +106,8 @@ class PhysicsTestCase(unittest.TestCase):
             step_f
         ))
 
-    def test_bounding_box_to_points(self):
-        points_a = np.array([[5, 3], [5, 3], [5, 3], [5, 3]])
-        box_points_a = np.array([[5, 3]])
+    def test_collision_axis(self):
+        agent = PointSet({(0, 0)})
+        orientation = collision_axis(agent)
 
-        self.assertTrue(np.array_equal(
-            box_points_a,
-            bounding_box_to_points(points_a)
-        ))
-
-        points_b = np.array([[5, 3], [5, 3], [5, 4], [5, 4]])
-        box_points_b = np.array([[5, 3], [5, 4]])
-
-        self.assertTrue(np.array_equal(
-            box_points_b,
-            bounding_box_to_points(points_b)
-        ))
-
-        points_c = np.array([[5, 3], [4, 3], [4, 4], [5, 4]])
-        box_points_c = np.array(sorted([[5, 3], [4, 3], [4, 4], [5, 4]]))
-
-        self.assertTrue(np.array_equal(
-            box_points_c,
-            bounding_box_to_points(points_c)
-        ))
+        self.assertEqual("horizontal", orientation)
