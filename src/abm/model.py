@@ -6,7 +6,7 @@ import numpy as np
 
 from abm.agent import Agent
 from abm.geometry import PointSet
-from abm.neighbourhood import directional_neighbours
+from abm.neighbourhood import resolve_point_set_neighbourhood
 from abm.state import AgentState
 
 
@@ -50,10 +50,7 @@ class Model(Iterator[np.ndarray], Iterable[np.ndarray]):
             # Select active agents
             if agent.active:
                 # Calculate the neighbourhood of the agent
-                if agent.neighbourhood is directional_neighbours:
-                    neighbourhood = directional_neighbours(agent.position, agent.direction)
-                else:
-                    neighbourhood = agent.neighbourhood(agent.position)
+                neighbourhood = resolve_point_set_neighbourhood(agent.position, agent.neighbourhood)
 
                 # Filter eligible agents based on the agent's topology
                 topology_labels = agent.topology(agent.label, self.labels)

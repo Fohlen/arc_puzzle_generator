@@ -1,6 +1,7 @@
 from unittest import TestCase
 
-from abm.neighbourhood import von_neumann_neighbours, moore_neighbours, IdentityPointSetNeighbourhood
+from abm.geometry import PointSet
+from abm.neighbourhood import von_neumann_neighbours, moore_neighbours, resolve_point_set_neighbourhood
 
 
 class NeighbourhoodTestCase(TestCase):
@@ -22,13 +23,12 @@ class NeighbourhoodTestCase(TestCase):
         self.assertEqual(expected, moore_neighbours(self.point))
 
     def test_point_set_neighbours(self):
-        point_set = {(1, 1), (1, 2)}
-        expected_van_moore = {
+        point_set = PointSet({(1, 1), (1, 2)})
+        expected_van_neumann = {
             (0, 1), (0, 2),
             (1, 0), (1, 3),
             (2, 1), (2, 2)
         }
 
-        multi_point_neighbourhood = IdentityPointSetNeighbourhood(von_neumann_neighbours)
 
-        self.assertEqual(expected_van_moore, multi_point_neighbourhood(point_set))
+        self.assertEqual(expected_van_neumann, resolve_point_set_neighbourhood(point_set, von_neumann_neighbours))

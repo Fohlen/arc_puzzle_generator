@@ -10,8 +10,7 @@ from abm.agent import Agent
 from abm.direction import identity_direction_rule, snake_direction_rule
 from abm.geometry import PointSet, unmask
 from abm.model import Model
-from abm.neighbourhood import zero_neighbours, IdentityPointSetNeighbourhood, \
-    von_neumann_neighbours
+from abm.neighbourhood import zero_neighbours, von_neumann_neighbours
 from abm.topology import FixedGroupTopology, identity_topology
 from abm.utils.entities import colour_count, find_colors, find_connected_objects
 
@@ -53,7 +52,7 @@ def puzzle_ten(input_grid: np.ndarray) -> Model:
         direction="right",
         label="foreground",
         topology=identity_topology,
-        neighbourhood=IdentityPointSetNeighbourhood(zero_neighbours),
+        neighbourhood=zero_neighbours,
         actions=[],
         colors=cycle([outside_color]),
         charge=0,
@@ -73,7 +72,7 @@ def puzzle_ten(input_grid: np.ndarray) -> Model:
         direction="right",
         label="snake",
         topology=topology,
-        neighbourhood=IdentityPointSetNeighbourhood(von_neumann_neighbours),
+        neighbourhood=von_neumann_neighbours,
         actions=actions,
         colors=cycle(color_sequence),
         charge=-1,

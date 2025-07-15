@@ -7,7 +7,7 @@ from abm.action import OutOfGridAction, CollisionDirectionAction, DirectionActio
 from abm.agent import Agent
 from abm.geometry import PointSet
 from abm.model import Model
-from abm.neighbourhood import zero_neighbours, moore_neighbours, IdentityPointSetNeighbourhood
+from abm.neighbourhood import zero_neighbours, moore_neighbours
 from abm.physics import Direction
 from abm.direction import identity_direction_rule, orthogonal_direction
 from abm.topology import FixedGroupTopology, identity_topology
@@ -46,7 +46,7 @@ def puzzle_four(input_grid: np.ndarray) -> Model:
         direction="right",
         label="bbox",
         topology=identity_topology,
-        neighbourhood=IdentityPointSetNeighbourhood(zero_neighbours),
+        neighbourhood=zero_neighbours,
         actions=[],
         colors=cycle([target_color]),
         charge=0
@@ -71,7 +71,7 @@ def puzzle_four(input_grid: np.ndarray) -> Model:
         direction=direction,
         label="puzzle_four_agent",
         topology=topology,
-        neighbourhood=IdentityPointSetNeighbourhood(moore_neighbours),
+        neighbourhood=moore_neighbours,
         actions=actions,
         colors=cycle([color]),
         charge=-1,
