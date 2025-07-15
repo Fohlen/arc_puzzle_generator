@@ -1,2 +1,1 @@
-from .puzzle_ten import PuzzleTenPuzzleGenerator
 from .puzzle_fourteen import PuzzleFourteenPuzzleGenerator
