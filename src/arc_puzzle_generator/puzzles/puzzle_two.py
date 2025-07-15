@@ -93,7 +93,6 @@ def puzzle_two(input_grid: np.ndarray) -> Model:
 
     assert box_size is not None
     beam_width = ceil(box_size / 2)
-    steps = max([distance for _, _, distance in box_order])
 
     return Model(
         output_grid=input_grid.copy(),
