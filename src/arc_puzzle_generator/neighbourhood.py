@@ -24,10 +24,10 @@ def von_neumann_neighbours(point: Point) -> PointSet:
     x, y = point
 
     return PointSet([
-        (x - 1, y),  # Left
-        (x + 1, y),  # Right
-        (x, y - 1),  # Up
-        (x, y + 1),  # Down
+        (x - 1, y),  # Up
+        (x + 1, y),  # Down
+        (x, y - 1),  # Left
+        (x, y + 1),  # Right
     ])
 
 
@@ -41,12 +41,12 @@ def moore_neighbours(point: Point) -> PointSet:
 
     return PointSet([
         (x - 1, y - 1),  # Top-left
-        (x - 1, y),  # Left
-        (x - 1, y + 1),  # Bottom-left
-        (x, y - 1),  # Up
-        (x, y + 1),  # Down
-        (x + 1, y - 1),  # Top-right
-        (x + 1, y),  # Right
+        (x - 1, y),      # Up
+        (x - 1, y + 1),  # Top-right
+        (x, y - 1),      # Left
+        (x, y + 1),      # Right
+        (x + 1, y - 1),  # Bottom-left
+        (x + 1, y),      # Down
         (x + 1, y + 1),  # Bottom-right
     ])
 
