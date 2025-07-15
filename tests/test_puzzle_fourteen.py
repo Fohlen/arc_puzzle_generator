@@ -4,7 +4,6 @@ import numpy as np
 
 from abm.puzzles.puzzle_fourteen import puzzle_fourteen
 from abm.utils.data_loader import load_puzzle
-from arc_puzzle_generator.generators import PuzzleFourteenPuzzleGenerator
 from tests.utils import test_dir
 
 
