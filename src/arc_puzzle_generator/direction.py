@@ -3,16 +3,16 @@ from typing import Protocol
 from arc_puzzle_generator.physics import Direction, Axis
 
 
-class DirectionRule(Protocol):
+class DirectionTransformer(Protocol):
     """
-    A direction rule determines the future direction of an agent based on the current direction and additional parameters.
+    A direction transformer determines the future direction of an agent based on the current direction and additional parameters.
     """
 
     def __call__(self, direction: Direction, *args, **kwargs) -> Direction:
         pass
 
 
-def identity_direction_rule(direction: Direction, *args, **kwargs) -> Direction:
+def identity_direction(direction: Direction, *args, **kwargs) -> Direction:
     """
     A direction rule that returns the same direction.
     :param direction: The direction to follow.
@@ -22,7 +22,7 @@ def identity_direction_rule(direction: Direction, *args, **kwargs) -> Direction:
     return direction
 
 
-def snake_direction_rule(direction: Direction, *args, **kwargs) -> Direction:
+def snake_direction(direction: Direction, *args, **kwargs) -> Direction:
     """
     Returns the opposite direction of the given direction, moving in a snake pattern.
     :param direction: The input direction

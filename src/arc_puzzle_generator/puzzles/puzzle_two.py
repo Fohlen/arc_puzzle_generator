@@ -10,7 +10,7 @@ from arc_puzzle_generator.geometry import PointSet
 from arc_puzzle_generator.model import Model
 from arc_puzzle_generator.neighbourhood import zero_neighbours
 from arc_puzzle_generator.physics import Direction, box_distance, relative_box_direction, starting_point
-from arc_puzzle_generator.direction import identity_direction_rule
+from arc_puzzle_generator.direction import identity_direction
 from arc_puzzle_generator.topology import identity_topology
 from arc_puzzle_generator.utils.entities import colour_count, find_connected_objects
 
@@ -104,7 +104,7 @@ def puzzle_two(input_grid: np.ndarray) -> Model:
                 ),
                 direction=direction,
                 label="puzzle_two_agent",
-                node=ActionNode(DirectionAction(identity_direction_rule)),
+                node=ActionNode(DirectionAction(identity_direction)),
                 charge=distance,
                 colors=ColorSequenceIterator(
                     [(box_color, distance), (boxes[box1][1], 1)],

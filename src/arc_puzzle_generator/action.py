@@ -1,7 +1,7 @@
 from itertools import chain, cycle
 from typing import Protocol, Optional, Sequence, Callable, Iterator
 
-from arc_puzzle_generator.direction import DirectionRule
+from arc_puzzle_generator.direction import DirectionTransformer
 from arc_puzzle_generator.geometry import PointSet, Point
 from arc_puzzle_generator.physics import direction_to_unit_vector, collision_axis
 from arc_puzzle_generator.selection import resolve_point_set_selectors_with_direction
@@ -67,7 +67,7 @@ class DirectionAction(Action):
 
     def __init__(
             self,
-            direction_rule: DirectionRule,
+            direction_rule: DirectionTransformer,
             select_direction: bool = False,
     ) -> None:
         self.direction_rule = direction_rule
@@ -151,7 +151,7 @@ class CollisionDirectionAction(Action):
 
     def __init__(
             self,
-            direction_rule: DirectionRule,
+            direction_rule: DirectionTransformer,
             select_direction: bool = False,
     ) -> None:
         self.direction_rule = direction_rule
@@ -229,7 +229,7 @@ class TrappedCollisionAction(Action):
 
     def __init__(
             self,
-            direction_rule: DirectionRule,
+            direction_rule: DirectionTransformer,
             select_direction: bool = False
     ) -> None:
         self.direction_rule = direction_rule
@@ -278,7 +278,7 @@ class CollisionBorderAction(Action):
     def __init__(
             self,
             border_color: int,
-            direction_rule: Optional[DirectionRule] = None,
+            direction_rule: Optional[DirectionTransformer] = None,
             select_direction: bool = False,
     ) -> None:
         self.border_color = border_color

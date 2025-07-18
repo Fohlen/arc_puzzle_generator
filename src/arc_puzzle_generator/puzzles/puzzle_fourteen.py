@@ -7,7 +7,7 @@ from arc_puzzle_generator.action import ActionNode, OutOfGridAction, CollisionFi
     identity_action, \
     DirectionAction
 from arc_puzzle_generator.agent import Agent
-from arc_puzzle_generator.direction import identity_direction_rule
+from arc_puzzle_generator.direction import identity_direction
 from arc_puzzle_generator.geometry import unmask
 from arc_puzzle_generator.model import Model
 from arc_puzzle_generator.neighbourhood import zero_neighbours, AxisNeighbourhood
@@ -63,7 +63,7 @@ def puzzle_fourteen(input_grid: np.ndarray) -> Model:
                 CollisionFillAction(fill_color=fill_color),
                 next_node=ActionNode(cast(Action, backtrack_action)),
                 alternative_node=ActionNode(
-                    DirectionAction(direction_rule=identity_direction_rule, select_direction=True),
+                    DirectionAction(direction_rule=identity_direction, select_direction=True),
                 )
             )
         ),

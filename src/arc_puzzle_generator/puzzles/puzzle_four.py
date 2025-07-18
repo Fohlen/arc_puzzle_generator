@@ -7,7 +7,7 @@ from arc_puzzle_generator.action import OutOfGridAction, CollisionDirectionActio
     collision_color_mapping, Action, \
     ActionNode, identity_action
 from arc_puzzle_generator.agent import Agent
-from arc_puzzle_generator.direction import identity_direction_rule, orthogonal_direction
+from arc_puzzle_generator.direction import identity_direction, orthogonal_direction
 from arc_puzzle_generator.geometry import PointSet
 from arc_puzzle_generator.model import Model
 from arc_puzzle_generator.neighbourhood import zero_neighbours, moore_neighbours
@@ -59,7 +59,7 @@ def puzzle_four(input_grid: np.ndarray) -> Model:
                 CollisionDirectionAction(orthogonal_direction),
             ),
             alternative_node=ActionNode(
-                DirectionAction(identity_direction_rule),
+                DirectionAction(identity_direction),
             )
         )
     )
