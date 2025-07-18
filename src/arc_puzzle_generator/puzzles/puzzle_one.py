@@ -2,7 +2,7 @@ from collections import OrderedDict
 
 import numpy as np
 
-from arc_puzzle_generator.action import DirectionAction, ActionNode
+from arc_puzzle_generator.rule import DirectionRule, RuleNode
 from arc_puzzle_generator.agent import Agent
 from arc_puzzle_generator.utils.color_sequence_iterator import ColorSequenceIterator
 from arc_puzzle_generator.geometry import PointSet
@@ -66,7 +66,7 @@ def puzzle_one(input_grid: np.ndarray) -> Model:
             position=PointSet([(row, start_col)]),
             direction=direction,
             label="puzzle_one_agent",
-            node=ActionNode(DirectionAction(identity_direction)),
+            node=RuleNode(DirectionRule(identity_direction)),
             charge=charge,
             colors=ColorSequenceIterator(color_sequence, background_color),
         ) for row, color_sequence in color_sequences],

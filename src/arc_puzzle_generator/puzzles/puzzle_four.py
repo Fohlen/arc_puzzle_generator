@@ -3,9 +3,9 @@ from typing import cast
 
 import numpy as np
 
-from arc_puzzle_generator.action import OutOfGridAction, CollisionDirectionAction, DirectionAction, \
-    collision_color_mapping, Action, \
-    ActionNode, identity_action
+from arc_puzzle_generator.rule import OutOfGridRule, CollisionDirectionRule, DirectionRule, \
+    collision_color_mapping_rule, Rule, \
+    RuleNode, identity_rule
 from arc_puzzle_generator.agent import Agent
 from arc_puzzle_generator.direction import identity_direction, orthogonal_direction
 from arc_puzzle_generator.geometry import PointSet
@@ -46,20 +46,20 @@ def puzzle_four(input_grid: np.ndarray) -> Model:
         position=PointSet.from_numpy(bbox),
         direction="none",
         label="bbox",
-        node=ActionNode(cast(Action, identity_action)),
+        node=RuleNode(cast(Rule, identity_rule)),
         colors=cycle([target_color]),
         charge=0
     ) for target_color, bbox in blocks]
 
-    node = ActionNode(
-        OutOfGridAction(grid_size=(input_grid.shape[0], input_grid.shape[1])),
-        alternative_node=ActionNode(
-            cast(Action, collision_color_mapping),
-            next_node=ActionNode(
-                CollisionDirectionAction(orthogonal_direction),
+    node = RuleNode(
+        OutOfGridRule(grid_size=(input_grid.shape[0], input_grid.shape[1])),
+        alternative_node=RuleNode(
+            cast(Rule, collision_color_mapping_rule),
+            next_node=RuleNode(
+                CollisionDirectionRule(orthogonal_direction),
             ),
-            alternative_node=ActionNode(
-                DirectionAction(identity_direction),
+            alternative_node=RuleNode(
+                DirectionRule(identity_direction),
             )
         )
     )

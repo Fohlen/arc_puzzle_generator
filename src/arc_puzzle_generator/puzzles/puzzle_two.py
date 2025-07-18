@@ -3,7 +3,7 @@ from math import ceil
 
 import numpy as np
 
-from arc_puzzle_generator.action import DirectionAction, ActionNode
+from arc_puzzle_generator.rule import DirectionRule, RuleNode
 from arc_puzzle_generator.agent import Agent
 from arc_puzzle_generator.utils.color_sequence_iterator import ColorSequenceIterator
 from arc_puzzle_generator.geometry import PointSet
@@ -104,7 +104,7 @@ def puzzle_two(input_grid: np.ndarray) -> Model:
                 ),
                 direction=direction,
                 label="puzzle_two_agent",
-                node=ActionNode(DirectionAction(identity_direction)),
+                node=RuleNode(DirectionRule(identity_direction)),
                 charge=distance,
                 colors=ColorSequenceIterator(
                     [(box_color, distance), (boxes[box1][1], 1)],

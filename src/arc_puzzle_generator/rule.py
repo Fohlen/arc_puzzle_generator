@@ -10,9 +10,9 @@ from arc_puzzle_generator.state import AgentState, AgentStateMapping, ColorItera
 ActionResult = Optional[tuple[AgentState, ColorIterator]]
 
 
-class Action(Protocol):
+class Rule(Protocol):
     """
-    An action is a callable that takes the current position and state of an agent and returns a new state.
+    A rule is a callable that takes the current position and state of an agent and returns a new state.
     """
 
     def __call__(
@@ -25,32 +25,32 @@ class Action(Protocol):
         pass
 
 
-class ActionNode:
+class RuleNode:
     """
-    A node in the action chain that contains an action and optional next and alternative nodes.
+    A node in the rule chain that contains a rule and optional next and alternative nodes.
     """
 
     def __init__(
             self,
-            action: Action,
-            next_node: Optional['ActionNode'] = None,
-            alternative_node: Optional['ActionNode'] = None
+            rule: Rule,
+            next_node: Optional['RuleNode'] = None,
+            alternative_node: Optional['RuleNode'] = None
     ) -> None:
         """
-        Initialize an action node with an action and an optional next node.
+        Initialize a rule node with a rule and an optional next node.
 
-        :param action: The action to be performed.
-        :param next_node: The next action node in the chain.
-        :param alternative_node: The alternative next action node in the chain.
+        :param rule: The rule to be performed.
+        :param next_node: The next rule node in the chain.
+        :param alternative_node: The alternative next rule node in the chain.
         """
-        self.action = action
+        self.rule = rule
         self.next_node = next_node
         self.alternative_node = alternative_node
 
 
-def identity_action(states: Sequence[AgentState], colors: ColorIterator, *args) -> ActionResult:
+def identity_rule(states: Sequence[AgentState], colors: ColorIterator, *args) -> ActionResult:
     """
-    An identity action that returns the state unchanged.
+    An identity rule that returns the state unchanged.
 
     :param states: The current states of the agent.
     :param colors: An iterator over the agent's colors.
@@ -60,9 +60,9 @@ def identity_action(states: Sequence[AgentState], colors: ColorIterator, *args) 
     return states[-1], colors
 
 
-class DirectionAction(Action):
+class DirectionRule(Rule):
     """
-    An action that changes the direction of an agent based on the given direction rule.
+    A rule that changes the direction of an agent based on the given direction rule.
     """
 
     def __init__(
@@ -107,9 +107,9 @@ class DirectionAction(Action):
         return None
 
 
-class OutOfGridAction(Action):
+class OutOfGridRule(Rule):
     """
-    An action that removes the agent if the next step is out of grid, by setting its charge to 0.
+    A rule that removes the agent if the next step is out of grid, by setting its charge to 0.
     """
 
     def __init__(self, grid_size: Point) -> None:
@@ -144,9 +144,9 @@ class OutOfGridAction(Action):
         return None
 
 
-class CollisionDirectionAction(Action):
+class CollisionDirectionRule(Rule):
     """
-    An action that handles collisions by applying a direction rule on collision.
+    A rule that handles collisions by applying a direction rule on collision.
     """
 
     def __init__(
@@ -193,7 +193,7 @@ class CollisionDirectionAction(Action):
         return None
 
 
-def collision_color_mapping(
+def collision_color_mapping_rule(
         states: Sequence[AgentState],
         colors: ColorIterator,
         collision: PointSet,
@@ -222,9 +222,9 @@ def collision_color_mapping(
     return None
 
 
-class TrappedCollisionAction(Action):
+class TrappedCollisionRule(Rule):
     """
-    An action that terminates the agent if it is trapped in a collision.
+    A rule that terminates the agent if it is trapped in a collision.
     """
 
     def __init__(
@@ -274,7 +274,7 @@ class TrappedCollisionAction(Action):
         return None
 
 
-class CollisionBorderAction(Action):
+class CollisionBorderRule(Rule):
     def __init__(
             self,
             border_color: int,
@@ -312,7 +312,7 @@ class CollisionBorderAction(Action):
         return None
 
 
-class CollisionFillAction(Action):
+class CollisionFillRule(Rule):
     def __init__(
             self,
             fill_color: int,
@@ -351,7 +351,7 @@ class CollisionFillAction(Action):
         return None
 
 
-def backtrack_action(
+def backtrack_rule(
         states: Sequence[AgentState],
         colors: ColorIterator,
         collision: PointSet,

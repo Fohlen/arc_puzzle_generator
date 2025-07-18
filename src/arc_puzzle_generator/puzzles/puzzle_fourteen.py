@@ -3,9 +3,9 @@ from typing import cast
 
 import numpy as np
 
-from arc_puzzle_generator.action import ActionNode, OutOfGridAction, CollisionFillAction, backtrack_action, Action, \
-    identity_action, \
-    DirectionAction
+from arc_puzzle_generator.rule import RuleNode, OutOfGridRule, CollisionFillRule, backtrack_rule, Rule, \
+    identity_rule, \
+    DirectionRule
 from arc_puzzle_generator.agent import Agent
 from arc_puzzle_generator.direction import identity_direction
 from arc_puzzle_generator.geometry import unmask
@@ -50,20 +50,20 @@ def puzzle_fourteen(input_grid: np.ndarray) -> Model:
         position=unmask(input_grid == foreground_color),
         direction="none",
         label="foreground",
-        node=ActionNode(cast(Action, identity_action)),
+        node=RuleNode(cast(Rule, identity_rule)),
         colors=cycle([foreground_color]),
         charge=0,
     ), Agent(
         unmask(labeled_grid),
         direction=direction,
         label="cloud_shooter",
-        node=ActionNode(
-            OutOfGridAction(grid_size=input_grid.shape),
-            alternative_node=ActionNode(
-                CollisionFillAction(fill_color=fill_color),
-                next_node=ActionNode(cast(Action, backtrack_action)),
-                alternative_node=ActionNode(
-                    DirectionAction(direction_rule=identity_direction, select_direction=True),
+        node=RuleNode(
+            OutOfGridRule(grid_size=input_grid.shape),
+            alternative_node=RuleNode(
+                CollisionFillRule(fill_color=fill_color),
+                next_node=RuleNode(cast(Rule, backtrack_rule)),
+                alternative_node=RuleNode(
+                    DirectionRule(direction_rule=identity_direction, select_direction=True),
                 )
             )
         ),
