@@ -1,17 +1,15 @@
-from itertools import cycle, groupby, combinations
+from itertools import cycle
 from typing import cast
 
 import numpy as np
 
-from arc_puzzle_generator.rule import RuleNode, identity_rule, DirectionRule, CollisionDirectionRule, \
-    StayInGridAction, Rule, TrappedCollisionRule, LeftBottomAction
 from arc_puzzle_generator.agent import Agent
 from arc_puzzle_generator.direction import identity_direction, clockwise_direction_90, \
     counterclockwise_direction_90
 from arc_puzzle_generator.geometry import unmask, PointSet, Point
 from arc_puzzle_generator.model import Model
-from arc_puzzle_generator.neighbourhood import zero_neighbours, moore_neighbours
-from arc_puzzle_generator.topology import identity_topology, all_topology
+from arc_puzzle_generator.rule import RuleNode, identity_rule, DirectionRule, CollisionDirectionRule, \
+    StayInGridRule, Rule, TrappedCollisionRule, LeftBottomRule
 from arc_puzzle_generator.utils.entities import colour_count, find_connected_objects
 
 
@@ -23,9 +21,9 @@ def puzzle_eight(input_grid: np.ndarray) -> Model:
     """
 
     sorted_colors = colour_count(input_grid)
-    background_color = sorted_colors[0][0].item()
-    line_color = sorted_colors[1][0].item()
-    sequence_colors = [color.item() for color, frequency in sorted_colors[2:]]
+    background_color = sorted_colors[0][0]
+    line_color = sorted_colors[1][0]
+    sequence_colors = [color for color, frequency in sorted_colors[2:]]
 
     # we initialise a border agent which other agents can follow
     agents = [Agent(
@@ -92,16 +90,14 @@ def puzzle_eight(input_grid: np.ndarray) -> Model:
         position=PointSet({(point[0], point[1])}),
         direction="right",
         label="point",
-        topology=all_topology,
-        neighbourhood=moore_neighbours,
         node=RuleNode(
             TrappedCollisionRule(direction_rule=clockwise_direction_90, select_direction=True),
             alternative_node=RuleNode(
                 CollisionDirectionRule(direction_rule=clockwise_direction_90, select_direction=True),
                 alternative_node=RuleNode(
-                    StayInGridAction(direction_rule=clockwise_direction_90, grid_size=input_grid.shape),
+                    StayInGridRule(direction_rule=clockwise_direction_90, grid_size=input_grid.shape),
                     alternative_node=RuleNode(
-                        LeftBottomAction(direction_rule=counterclockwise_direction_90),
+                        LeftBottomRule(direction_rule=counterclockwise_direction_90),
                         alternative_node=RuleNode(
                             DirectionRule(direction_rule=identity_direction, select_direction=True)
                         )
