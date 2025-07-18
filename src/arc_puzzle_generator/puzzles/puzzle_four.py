@@ -3,11 +3,11 @@ from typing import cast
 
 import numpy as np
 
-from arc_puzzle_generator.action import OutOfGridAction, CollisionDirectionAction, DirectionAction, \
-    collision_color_mapping, Action, \
-    ActionNode, identity_action
+from arc_puzzle_generator.rule import OutOfGridRule, CollisionDirectionRule, DirectionRule, \
+    collision_color_mapping_rule, Rule, \
+    RuleNode, identity_rule
 from arc_puzzle_generator.agent import Agent
-from arc_puzzle_generator.direction import identity_direction_rule, orthogonal_direction
+from arc_puzzle_generator.direction import identity_direction, orthogonal_direction
 from arc_puzzle_generator.geometry import PointSet
 from arc_puzzle_generator.model import Model
 from arc_puzzle_generator.neighbourhood import zero_neighbours, moore_neighbours
@@ -44,25 +44,22 @@ def puzzle_four(input_grid: np.ndarray) -> Model:
 
     agents = [Agent(
         position=PointSet.from_numpy(bbox),
-        direction="right",
+        direction="none",
         label="bbox",
-        topology=identity_topology,
-        neighbourhood=zero_neighbours,
-        node=ActionNode(cast(Action, identity_action)),
+        node=RuleNode(cast(Rule, identity_rule)),
         colors=cycle([target_color]),
         charge=0
     ) for target_color, bbox in blocks]
 
-    topology = FixedGroupTopology(group={"bbox"})
-    node = ActionNode(
-        OutOfGridAction(grid_size=(input_grid.shape[0], input_grid.shape[1])),
-        alternative_node=ActionNode(
-            cast(Action, collision_color_mapping),
-            next_node=ActionNode(
-                CollisionDirectionAction(orthogonal_direction),
+    node = RuleNode(
+        OutOfGridRule(grid_size=(input_grid.shape[0], input_grid.shape[1])),
+        alternative_node=RuleNode(
+            cast(Rule, collision_color_mapping_rule),
+            next_node=RuleNode(
+                CollisionDirectionRule(orthogonal_direction),
             ),
-            alternative_node=ActionNode(
-                DirectionAction(identity_direction_rule),
+            alternative_node=RuleNode(
+                DirectionRule(identity_direction),
             )
         )
     )
@@ -77,8 +74,6 @@ def puzzle_four(input_grid: np.ndarray) -> Model:
         ),
         direction=direction,
         label="puzzle_four_agent",
-        topology=topology,
-        neighbourhood=moore_neighbours,
         node=node,
         colors=cycle([color]),
         charge=-1,
@@ -87,4 +82,6 @@ def puzzle_four(input_grid: np.ndarray) -> Model:
     return Model(
         output_grid=input_grid.copy(),
         agents=agents,
+        neighbourhood=moore_neighbours,
+        topology=FixedGroupTopology(group={"bbox"})
     )

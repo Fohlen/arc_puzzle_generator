@@ -1,6 +1,6 @@
 from typing import Iterator, Iterable
 
-from arc_puzzle_generator.action import ActionNode
+from arc_puzzle_generator.rule import RuleNode
 from arc_puzzle_generator.geometry import PointSet
 from arc_puzzle_generator.neighbourhood import Neighbourhood
 from arc_puzzle_generator.physics import Direction
@@ -14,21 +14,18 @@ class Agent:
             position: PointSet,
             direction: Direction,
             label: str,
-            topology: Topology,
-            neighbourhood: Neighbourhood,
-            node: ActionNode,
+            node: RuleNode,
             colors: Iterator[int],
             charge: int = 0,
     ):
         self.position = position
         self.direction = direction
         self.label = label
-        self.topology = topology
-        self.neighbourhood = neighbourhood
         self.node = node
         self.colors = colors
         self.charge = charge
         self.color = next(colors)
+        self.history: list[AgentState] = []
 
     @property
     def active(self) -> bool:
@@ -57,7 +54,7 @@ class Agent:
 
         while stack:
             curr = stack.pop()
-            result = curr.action(states, self.colors, collision, collision_mapping)
+            result = curr.rule(states, self.colors, collision, collision_mapping)
 
             if result is not None:
                 state, colors = result
@@ -67,6 +64,7 @@ class Agent:
                 self.color = state.color
                 self.charge = state.charge
                 self.colors = colors
+                self.history.append(state)
                 states.append(state)
 
                 if curr.next_node is not None:

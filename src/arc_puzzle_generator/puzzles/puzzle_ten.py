@@ -4,10 +4,11 @@ from typing import Mapping, cast
 
 import numpy as np
 
-from arc_puzzle_generator.action import OutOfGridAction, TrappedCollisionAction, CollisionDirectionAction, DirectionAction, \
-    CollisionBorderAction, backtrack_action, Action, ActionNode, identity_action
+from arc_puzzle_generator.rule import OutOfGridRule, TrappedCollisionRule, CollisionDirectionRule, \
+    DirectionRule, \
+    CollisionBorderRule, backtrack_rule, Rule, RuleNode, identity_rule
 from arc_puzzle_generator.agent import Agent
-from arc_puzzle_generator.direction import identity_direction_rule, snake_direction_rule
+from arc_puzzle_generator.direction import identity_direction, snake_direction
 from arc_puzzle_generator.geometry import PointSet, unmask
 from arc_puzzle_generator.model import Model
 from arc_puzzle_generator.neighbourhood import zero_neighbours, von_neumann_neighbours
@@ -55,32 +56,30 @@ def puzzle_ten(input_grid: np.ndarray) -> Model:
     foreground_position = unmask(input_grid == outside_color)
     agents = [Agent(
         position=foreground_position,
-        direction="right",
+        direction="none",
         label="foreground",
-        topology=identity_topology,
-        neighbourhood=zero_neighbours,
-        node=ActionNode(cast(Action, identity_action)),
+        node=RuleNode(cast(Rule, identity_rule)),
         colors=cycle([outside_color]),
         charge=0,
     )]
 
-    node = ActionNode(
-        OutOfGridAction(grid_size=(input_grid.shape[0], input_grid.shape[1])),
-        alternative_node=ActionNode(
-            CollisionBorderAction(
+    node = RuleNode(
+        OutOfGridRule(grid_size=(input_grid.shape[0], input_grid.shape[1])),
+        alternative_node=RuleNode(
+            CollisionBorderRule(
                 border_color=border_color,
-                direction_rule=snake_direction_rule,
+                direction_rule=snake_direction,
                 select_direction=True
             ),
-            next_node=ActionNode(
-                cast(Action, backtrack_action),
+            next_node=RuleNode(
+                cast(Rule, backtrack_rule),
             ),
-            alternative_node=ActionNode(
-                TrappedCollisionAction(direction_rule=snake_direction_rule, select_direction=True),
-                alternative_node=ActionNode(
-                    CollisionDirectionAction(direction_rule=snake_direction_rule, select_direction=True),
-                    alternative_node=ActionNode(
-                        DirectionAction(direction_rule=identity_direction_rule, select_direction=True)
+            alternative_node=RuleNode(
+                TrappedCollisionRule(direction_rule=snake_direction, select_direction=True),
+                alternative_node=RuleNode(
+                    CollisionDirectionRule(direction_rule=snake_direction, select_direction=True),
+                    alternative_node=RuleNode(
+                        DirectionRule(direction_rule=identity_direction, select_direction=True)
                     )
                 )
             )
@@ -91,8 +90,6 @@ def puzzle_ten(input_grid: np.ndarray) -> Model:
         position=PointSet([(row, 0)]),
         direction="right",
         label="snake",
-        topology=topology,
-        neighbourhood=von_neumann_neighbours,
         node=node,
         colors=cycle(color_sequence),
         charge=-1,
@@ -101,4 +98,6 @@ def puzzle_ten(input_grid: np.ndarray) -> Model:
     return Model(
         input_grid.copy(),
         agents=agents,
+        neighbourhood=von_neumann_neighbours,
+        topology=topology,
     )

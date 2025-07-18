@@ -14,7 +14,7 @@ Axis = Literal["horizontal", "vertical", "diagonal"]
 The axis of a line.
 """
 
-Direction = Literal["left", "right", "up", "down", "top_left", "top_right", "bottom_left", "bottom_right"]
+Direction = Literal["left", "right", "up", "down", "top_left", "top_right", "bottom_left", "bottom_right", "none"]
 """
 The possible directions we can go in our universe.
 """
@@ -28,6 +28,8 @@ def direction_to_unit_vector(direction: Direction) -> Point:
     """
 
     match direction:
+        case "none":
+            return 0, 0
         case "left":
             return 0, -1
         case "right":

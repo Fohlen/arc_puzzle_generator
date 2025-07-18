@@ -2,14 +2,14 @@ from collections import OrderedDict
 
 import numpy as np
 
-from arc_puzzle_generator.action import DirectionAction, ActionNode
+from arc_puzzle_generator.rule import DirectionRule, RuleNode
 from arc_puzzle_generator.agent import Agent
 from arc_puzzle_generator.utils.color_sequence_iterator import ColorSequenceIterator
 from arc_puzzle_generator.geometry import PointSet
 from arc_puzzle_generator.model import Model
 from arc_puzzle_generator.neighbourhood import zero_neighbours
 from arc_puzzle_generator.physics import Direction
-from arc_puzzle_generator.direction import identity_direction_rule
+from arc_puzzle_generator.direction import identity_direction
 from arc_puzzle_generator.topology import identity_topology
 from arc_puzzle_generator.utils.entities import colour_count, find_connected_objects
 
@@ -66,10 +66,10 @@ def puzzle_one(input_grid: np.ndarray) -> Model:
             position=PointSet([(row, start_col)]),
             direction=direction,
             label="puzzle_one_agent",
-            topology=identity_topology,
-            neighbourhood=zero_neighbours,
-            node=ActionNode(DirectionAction(identity_direction_rule)),
+            node=RuleNode(DirectionRule(identity_direction)),
             charge=charge,
             colors=ColorSequenceIterator(color_sequence, background_color),
-        ) for row, color_sequence in color_sequences]
+        ) for row, color_sequence in color_sequences],
+        neighbourhood=zero_neighbours,
+        topology=identity_topology,
     )
