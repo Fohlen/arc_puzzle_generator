@@ -14,7 +14,7 @@ Axis = Literal["horizontal", "vertical", "diagonal"]
 The axis of a line.
 """
 
-Direction = Literal["left", "right", "up", "down", "top_left", "top_right", "bottom_left", "bottom_right", "none"]
+Direction = Literal["left", "right", "up", "down", "top_left", "top_right", "bottom_left", "bottom_right"]
 """
 The possible directions we can go in our universe.
 """
@@ -28,8 +28,6 @@ def direction_to_unit_vector(direction: Direction) -> Point:
     """
 
     match direction:
-        case "none":
-            return 0, 0
         case "left":
             return 0, -1
         case "right":
@@ -204,3 +202,17 @@ def starting_point(
             return np.array([start_pos + (direction_to_numpy_unit_vector("top_right") * i) for i in range(point_width)])
 
     raise ValueError("Unknown direction {}".format(direction))
+
+
+def bottom_left(point: Point, direction: Direction) -> Point:
+    match direction:
+        case "left":
+            return point[0] + 1, point[1] + 1
+        case "up":
+            return point[0] + 1, point[1] - 1
+        case "right":
+            return point[0] - 1, point[1] - 1
+        case "down":
+            return point[0] - 1, point[1] + 1
+        case _:
+            raise ValueError("Unsupported direction for bottom_left: {}".format(direction))

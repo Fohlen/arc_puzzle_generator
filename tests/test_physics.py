@@ -3,8 +3,9 @@ import unittest
 import numpy as np
 
 from arc_puzzle_generator.geometry import PointSet
-from arc_puzzle_generator.physics import collision_axis, direction_to_numpy_unit_vector, box_distance, relative_box_direction, \
-    starting_point
+from arc_puzzle_generator.physics import collision_axis, direction_to_numpy_unit_vector, box_distance, \
+    relative_box_direction, \
+    starting_point, bottom_left
 
 
 class PhysicsTestCase(unittest.TestCase):
@@ -111,3 +112,7 @@ class PhysicsTestCase(unittest.TestCase):
         orientation = collision_axis(agent)
 
         self.assertEqual("horizontal", orientation)
+
+    def test_bottom_left(self):
+        point = (16, 17)
+        self.assertEqual((15, 16), bottom_left(point, "right"))
