@@ -44,7 +44,7 @@ def puzzle_four(input_grid: np.ndarray) -> Model:
 
     agents = [Agent(
         position=PointSet.from_numpy(bbox),
-        direction="right",
+        direction="none",
         label="bbox",
         node=ActionNode(cast(Action, identity_action)),
         colors=cycle([target_color]),

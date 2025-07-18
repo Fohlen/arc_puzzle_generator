@@ -56,7 +56,7 @@ def puzzle_ten(input_grid: np.ndarray) -> Model:
     foreground_position = unmask(input_grid == outside_color)
     agents = [Agent(
         position=foreground_position,
-        direction="right",
+        direction="none",
         label="foreground",
         node=ActionNode(cast(Action, identity_action)),
         colors=cycle([outside_color]),

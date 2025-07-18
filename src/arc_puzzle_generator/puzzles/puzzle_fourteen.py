@@ -48,7 +48,7 @@ def puzzle_fourteen(input_grid: np.ndarray) -> Model:
 
     agents = [Agent(
         position=unmask(input_grid == foreground_color),
-        direction=direction,
+        direction="none",
         label="foreground",
         node=ActionNode(cast(Action, identity_action)),
         colors=cycle([foreground_color]),
