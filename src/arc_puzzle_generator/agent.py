@@ -29,6 +29,7 @@ class Agent:
         self.colors = colors
         self.charge = charge
         self.color = next(colors)
+        self.history: list[AgentState] = []
 
     @property
     def active(self) -> bool:
@@ -67,6 +68,7 @@ class Agent:
                 self.color = state.color
                 self.charge = state.charge
                 self.colors = colors
+                self.history.append(state)
                 states.append(state)
 
                 if curr.next_node is not None:
