@@ -4,7 +4,8 @@ from typing import Mapping, cast
 
 import numpy as np
 
-from arc_puzzle_generator.action import OutOfGridAction, TrappedCollisionAction, CollisionDirectionAction, DirectionAction, \
+from arc_puzzle_generator.action import OutOfGridAction, TrappedCollisionAction, CollisionDirectionAction, \
+    DirectionAction, \
     CollisionBorderAction, backtrack_action, Action, ActionNode, identity_action
 from arc_puzzle_generator.agent import Agent
 from arc_puzzle_generator.direction import identity_direction_rule, snake_direction_rule
@@ -57,8 +58,6 @@ def puzzle_ten(input_grid: np.ndarray) -> Model:
         position=foreground_position,
         direction="right",
         label="foreground",
-        topology=identity_topology,
-        neighbourhood=zero_neighbours,
         node=ActionNode(cast(Action, identity_action)),
         colors=cycle([outside_color]),
         charge=0,
@@ -91,8 +90,6 @@ def puzzle_ten(input_grid: np.ndarray) -> Model:
         position=PointSet([(row, 0)]),
         direction="right",
         label="snake",
-        topology=topology,
-        neighbourhood=von_neumann_neighbours,
         node=node,
         colors=cycle(color_sequence),
         charge=-1,
@@ -101,4 +98,6 @@ def puzzle_ten(input_grid: np.ndarray) -> Model:
     return Model(
         input_grid.copy(),
         agents=agents,
+        neighbourhood=von_neumann_neighbours,
+        topology=topology,
     )

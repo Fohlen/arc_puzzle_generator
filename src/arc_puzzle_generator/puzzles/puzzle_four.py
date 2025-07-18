@@ -46,14 +46,11 @@ def puzzle_four(input_grid: np.ndarray) -> Model:
         position=PointSet.from_numpy(bbox),
         direction="right",
         label="bbox",
-        topology=identity_topology,
-        neighbourhood=zero_neighbours,
         node=ActionNode(cast(Action, identity_action)),
         colors=cycle([target_color]),
         charge=0
     ) for target_color, bbox in blocks]
 
-    topology = FixedGroupTopology(group={"bbox"})
     node = ActionNode(
         OutOfGridAction(grid_size=(input_grid.shape[0], input_grid.shape[1])),
         alternative_node=ActionNode(
@@ -77,8 +74,6 @@ def puzzle_four(input_grid: np.ndarray) -> Model:
         ),
         direction=direction,
         label="puzzle_four_agent",
-        topology=topology,
-        neighbourhood=moore_neighbours,
         node=node,
         colors=cycle([color]),
         charge=-1,
@@ -87,4 +82,6 @@ def puzzle_four(input_grid: np.ndarray) -> Model:
     return Model(
         output_grid=input_grid.copy(),
         agents=agents,
+        neighbourhood=moore_neighbours,
+        topology=FixedGroupTopology(group={"bbox"})
     )

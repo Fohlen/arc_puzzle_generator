@@ -3,7 +3,8 @@ from typing import cast
 
 import numpy as np
 
-from arc_puzzle_generator.action import ActionNode, OutOfGridAction, CollisionFillAction, backtrack_action, Action, identity_action, \
+from arc_puzzle_generator.action import ActionNode, OutOfGridAction, CollisionFillAction, backtrack_action, Action, \
+    identity_action, \
     DirectionAction
 from arc_puzzle_generator.agent import Agent
 from arc_puzzle_generator.direction import identity_direction_rule
@@ -49,8 +50,6 @@ def puzzle_fourteen(input_grid: np.ndarray) -> Model:
         position=unmask(input_grid == foreground_color),
         direction=direction,
         label="foreground",
-        topology=identity_topology,
-        neighbourhood=zero_neighbours,
         node=ActionNode(cast(Action, identity_action)),
         colors=cycle([foreground_color]),
         charge=0,
@@ -58,11 +57,6 @@ def puzzle_fourteen(input_grid: np.ndarray) -> Model:
         unmask(labeled_grid),
         direction=direction,
         label="cloud_shooter",
-        topology=FixedGroupTopology(group={"foreground"}),
-        neighbourhood=AxisNeighbourhood(
-            grid_size=input_grid.shape,
-            axis="vertical" if direction in ["up", "down"] else "horizontal"
-        ),
         node=ActionNode(
             OutOfGridAction(grid_size=input_grid.shape),
             alternative_node=ActionNode(
@@ -82,4 +76,9 @@ def puzzle_fourteen(input_grid: np.ndarray) -> Model:
     return Model(
         output_grid=input_grid,
         agents=agents,
+        neighbourhood=AxisNeighbourhood(
+            grid_size=input_grid.shape,
+            axis="vertical" if direction in ["up", "down"] else "horizontal"
+        ),
+        topology=FixedGroupTopology(group={"foreground"}),
     )

@@ -66,10 +66,10 @@ def puzzle_one(input_grid: np.ndarray) -> Model:
             position=PointSet([(row, start_col)]),
             direction=direction,
             label="puzzle_one_agent",
-            topology=identity_topology,
-            neighbourhood=zero_neighbours,
             node=ActionNode(DirectionAction(identity_direction_rule)),
             charge=charge,
             colors=ColorSequenceIterator(color_sequence, background_color),
-        ) for row, color_sequence in color_sequences]
+        ) for row, color_sequence in color_sequences],
+        neighbourhood=zero_neighbours,
+        topology=identity_topology,
     )

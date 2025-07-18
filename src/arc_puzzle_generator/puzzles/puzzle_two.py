@@ -104,8 +104,6 @@ def puzzle_two(input_grid: np.ndarray) -> Model:
                 ),
                 direction=direction,
                 label="puzzle_two_agent",
-                topology=identity_topology,
-                neighbourhood=zero_neighbours,
                 node=ActionNode(DirectionAction(identity_direction_rule)),
                 charge=distance,
                 colors=ColorSequenceIterator(
@@ -113,5 +111,7 @@ def puzzle_two(input_grid: np.ndarray) -> Model:
                     background_color=background_color
                 ),
             ) for box1, direction, distance in box_order
-        ]
+        ],
+        neighbourhood=zero_neighbours,
+        topology=identity_topology,
     )

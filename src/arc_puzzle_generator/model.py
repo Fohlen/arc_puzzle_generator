@@ -8,8 +8,9 @@ import logging
 
 from arc_puzzle_generator.agent import Agent
 from arc_puzzle_generator.geometry import PointSet, Point
-from arc_puzzle_generator.neighbourhood import resolve_point_set_neighbourhood
+from arc_puzzle_generator.neighbourhood import resolve_point_set_neighbourhood, Neighbourhood, zero_neighbours
 from arc_puzzle_generator.state import AgentState
+from arc_puzzle_generator.topology import Topology, identity_topology
 
 logger = logging.getLogger(__name__)
 
@@ -22,11 +23,15 @@ class Model(Iterator[np.ndarray], Iterable[np.ndarray]):
             self,
             output_grid: np.ndarray,
             agents: Sequence[Agent],
+            neighbourhood: Neighbourhood = zero_neighbours,
+            topology: Topology = identity_topology,
             execution_mode: ExecutionMode = "parallel",
             collision_mode: CollisionMode = "current",
     ):
         self.output_grid = output_grid
         self.agents = agents
+        self.neighbourhood = neighbourhood
+        self.topology = topology
         self.execution_mode = execution_mode
         self.collision_mode = collision_mode
         self.current_agent_idx = 0
@@ -59,10 +64,10 @@ class Model(Iterator[np.ndarray], Iterable[np.ndarray]):
 
     def _process_agent(self, agent: Agent) -> None:
         # calculate the neighbourhood for the agent's position
-        neighbourhood = resolve_point_set_neighbourhood(agent.position, agent.neighbourhood)
+        neighbourhood = resolve_point_set_neighbourhood(agent.position, self.neighbourhood)
 
         # determine the eligible agents based on the agent's label and topology
-        topology_labels = agent.topology(agent.label, self.labels)
+        topology_labels = self.topology(agent.label, self.labels)
         eligible_agents = set(chain.from_iterable(self.agents_by_label[label] for label in topology_labels))
 
         # create a mapping of agent positions to their states

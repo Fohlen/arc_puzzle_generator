@@ -14,8 +14,6 @@ class Agent:
             position: PointSet,
             direction: Direction,
             label: str,
-            topology: Topology,
-            neighbourhood: Neighbourhood,
             node: ActionNode,
             colors: Iterator[int],
             charge: int = 0,
@@ -23,8 +21,6 @@ class Agent:
         self.position = position
         self.direction = direction
         self.label = label
-        self.topology = topology
-        self.neighbourhood = neighbourhood
         self.node = node
         self.colors = colors
         self.charge = charge
