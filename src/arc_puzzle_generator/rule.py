@@ -3,7 +3,7 @@ from typing import Protocol, Optional, Sequence, Callable, Iterator
 
 from arc_puzzle_generator.direction import DirectionTransformer
 from arc_puzzle_generator.geometry import PointSet, Point
-from arc_puzzle_generator.physics import direction_to_unit_vector, collision_axis
+from arc_puzzle_generator.physics import direction_to_unit_vector, collision_axis, bottom_left
 from arc_puzzle_generator.selection import resolve_point_set_selectors_with_direction
 from arc_puzzle_generator.state import AgentState, AgentStateMapping, ColorIterator
 
@@ -139,6 +139,54 @@ class OutOfGridRule(Rule):
                 direction=states[-1].direction,
                 color=next(colors),
                 charge=0  # Set charge to 0 to indicate removal
+            ), colors
+
+        return None
+
+
+class StayInGridRule(Rule):
+    """
+    An action that keeps the agent in the grid applying a direction rule.
+    """
+
+    def __init__(
+            self,
+            direction_rule: DirectionTransformer,
+            grid_size: Point,
+    ) -> None:
+        self.direction_rule = direction_rule
+        self.grid_size = grid_size
+
+    def __call__(
+            self,
+            states: Sequence[AgentState],
+            colors: ColorIterator,
+            collision: PointSet,
+            collision_mapping: AgentStateMapping,
+    ) -> ActionResult:
+        """
+        Keep the agent in the grid by applying the direction rule.
+
+        :return: A new state with the updated position and direction.
+        """
+
+        next_position = states[-1].position.shift(direction_to_unit_vector(states[-1].direction))
+
+        min_x = min(pos[0] for pos in next_position)
+        max_x = max(pos[0] for pos in next_position)
+        min_y = min(pos[1] for pos in next_position)
+        max_y = max(pos[1] for pos in next_position)
+
+        if min_x < 0 or max_x >= self.grid_size[0] or \
+                min_y < 0 or max_y >= self.grid_size[1]:
+            new_direction = self.direction_rule(states[-1].direction)
+            new_position = states[-1].position.shift(direction_to_unit_vector(new_direction))
+
+            return AgentState(
+                position=new_position,
+                direction=new_direction,
+                color=next(colors),
+                charge=states[-1].charge - 1 if states[-1].charge > 0 else states[-1].charge
             ), colors
 
         return None
@@ -371,3 +419,39 @@ def backtrack_rule(
         return states[-2], colors
 
     return None
+
+
+class LeftBottomRule(Rule):
+    def __init__(self, direction_rule: DirectionTransformer) -> None:
+        self.direction_rule = direction_rule
+
+    def __call__(
+            self,
+            states: Sequence[AgentState],
+            colors: ColorIterator,
+            collision: PointSet,
+            collision_mapping: AgentStateMapping,
+    ) -> ActionResult:
+        """
+        An action that attempts to change the agent's direction if it collides at the left bottom corner.
+        :return: A new state with the updated position and direction if the agent collides at the left bottom corner, otherwise None.
+        """
+        bottom_left_corners = PointSet([
+            bottom_left(point, states[-1].direction) for point in states[-1].position
+        ])
+
+        if len(bottom_left_corners & collision) > 0:
+            # If the agent collides at the left bottom corner, try to change direction
+            new_direction = self.direction_rule(states[-1].direction)
+            new_position = states[-1].position.shift(direction_to_unit_vector(new_direction))
+
+            if len(new_position & collision) == 0:
+                return AgentState(
+                    position=new_position,
+                    direction=new_direction,
+                    color=next(colors),
+                    charge=states[-1].charge - 1 if states[-1].charge > 0 else states[-1].charge
+                ), colors
+
+        return None
+
