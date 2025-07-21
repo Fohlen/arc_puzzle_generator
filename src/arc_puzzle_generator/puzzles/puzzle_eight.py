@@ -123,7 +123,7 @@ def puzzle_eight(input_grid: np.ndarray) -> Model:
             for x in range(min_x, max_x, step_x):
                 for y in range(min_y, max_y, step_y):
                     if box_mask[x, y]:
-                        rectangle_size = (x - min_x, y - min_y)
+                        rectangle_size = (x - min_x + 1, y - min_y + 1)
                     else:
                         break
 
