@@ -144,64 +144,31 @@ def puzzle_eight(input_grid: np.ndarray) -> Model:
 
             for _ in range(num_agents):
                 target_color = next(color_sequence)
-
-                agents.extend([
-                    Agent(
-                        position=PointSet([agent_point]),
-                        direction="right",
-                        label="point_clockwise",
-                        node=RuleNode(
-                            TrappedCollisionRule(direction_rule=clockwise_direction_90, select_direction=True),
+                agents.append(Agent(
+                    position=PointSet([agent_point]),
+                    direction="right",
+                    label="point_clockwise",
+                    node=RuleNode(
+                        TrappedCollisionRule(direction_rule=clockwise_direction_90, select_direction=True),
+                        alternative_node=RuleNode(
+                            CollisionDirectionRule(direction_rule=clockwise_direction_90, select_direction=True),
                             alternative_node=RuleNode(
-                                CollisionDirectionRule(direction_rule=clockwise_direction_90, select_direction=True),
+                                StayInGridRule(direction_rule=clockwise_direction_90, grid_size=input_grid.shape),
                                 alternative_node=RuleNode(
-                                    StayInGridRule(direction_rule=clockwise_direction_90, grid_size=input_grid.shape),
-                                    alternative_node=RuleNode(
-                                        CornerSelectorRule(
-                                            direction_rule=counterclockwise_direction_90,
-                                            selector=bottom_left_selector
-                                        ),
-                                        alternative_node=RuleNode(
-                                            DirectionRule(direction_rule=identity_direction, select_direction=True)
-                                        )
-                                    )
-                                )
-                            )
-                        ),
-                        colors=cycle([target_color]),
-                        charge=-1
-                    ),
-                    Agent(
-                        position=PointSet([agent_point]),
-                        direction="left",
-                        label="point_counterclockwise",
-                        node=RuleNode(
-                            TrappedCollisionRule(direction_rule=counterclockwise_direction_90, select_direction=True),
-                            alternative_node=RuleNode(
-                                CollisionDirectionRule(direction_rule=counterclockwise_direction_90,
-                                                       select_direction=True),
-                                alternative_node=RuleNode(
-                                    StayInGridRule(
+                                    CornerSelectorRule(
                                         direction_rule=counterclockwise_direction_90,
-                                        grid_size=input_grid.shape
+                                        selector=bottom_left_selector
                                     ),
                                     alternative_node=RuleNode(
-                                        CornerSelectorRule(
-                                            direction_rule=clockwise_direction_90,
-                                            selector=bottom_right_selector,
-                                        ),
-                                        alternative_node=RuleNode(
-                                            DirectionRule(direction_rule=identity_direction, select_direction=True)
-                                        )
+                                        DirectionRule(direction_rule=identity_direction, select_direction=True)
                                     )
                                 )
                             )
-                        ),
-                        colors=cycle([target_color]),
-                        charge=-1
-                    )
-                ])
-
+                        )
+                    ),
+                    colors=cycle([target_color]),
+                    charge=-1
+                ))
                 agent_point = (agent_point[0] + direction_unit[0], agent_point[1] + direction_unit[1])
 
     return Model(
