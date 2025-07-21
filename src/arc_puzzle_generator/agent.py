@@ -59,8 +59,8 @@ class Agent:
             result = current.rule(states, self.colors, collision, collision_mapping)
 
             if result is not None:
-                logger.debug(f"Rule {get_callable_name(current.rule)} produced state: {result}")
                 state, colors = result
+                logger.debug(f"Rule {get_callable_name(current.rule)} produced state: {state}")
 
                 self.position = state.position
                 self.direction = state.direction
