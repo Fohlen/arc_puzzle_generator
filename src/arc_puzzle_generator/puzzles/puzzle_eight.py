@@ -1,3 +1,4 @@
+import logging
 from collections import Counter
 from itertools import cycle
 from typing import cast
@@ -9,10 +10,15 @@ from arc_puzzle_generator.direction import identity_direction, clockwise_directi
     counterclockwise_direction_90, orthogonal_direction
 from arc_puzzle_generator.geometry import unmask, PointSet, Point
 from arc_puzzle_generator.model import Model
+from arc_puzzle_generator.neighbourhood import moore_neighbours
 from arc_puzzle_generator.physics import direction_to_unit_vector
 from arc_puzzle_generator.rule import RuleNode, identity_rule, DirectionRule, CollisionDirectionRule, \
     StayInGridRule, Rule, TrappedCollisionRule, LeftBottomRule
+from arc_puzzle_generator.topology import all_topology
 from arc_puzzle_generator.utils.entities import colour_count, find_connected_objects
+
+
+logging.basicConfig(level=logging.DEBUG)
 
 
 def puzzle_eight(input_grid: np.ndarray) -> Model:
@@ -50,7 +56,7 @@ def puzzle_eight(input_grid: np.ndarray) -> Model:
                 bounding_box[(i - 1), 0][1].item(),
             )
 
-            points[point] = target_color
+            points[point] = target_color.item()
 
     # next we find all polygons and their associated sequence
     point_set = PointSet(points.keys())
@@ -129,7 +135,7 @@ def puzzle_eight(input_grid: np.ndarray) -> Model:
                 num_agents = 1
             else:
                 num_agents = (shortest_side // len(sorted_sequence_points)) + (
-                            shortest_side % len(sorted_sequence_points))
+                        shortest_side % len(sorted_sequence_points))
 
             color_sequence = cycle([points[point] for point in sorted_sequence_points])
             agent_point = sorted_sequence_points[0]
@@ -168,6 +174,8 @@ def puzzle_eight(input_grid: np.ndarray) -> Model:
     return Model(
         output_grid=input_grid,
         agents=agents,
+        neighbourhood=moore_neighbours,
+        topology=all_topology,
         execution_mode="sequential",
         collision_mode="history",
     )
