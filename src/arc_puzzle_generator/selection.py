@@ -28,7 +28,7 @@ def up_selector(point: Point, point_set: PointSet) -> PointSet:
     :return: A set of points that are above the reference point.
     """
 
-    return PointSet((x, y) for (x, y) in point_set if x < point[0])
+    return PointSet((x, y) for (x, y) in point_set if x < point[0] and y == point[1])
 
 
 def down_selector(point: Point, point_set: PointSet) -> PointSet:
@@ -40,7 +40,7 @@ def down_selector(point: Point, point_set: PointSet) -> PointSet:
     :return: A set of points that are below the reference point.
     """
 
-    return PointSet((x, y) for (x, y) in point_set if x > point[0])
+    return PointSet((x, y) for (x, y) in point_set if x > point[0] and y == point[1])
 
 
 def left_selector(point: Point, point_set: PointSet) -> PointSet:
@@ -51,7 +51,7 @@ def left_selector(point: Point, point_set: PointSet) -> PointSet:
     :return: A set of points that are to the left of the reference point.
     """
 
-    return PointSet((x, y) for (x, y) in point_set if y < point[1])
+    return PointSet((x, y) for (x, y) in point_set if y < point[1] and x == point[0])
 
 
 def right_selector(point: Point, point_set: PointSet) -> PointSet:
@@ -62,7 +62,7 @@ def right_selector(point: Point, point_set: PointSet) -> PointSet:
     :return: A set of points that are to the right of the reference point.
     """
 
-    return PointSet((x, y) for (x, y) in point_set if y > point[1])
+    return PointSet((x, y) for (x, y) in point_set if y > point[1] and x == point[0])
 
 
 def resolve_point_set_selectors(point_set: PointSet, neighbourhood: PointSet, selector: Selector) -> PointSet:

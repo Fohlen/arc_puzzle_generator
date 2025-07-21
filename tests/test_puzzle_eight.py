@@ -17,5 +17,4 @@ class PuzzleEightTestCase(TestCase):
     def test_generate_13e47133(self):
         model = puzzle_eight(self.puzzle.train[0].input)
         *_, output_grid = model
-        # output_grid = output_grid[1:-1, 1:-1]
         self.assertTrue(np.array_equal(self.puzzle.train[0].output, output_grid))
