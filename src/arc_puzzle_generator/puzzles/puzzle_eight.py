@@ -138,6 +138,16 @@ def puzzle_eight(input_grid: np.ndarray) -> Model:
                 num_agents = (shortest_side // len(sorted_sequence_points)) + (
                         shortest_side % len(sorted_sequence_points))
 
+
+            if corner == "top_left":
+                agent_direction = "right"
+            elif corner == "top_right":
+                agent_direction = "down"
+            elif corner == "bottom_right":
+                agent_direction = "left"
+            else:
+                agent_direction = "up"
+
             color_sequence = cycle([points[point] for point in sorted_sequence_points])
             agent_point = sorted_sequence_points[0]
             agent_direction_unit = direction_to_unit_vector(direction_count.most_common()[0][0])
@@ -146,7 +156,7 @@ def puzzle_eight(input_grid: np.ndarray) -> Model:
                 target_color = next(color_sequence)
                 agents.append(Agent(
                     position=PointSet([agent_point]),
-                    direction="right",
+                    direction=agent_direction,
                     label="point_clockwise",
                     node=RuleNode(
                         TrappedCollisionRule(direction_rule=clockwise_direction_90, select_direction=True),
