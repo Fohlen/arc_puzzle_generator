@@ -204,15 +204,3 @@ def starting_point(
     raise ValueError("Unknown direction {}".format(direction))
 
 
-def bottom_left(point: Point, direction: Direction) -> Point:
-    match direction:
-        case "left":
-            return point[0] + 1, point[1] + 1
-        case "up":
-            return point[0] + 1, point[1] - 1
-        case "right":
-            return point[0] - 1, point[1] - 1
-        case "down":
-            return point[0] - 1, point[1] + 1
-        case _:
-            raise ValueError("Unsupported direction for bottom_left: {}".format(direction))

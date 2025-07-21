@@ -13,10 +13,10 @@ from arc_puzzle_generator.model import Model
 from arc_puzzle_generator.neighbourhood import moore_neighbours
 from arc_puzzle_generator.physics import direction_to_unit_vector
 from arc_puzzle_generator.rule import RuleNode, identity_rule, DirectionRule, CollisionDirectionRule, \
-    StayInGridRule, Rule, TrappedCollisionRule, LeftBottomRule
+    StayInGridRule, Rule, TrappedCollisionRule, CornerSelectorRule
+from arc_puzzle_generator.selection import bottom_left_selector, bottom_right_selector
 from arc_puzzle_generator.topology import all_topology
 from arc_puzzle_generator.utils.entities import colour_count, find_connected_objects
-
 
 logging.basicConfig(level=logging.DEBUG)
 
@@ -148,7 +148,7 @@ def puzzle_eight(input_grid: np.ndarray) -> Model:
                     Agent(
                         position=PointSet([agent_point]),
                         direction="right",
-                        label="point",
+                        label="point_clockwise",
                         node=RuleNode(
                             TrappedCollisionRule(direction_rule=clockwise_direction_90, select_direction=True),
                             alternative_node=RuleNode(
@@ -156,7 +156,39 @@ def puzzle_eight(input_grid: np.ndarray) -> Model:
                                 alternative_node=RuleNode(
                                     StayInGridRule(direction_rule=clockwise_direction_90, grid_size=input_grid.shape),
                                     alternative_node=RuleNode(
-                                        LeftBottomRule(direction_rule=counterclockwise_direction_90),
+                                        CornerSelectorRule(
+                                            direction_rule=counterclockwise_direction_90,
+                                            selector=bottom_left_selector
+                                        ),
+                                        alternative_node=RuleNode(
+                                            DirectionRule(direction_rule=identity_direction, select_direction=True)
+                                        )
+                                    )
+                                )
+                            )
+                        ),
+                        colors=cycle([target_color]),
+                        charge=-1
+                    ),
+                    Agent(
+                        position=PointSet([agent_point]),
+                        direction="left",
+                        label="point_counterclockwise",
+                        node=RuleNode(
+                            TrappedCollisionRule(direction_rule=counterclockwise_direction_90, select_direction=True),
+                            alternative_node=RuleNode(
+                                CollisionDirectionRule(direction_rule=counterclockwise_direction_90,
+                                                       select_direction=True),
+                                alternative_node=RuleNode(
+                                    StayInGridRule(
+                                        direction_rule=counterclockwise_direction_90,
+                                        grid_size=input_grid.shape
+                                    ),
+                                    alternative_node=RuleNode(
+                                        CornerSelectorRule(
+                                            direction_rule=clockwise_direction_90,
+                                            selector=bottom_right_selector,
+                                        ),
                                         alternative_node=RuleNode(
                                             DirectionRule(direction_rule=identity_direction, select_direction=True)
                                         )

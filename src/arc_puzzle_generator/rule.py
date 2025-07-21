@@ -1,9 +1,9 @@
 from itertools import chain, cycle
-from typing import Protocol, Optional, Sequence, Callable, Iterator
+from typing import Protocol, Optional, Sequence, Callable
 
 from arc_puzzle_generator.direction import DirectionTransformer
 from arc_puzzle_generator.geometry import PointSet, Point
-from arc_puzzle_generator.physics import direction_to_unit_vector, collision_axis, bottom_left
+from arc_puzzle_generator.physics import direction_to_unit_vector, collision_axis, Direction
 from arc_puzzle_generator.selection import resolve_point_set_selectors_with_direction
 from arc_puzzle_generator.state import AgentState, AgentStateMapping, ColorIterator
 
@@ -421,26 +421,35 @@ def backtrack_rule(
     return None
 
 
-class LeftBottomRule(Rule):
-    def __init__(self, direction_rule: DirectionTransformer) -> None:
+class CornerSelectorRule(Rule):
+    def __init__(
+            self,
+            direction_rule: DirectionTransformer,
+            selector: Callable[[Point, Direction], Point]
+    ) -> None:
+        """
+        Initialize the directional selector rule with a direction rule.
+        :param direction_rule: A function that transforms the current direction.
+        """
         self.direction_rule = direction_rule
+        self.selector = selector
 
     def __call__(
             self,
             states: Sequence[AgentState],
             colors: ColorIterator,
             collision: PointSet,
-            collision_mapping: AgentStateMapping,
+            collision_mapping: AgentStateMapping
     ) -> ActionResult:
         """
-        An action that attempts to change the agent's direction if it collides at the left bottom corner.
-        :return: A new state with the updated position and direction if the agent collides at the left bottom corner, otherwise None.
+        An action that attempts to change the agent's direction if it collides at the selected corner.
+        :return: A new state with the updated position and direction if the agent collides at the selected corner, otherwise None.
         """
-        bottom_left_corners = PointSet([
-            bottom_left(point, states[-1].direction) for point in states[-1].position
+        corners = PointSet([
+            self.selector(point, states[-1].direction) for point in states[-1].position
         ])
 
-        if len(bottom_left_corners & collision) > 0:
+        if len(corners & collision) > 0:
             # If the agent collides at the left bottom corner, try to change direction
             new_direction = self.direction_rule(states[-1].direction)
             new_position = states[-1].position.shift(direction_to_unit_vector(new_direction))
@@ -454,4 +463,3 @@ class LeftBottomRule(Rule):
                 ), colors
 
         return None
-
