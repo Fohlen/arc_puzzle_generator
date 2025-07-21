@@ -65,6 +65,16 @@ def orthogonal_direction(direction: Direction, axis: Axis = "horizontal") -> Dir
                     return "bottom_left"
                 case "top_right":
                     return "bottom_right"
+        case "diagonal":
+            match direction:
+                case "bottom_left":
+                    return "top_right"
+                case "bottom_right":
+                    return "top_left"
+                case "top_left":
+                    return "bottom_right"
+                case "top_right":
+                    return "bottom_left"
 
     raise ValueError("Unknown axis {}".format(axis))
 

@@ -1,3 +1,4 @@
+from collections import Counter
 from itertools import cycle
 from typing import cast
 
@@ -5,9 +6,10 @@ import numpy as np
 
 from arc_puzzle_generator.agent import Agent
 from arc_puzzle_generator.direction import identity_direction, clockwise_direction_90, \
-    counterclockwise_direction_90
+    counterclockwise_direction_90, orthogonal_direction
 from arc_puzzle_generator.geometry import unmask, PointSet, Point
 from arc_puzzle_generator.model import Model
+from arc_puzzle_generator.physics import direction_to_unit_vector
 from arc_puzzle_generator.rule import RuleNode, identity_rule, DirectionRule, CollisionDirectionRule, \
     StayInGridRule, Rule, TrappedCollisionRule, LeftBottomRule
 from arc_puzzle_generator.utils.entities import colour_count, find_connected_objects
@@ -63,26 +65,72 @@ def puzzle_eight(input_grid: np.ndarray) -> Model:
         sequence_points = point_set & box_points
 
         if len(sequence_points) > 0:
-            # once we found the starting colors, we want to try and find the largest rectangle that contains all of them,
-            point_rectangle: dict[Point, Point] = {}
+            # once we found the starting colors, we want to find the corresponding corner of the polygon,
+            direction_count = Counter()
 
-            for point in sequence_points:
-                for x in range(point[0], grid.shape[0]):
-                    for y in range(point[1], grid.shape[1]):
-                        if box_mask[x, y]:
-                            point_rectangle[point] = (x - point[0], y - point[1])
+            random_point = next(iter(sequence_points))
+            for direction in ["top_left", "top_right", "bottom_left", "bottom_right"]:
+                direction_unit = direction_to_unit_vector(direction)
+                next_point = (random_point[0] + direction_unit[0], random_point[1] + direction_unit[1])
 
+                while 0 < next_point[0] < grid.shape[0] and \
+                        0 < next_point[1] < grid.shape[1] and box_mask[next_point]:
+                    direction_count[direction] += 1
+                    direction_unit = direction_to_unit_vector(direction)
+                    next_point = (next_point[0] + direction_unit[0], next_point[1] + direction_unit[1])
+
+            sequence_direction = orthogonal_direction(direction_count.most_common()[0][0], axis="diagonal")
             sorted_sequence_points = sorted(
                 sequence_points,
-                key=lambda sort_point: point_rectangle[sort_point][0] * point_rectangle[sort_point][1],
-                reverse=True
+                reverse=sequence_direction in ["bottom_left", "bottom_right"],
             )
+
+            # we found the starting point, and we want to find the largest rectangle from this point
+            start_point = sorted_sequence_points[0]
+
+            if sequence_direction == "top_left":
+                min_x = start_point[0]
+                max_x = grid.shape[0]
+                step_x = 1
+                min_y = start_point[1]
+                max_y = grid.shape[1]
+                step_y = 1
+            elif sequence_direction == "top_right":
+                min_x = start_point[0]
+                max_x = grid.shape[0]
+                step_x = 1
+                min_y = start_point[1]
+                max_y = -1
+                step_y = -1
+            elif sequence_direction == "bottom_left":
+                min_x = start_point[0]
+                max_x = -1
+                step_x = -1
+                min_y = start_point[1]
+                max_y = grid.shape[1]
+                step_y = -1
+            else:
+                min_x = start_point[0]
+                max_x = -1
+                step_x = -1
+                min_y = start_point[1]
+                max_y = -1
+                step_y = -1
+
+            rectangle_size = (0, 0)
+
+            for x in range(min_x, max_x, step_x):
+                for y in range(min_y, max_y, step_y):
+                    if box_mask[x, y]:
+                        rectangle_size = (x - min_x, y - min_y)
+                    else:
+                        break
 
             # we use the shorted side of the rectangle to determine the number of agents,
             # as agents need to repeat on either side of the rectangle,
             # e.g. if a rectangle is 10x6, and we have 3 agents, we will have 3 agents on the left side and 3 agents on the right side, and one agent in the middle,
             # from this we can determine the number of agents we need to create, their positions, and we also let them run in both directions around the polygon,
-            shortest_side = min(point_rectangle[sorted_sequence_points[0]])
+            shortest_side = abs(min(rectangle_size))
             num_agents = (shortest_side // len(sorted_sequence_points)) + (shortest_side % len(sorted_sequence_points))
             print("HI")
 
