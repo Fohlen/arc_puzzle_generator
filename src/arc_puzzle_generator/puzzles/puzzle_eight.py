@@ -11,7 +11,7 @@ from arc_puzzle_generator.direction import identity_direction, clockwise_directi
 from arc_puzzle_generator.geometry import unmask, PointSet, Point
 from arc_puzzle_generator.model import Model
 from arc_puzzle_generator.neighbourhood import moore_neighbours
-from arc_puzzle_generator.physics import direction_to_unit_vector
+from arc_puzzle_generator.physics import direction_to_unit_vector, Direction
 from arc_puzzle_generator.rule import RuleNode, identity_rule, DirectionRule, CollisionDirectionRule, \
     StayInGridRule, Rule, TrappedCollisionRule, CornerSelectorRule
 from arc_puzzle_generator.selection import bottom_left_selector, bottom_right_selector
@@ -56,7 +56,7 @@ def puzzle_eight(input_grid: np.ndarray) -> Model:
                 bounding_box[(i - 1), 0][1].item(),
             )
 
-            points[point] = target_color.item()
+            points[point] = target_color
 
     # next we find all polygons and their associated sequence
     point_set = PointSet(points.keys())
@@ -72,10 +72,11 @@ def puzzle_eight(input_grid: np.ndarray) -> Model:
 
         if len(sequence_points) > 0:
             # once we found the starting colors, we want to find the corresponding corner of the polygon,
-            direction_count = Counter()
+            direction_count: Counter[Direction] = Counter()
+            directions: list[Direction] = ["top_left", "top_right", "bottom_left", "bottom_right"]
 
             random_point = next(iter(sequence_points))
-            for direction in ["top_left", "top_right", "bottom_left", "bottom_right"]:
+            for direction in directions:
                 direction_unit = direction_to_unit_vector(direction)
                 next_point = (random_point[0] + direction_unit[0], random_point[1] + direction_unit[1])
 
