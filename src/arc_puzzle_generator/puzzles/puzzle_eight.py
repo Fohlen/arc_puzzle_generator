@@ -77,13 +77,13 @@ def puzzle_eight(input_grid: np.ndarray) -> Model:
 
             random_point = next(iter(sequence_points))
             for direction in directions:
-                direction_unit = direction_to_unit_vector(direction)
-                next_point = (random_point[0] + direction_unit[0], random_point[1] + direction_unit[1])
+                agent_direction_unit = direction_to_unit_vector(direction)
+                next_point = (random_point[0] + agent_direction_unit[0], random_point[1] + agent_direction_unit[1])
 
-                while 0 < next_point[0] < grid.shape[0] and \
-                        0 < next_point[1] < grid.shape[1] and box_mask[next_point]:
+                while -1 < next_point[0] < grid.shape[0] and \
+                        -1 < next_point[1] < grid.shape[1] and box_mask[next_point]:
                     direction_count[direction] += 1
-                    next_point = (next_point[0] + direction_unit[0], next_point[1] + direction_unit[1])
+                    next_point = (next_point[0] + agent_direction_unit[0], next_point[1] + agent_direction_unit[1])
 
             corner = orthogonal_direction(direction_count.most_common()[0][0], axis="diagonal")
             sorted_sequence_points = sorted(
@@ -140,7 +140,7 @@ def puzzle_eight(input_grid: np.ndarray) -> Model:
 
             color_sequence = cycle([points[point] for point in sorted_sequence_points])
             agent_point = sorted_sequence_points[0]
-            direction_unit = direction_to_unit_vector(direction_count.most_common()[0][0])
+            agent_direction_unit = direction_to_unit_vector(direction_count.most_common()[0][0])
 
             for _ in range(num_agents):
                 target_color = next(color_sequence)
@@ -169,7 +169,7 @@ def puzzle_eight(input_grid: np.ndarray) -> Model:
                     colors=cycle([target_color]),
                     charge=-1
                 ))
-                agent_point = (agent_point[0] + direction_unit[0], agent_point[1] + direction_unit[1])
+                agent_point = (agent_point[0] + agent_direction_unit[0], agent_point[1] + agent_direction_unit[1])
 
     return Model(
         output_grid=input_grid,
