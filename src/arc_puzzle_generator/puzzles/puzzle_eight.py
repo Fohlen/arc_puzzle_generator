@@ -76,44 +76,38 @@ def puzzle_eight(input_grid: np.ndarray) -> Model:
                 while 0 < next_point[0] < grid.shape[0] and \
                         0 < next_point[1] < grid.shape[1] and box_mask[next_point]:
                     direction_count[direction] += 1
-                    direction_unit = direction_to_unit_vector(direction)
                     next_point = (next_point[0] + direction_unit[0], next_point[1] + direction_unit[1])
 
-            sequence_direction = orthogonal_direction(direction_count.most_common()[0][0], axis="diagonal")
+            corner = orthogonal_direction(direction_count.most_common()[0][0], axis="diagonal")
             sorted_sequence_points = sorted(
                 sequence_points,
-                reverse=sequence_direction in ["bottom_left", "bottom_right"],
+                reverse=corner in ["bottom_left", "bottom_right"],
             )
 
             # we found the starting point, and we want to find the largest rectangle from this point
             start_point = sorted_sequence_points[0]
 
-            if sequence_direction == "top_left":
-                min_x = start_point[0]
+            min_x = start_point[0]
+            min_y = start_point[1]
+
+            if corner == "top_left":
                 max_x = grid.shape[0]
                 step_x = 1
-                min_y = start_point[1]
                 max_y = grid.shape[1]
                 step_y = 1
-            elif sequence_direction == "top_right":
-                min_x = start_point[0]
+            elif corner == "top_right":
                 max_x = grid.shape[0]
                 step_x = 1
-                min_y = start_point[1]
                 max_y = -1
                 step_y = -1
-            elif sequence_direction == "bottom_left":
-                min_x = start_point[0]
+            elif corner == "bottom_left":
                 max_x = -1
                 step_x = -1
-                min_y = start_point[1]
                 max_y = grid.shape[1]
                 step_y = -1
             else:
-                min_x = start_point[0]
                 max_x = -1
                 step_x = -1
-                min_y = start_point[1]
                 max_y = -1
                 step_y = -1
 
@@ -131,31 +125,45 @@ def puzzle_eight(input_grid: np.ndarray) -> Model:
             # e.g. if a rectangle is 10x6, and we have 3 agents, we will have 3 agents on the left side and 3 agents on the right side, and one agent in the middle,
             # from this we can determine the number of agents we need to create, their positions, and we also let them run in both directions around the polygon,
             shortest_side = abs(min(rectangle_size))
-            num_agents = (shortest_side // len(sorted_sequence_points)) + (shortest_side % len(sorted_sequence_points))
-            print("HI")
+            if len(sorted_sequence_points) == 1:
+                num_agents = 1
+            else:
+                num_agents = (shortest_side // len(sorted_sequence_points)) + (
+                            shortest_side % len(sorted_sequence_points))
 
-    agents += [Agent(
-        position=PointSet({(point[0], point[1])}),
-        direction="right",
-        label="point",
-        node=RuleNode(
-            TrappedCollisionRule(direction_rule=clockwise_direction_90, select_direction=True),
-            alternative_node=RuleNode(
-                CollisionDirectionRule(direction_rule=clockwise_direction_90, select_direction=True),
-                alternative_node=RuleNode(
-                    StayInGridRule(direction_rule=clockwise_direction_90, grid_size=input_grid.shape),
-                    alternative_node=RuleNode(
-                        LeftBottomRule(direction_rule=counterclockwise_direction_90),
-                        alternative_node=RuleNode(
-                            DirectionRule(direction_rule=identity_direction, select_direction=True)
-                        )
+            color_sequence = cycle([points[point] for point in sorted_sequence_points])
+            agent_point = sorted_sequence_points[0]
+            direction_unit = direction_to_unit_vector(direction_count.most_common()[0][0])
+
+            for _ in range(num_agents):
+                target_color = next(color_sequence)
+
+                agents.extend([
+                    Agent(
+                        position=PointSet([agent_point]),
+                        direction="right",
+                        label="point",
+                        node=RuleNode(
+                            TrappedCollisionRule(direction_rule=clockwise_direction_90, select_direction=True),
+                            alternative_node=RuleNode(
+                                CollisionDirectionRule(direction_rule=clockwise_direction_90, select_direction=True),
+                                alternative_node=RuleNode(
+                                    StayInGridRule(direction_rule=clockwise_direction_90, grid_size=input_grid.shape),
+                                    alternative_node=RuleNode(
+                                        LeftBottomRule(direction_rule=counterclockwise_direction_90),
+                                        alternative_node=RuleNode(
+                                            DirectionRule(direction_rule=identity_direction, select_direction=True)
+                                        )
+                                    )
+                                )
+                            )
+                        ),
+                        colors=cycle([target_color]),
+                        charge=-1
                     )
-                )
-            )
-        ),
-        colors=cycle([target_color]),
-        charge=-1
-    ) for (point, target_color) in sorted_points]
+                ])
+
+                agent_point = (agent_point[0] + direction_unit[0], agent_point[1] + direction_unit[1])
 
     return Model(
         output_grid=input_grid,
