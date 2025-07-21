@@ -1,5 +1,6 @@
 from .puzzle_one import puzzle_one
 from .puzzle_two import puzzle_two
 from .puzzle_four import puzzle_four
+from .puzzle_eight import puzzle_eight
 from .puzzle_ten import puzzle_ten
 from .puzzle_fourteen import puzzle_fourteen

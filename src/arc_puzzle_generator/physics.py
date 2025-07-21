@@ -28,8 +28,6 @@ def direction_to_unit_vector(direction: Direction) -> Point:
     """
 
     match direction:
-        case "none":
-            return 0, 0
         case "left":
             return 0, -1
         case "right":
@@ -204,3 +202,5 @@ def starting_point(
             return np.array([start_pos + (direction_to_numpy_unit_vector("top_right") * i) for i in range(point_width)])
 
     raise ValueError("Unknown direction {}".format(direction))
+
+
