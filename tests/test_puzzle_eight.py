@@ -18,3 +18,24 @@ class PuzzleEightTestCase(TestCase):
         model = puzzle_eight(self.puzzle.train[0].input)
         *_, output_grid = model
         self.assertTrue(np.array_equal(self.puzzle.train[0].output, output_grid))
+
+
+    def test_generate_13e47133_second(self):
+        model = puzzle_eight(self.puzzle.train[1].input)
+        *_, output_grid = model
+        self.assertTrue(np.array_equal(self.puzzle.train[1].output, output_grid))
+
+    def test_generate_13e47133_third(self):
+        model = puzzle_eight(self.puzzle.train[2].input)
+        *_, output_grid = model
+        self.assertTrue(np.array_equal(self.puzzle.train[2].output, output_grid))
+
+    def test_generate_13e47133_prompt(self):
+        model = puzzle_eight(self.puzzle.test[0].input)
+        *_, output_grid = model
+        self.assertTrue(np.array_equal(self.puzzle.test[0].output, output_grid))
+
+    def test_generate_13e47133_prompt_second(self):
+        model = puzzle_eight(self.puzzle.test[1].input)
+        *_, output_grid = model
+        self.assertTrue(np.array_equal(self.puzzle.test[1].output, output_grid))
