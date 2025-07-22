@@ -4,7 +4,7 @@ from arc_puzzle_generator.direction import orthogonal_direction, snake_direction
 from arc_puzzle_generator.geometry import PointSet
 from arc_puzzle_generator.physics import Direction
 from arc_puzzle_generator.rule import identity_rule, DirectionRule, CollisionDirectionRule, OutOfGridRule, \
-    collision_color_mapping_rule, TrappedCollisionRule, CollisionBorderRule
+    collision_color_mapping_rule, TrappedCollisionRule, CollisionBorderRule, CollisionFillRule
 from arc_puzzle_generator.state import AgentState
 
 
@@ -154,3 +154,22 @@ class RuleTest(TestCase):
         self.assertEqual(PointSet([(0, 1)]), new_state.position)
         self.assertEqual("right", new_state.direction)
         self.assertEqual(9, new_state.color)
+
+    def test_collision_file_rule_with_collision(self):
+        states = [AgentState(PointSet([(0, 0)]), "right", 9, 1)]
+        colors = iter([1, 2])
+        collision = PointSet([(0, 1), (0, 2)])
+        collision_mapping = {
+            (0, 1): AgentState(PointSet([(0, 1)]), "none", 2, 1),
+            (0, 2): AgentState(PointSet([(0, 2)]), "none", 3, 1)
+        }
+
+        rule = CollisionFillRule(fill_color=9)
+        result = rule(states, colors, collision, collision_mapping)
+        self.assertIsNotNone(result)
+        new_state, new_colors = result
+
+        self.assertEqual(9, new_state.color)
+        self.assertEqual(PointSet([(0, 0), (0, 1), (0, 2)]), new_state.position)
+        self.assertEqual(states[0].direction, new_state.direction)
+        self.assertEqual(states[0].charge, new_state.charge)
