@@ -3,7 +3,8 @@ from unittest import TestCase
 from arc_puzzle_generator.direction import orthogonal_direction
 from arc_puzzle_generator.geometry import PointSet
 from arc_puzzle_generator.physics import Direction
-from arc_puzzle_generator.rule import identity_rule, DirectionRule, CollisionDirectionRule, OutOfGridRule
+from arc_puzzle_generator.rule import identity_rule, DirectionRule, CollisionDirectionRule, OutOfGridRule, \
+    collision_color_mapping_rule
 from arc_puzzle_generator.state import AgentState
 
 
@@ -100,3 +101,21 @@ class RuleTest(TestCase):
         self.assertEqual(PointSet([(0, 0)]), new_state.position)
         self.assertEqual("up", new_state.direction)
         self.assertEqual(1, new_state.color)
+
+    def test_collision_color_mapping_rule_with_collision(self):
+        states = [AgentState(PointSet([(0, 0)]), "down", 1, 1)]
+        colors = iter([1, 2])
+        collision = PointSet([(1, 0)])
+        collision_mapping = {
+            (1, 0): AgentState(PointSet([(1, 0)]), "down", 2, 1)
+        }
+
+        result = collision_color_mapping_rule(states, colors, collision, collision_mapping)
+
+        self.assertIsNotNone(result)
+        new_state, new_colors = result
+
+        self.assertEqual(2, new_state.color)
+        self.assertEqual(PointSet([(0, 0)]), new_state.position)
+        self.assertEqual("down", new_state.direction)
+        self.assertEqual(1, new_state.charge)
