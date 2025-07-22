@@ -412,7 +412,6 @@ class GravityRule(Rule):
             collision: PointSet,
             collision_mapping: AgentStateMapping
     ) -> ActionResult:
-
         directions: list[Direction] = ["down", "left", "right"]
         for direction in directions:
             sub_collision = resolve_point_set_selectors_with_direction(

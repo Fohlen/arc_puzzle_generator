@@ -54,8 +54,8 @@ def puzzle_eighteen(input_grid: np.ndarray) -> Model:
             ),
         ),
         colors=cycle([1]),
-        charge=20
-    ) for point in sorted(unmask(water_mask))]
+        charge=20 if point[0] < input_grid.shape[0] - 1 else 0
+    ) for point in sorted(unmask(water_mask), reverse=True)]
 
     return Model(
         input_grid.copy(),
