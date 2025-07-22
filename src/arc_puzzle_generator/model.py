@@ -47,10 +47,6 @@ class Model(Iterator[np.ndarray], Iterable[np.ndarray]):
                 position = np.array(list(agent.position))
                 self.output_grid[position[:, 0], position[:, 1]] = agent.color
 
-        # Note: It is not clear if this is the optimal way to handle the step iterator.
-        while self.active:
-            self.step()
-
     @property
     def active(self) -> bool:
         """Check if any agent is active."""
@@ -60,6 +56,9 @@ class Model(Iterator[np.ndarray], Iterable[np.ndarray]):
         return self
 
     def __next__(self) -> np.ndarray:
+        if self.active:
+            self.step()
+
         return next(self.step_iterator)
 
     def _process_agent(self, agent: Agent) -> None:
