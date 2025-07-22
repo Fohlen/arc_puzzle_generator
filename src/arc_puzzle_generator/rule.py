@@ -275,6 +275,10 @@ class TrappedCollisionRule(Rule):
 
 
 class CollisionBorderRule(Rule):
+    """
+    A rule that changes the collision border's color to the given border color, if applicable.
+    """
+
     def __init__(
             self,
             border_color: int,
