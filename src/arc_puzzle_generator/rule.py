@@ -362,7 +362,7 @@ def backtrack_rule(
         collision_mapping: AgentStateMapping
 ) -> ActionResult:
     """
-    Backtrack the agent to its previous position.
+    Backtrack the agent to its previous position, if there is any collision detected.
 
     :param states: The current states of the agent.
     :param colors: An iterator over the agent's colors.

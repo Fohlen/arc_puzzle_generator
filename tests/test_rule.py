@@ -4,7 +4,7 @@ from arc_puzzle_generator.direction import orthogonal_direction, snake_direction
 from arc_puzzle_generator.geometry import PointSet
 from arc_puzzle_generator.physics import Direction
 from arc_puzzle_generator.rule import identity_rule, DirectionRule, CollisionDirectionRule, OutOfGridRule, \
-    collision_color_mapping_rule, TrappedCollisionRule, CollisionBorderRule, CollisionFillRule
+    collision_color_mapping_rule, TrappedCollisionRule, CollisionBorderRule, CollisionFillRule, backtrack_rule
 from arc_puzzle_generator.state import AgentState
 
 
@@ -173,3 +173,19 @@ class RuleTest(TestCase):
         self.assertEqual(PointSet([(0, 0), (0, 1), (0, 2)]), new_state.position)
         self.assertEqual(states[0].direction, new_state.direction)
         self.assertEqual(states[0].charge, new_state.charge)
+
+    def test_backtrack_rule(self):
+        states = [
+            AgentState(PointSet([(0, 0)]), "down", 1, 1),
+            AgentState(PointSet([(1, 0)]), "right", 2, 1)
+        ]
+
+        colors = iter([1, 2])
+        collision = PointSet([(1, 0)])
+
+        result = backtrack_rule(states, colors, collision, {})
+        self.assertIsNotNone(result)
+        new_state, new_colors = result
+
+        self.assertEqual(states[0], new_state)
+
