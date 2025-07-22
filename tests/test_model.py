@@ -40,11 +40,11 @@ class ModelTest(TestCase):
         model1.step()
 
         # Assert that _process_agent was called for each agent
-        self.assertEqual(model1._process_agent.call_args_list[-1].args[0], agent2)
-        self.assertEqual(model1._process_agent.call_args_list[-2].args[0], agent1)
+        self.assertEqual(agent2, model1._process_agent.call_args_list[-1].args[0])
+        self.assertEqual(agent1, model1._process_agent.call_args_list[-2].args[0])
 
         # Step forward again
         model1.step()
 
-        self.assertEqual(model1._process_agent.call_args_list[-1].args[0], agent2)
-        self.assertEqual(model1._process_agent.call_args_list[-2].args[0], agent1)
+        self.assertEqual(agent2, model1._process_agent.call_args_list[-1].args[0])
+        self.assertEqual(agent1, model1._process_agent.call_args_list[-2].args[0])
