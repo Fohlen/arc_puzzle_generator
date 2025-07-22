@@ -3,7 +3,7 @@ from unittest import TestCase
 from arc_puzzle_generator.direction import orthogonal_direction
 from arc_puzzle_generator.geometry import PointSet
 from arc_puzzle_generator.physics import Direction
-from arc_puzzle_generator.rule import identity_rule, DirectionRule, CollisionDirectionRule
+from arc_puzzle_generator.rule import identity_rule, DirectionRule, CollisionDirectionRule, OutOfGridRule
 from arc_puzzle_generator.state import AgentState
 
 
@@ -76,4 +76,27 @@ class RuleTest(TestCase):
         self.assertEqual("top_right", new_state.direction)
         self.assertIn((-1, 1), new_state.position)
         self.assertEqual(0, new_state.charge)
+        self.assertEqual(1, new_state.color)
+
+    def test_out_of_grid_rule_inside(self):
+        states = [AgentState(PointSet([(1, 1)]), "up", 1, 1)]
+        colors = iter([1, 2])
+        collision = PointSet()
+        grid_size = (3, 3)
+        rule = OutOfGridRule(grid_size)
+        result = rule(states, colors, collision)
+        self.assertIsNone(result)
+
+    def test_out_of_grid_rule_outside(self):
+        states = [AgentState(PointSet([(0, 0)]), "up", 1, 1)]
+        colors = iter([1, 2])
+        collision = PointSet()
+        grid_size = (2, 2)
+        rule = OutOfGridRule(grid_size)
+        result = rule(states, colors, collision)
+        self.assertIsNotNone(result)
+        new_state, new_colors = result
+        self.assertEqual(0, new_state.charge)
+        self.assertEqual(PointSet([(0, 0)]), new_state.position)
+        self.assertEqual("up", new_state.direction)
         self.assertEqual(1, new_state.color)
