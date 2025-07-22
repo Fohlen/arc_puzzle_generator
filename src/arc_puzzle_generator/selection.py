@@ -28,7 +28,7 @@ def up_selector(point: Point, point_set: PointSet) -> PointSet:
     :return: A set of points that are above the reference point.
     """
 
-    return PointSet((x, y) for (x, y) in point_set if x < point[0])
+    return PointSet((x, y) for (x, y) in point_set if x < point[0] and y == point[1])
 
 
 def down_selector(point: Point, point_set: PointSet) -> PointSet:
@@ -40,7 +40,7 @@ def down_selector(point: Point, point_set: PointSet) -> PointSet:
     :return: A set of points that are below the reference point.
     """
 
-    return PointSet((x, y) for (x, y) in point_set if x > point[0])
+    return PointSet((x, y) for (x, y) in point_set if x > point[0] and y == point[1])
 
 
 def left_selector(point: Point, point_set: PointSet) -> PointSet:
@@ -51,7 +51,7 @@ def left_selector(point: Point, point_set: PointSet) -> PointSet:
     :return: A set of points that are to the left of the reference point.
     """
 
-    return PointSet((x, y) for (x, y) in point_set if y < point[1])
+    return PointSet((x, y) for (x, y) in point_set if y < point[1] and x == point[0])
 
 
 def right_selector(point: Point, point_set: PointSet) -> PointSet:
@@ -62,7 +62,7 @@ def right_selector(point: Point, point_set: PointSet) -> PointSet:
     :return: A set of points that are to the right of the reference point.
     """
 
-    return PointSet((x, y) for (x, y) in point_set if y > point[1])
+    return PointSet((x, y) for (x, y) in point_set if y > point[1] and x == point[0])
 
 
 def resolve_point_set_selectors(point_set: PointSet, neighbourhood: PointSet, selector: Selector) -> PointSet:
@@ -99,3 +99,43 @@ def resolve_point_set_selectors_with_direction(
             return resolve_point_set_selectors(point_set, neighbourhood, right_selector)
         case _:
             raise ValueError(f"Unknown direction: {direction}")
+
+
+def bottom_left_selector(point: Point, direction: Direction) -> Point:
+    """
+    Selects the bottom left point based on the given point as a center and direction.
+    :param point: The center point from which to select.
+    :param direction: The direction to select the bottom left point.
+    :return: A new point that is the bottom left of the given point in the specified direction.
+    """
+    match direction:
+        case "left":
+            return point[0] + 1, point[1] + 1
+        case "up":
+            return point[0] + 1, point[1] - 1
+        case "right":
+            return point[0] - 1, point[1] - 1
+        case "down":
+            return point[0] - 1, point[1] + 1
+        case _:
+            raise ValueError("Unsupported direction for bottom_left: {}".format(direction))
+
+
+def bottom_right_selector(point: Point, direction: Direction) -> Point:
+    """
+    Selects the bottom right point based on the given point as a center and direction.
+    :param point: The center point from which to select.
+    :param direction: The direction to select the bottom right point.
+    :return: A new point that is the bottom right of the given point in the specified direction.
+    """
+    match direction:
+        case "left":
+            return point[0] - 1, point[1] + 1
+        case "up":
+            return point[0] + 1, point[1] + 1
+        case "right":
+            return point[0] + 1, point[1] - 1
+        case "down":
+            return point[0] - 1, point[1] - 1
+        case _:
+            raise ValueError("Unsupported direction for bottom_right: {}".format(direction))

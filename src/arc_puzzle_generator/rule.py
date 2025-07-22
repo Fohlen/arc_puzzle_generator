@@ -275,6 +275,10 @@ class TrappedCollisionRule(Rule):
 
 
 class CollisionBorderRule(Rule):
+    """
+    A rule that changes the collision border's color to the given border color, if applicable.
+    """
+
     def __init__(
             self,
             border_color: int,
@@ -358,7 +362,7 @@ def backtrack_rule(
         collision_mapping: AgentStateMapping
 ) -> ActionResult:
     """
-    Backtrack the agent to its previous position.
+    Backtrack the agent to its previous position, if there is any collision detected.
 
     :param states: The current states of the agent.
     :param colors: An iterator over the agent's colors.
