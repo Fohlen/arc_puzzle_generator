@@ -455,9 +455,11 @@ class BackFillColorRule(Rule):
             collision: PointSet,
             collision_mapping: AgentStateMapping
     ) -> ActionResult:
+        colors = chain([self.fill_color], colors)
+
         return AgentState(
             position=states[-2].position,
             direction=states[-2].direction,
-            color=self.fill_color,
-            charge=states[-2].charge
-        ), chain([self.fill_color], colors)
+            color=next(colors),
+            charge=states[-1].charge
+        ), colors
