@@ -3,7 +3,7 @@ from typing import Protocol, Optional, Sequence, Callable, Iterator
 
 from arc_puzzle_generator.direction import DirectionTransformer
 from arc_puzzle_generator.geometry import PointSet, Point
-from arc_puzzle_generator.physics import direction_to_unit_vector, collision_axis
+from arc_puzzle_generator.physics import direction_to_unit_vector, collision_axis, Direction
 from arc_puzzle_generator.selection import resolve_point_set_selectors_with_direction
 from arc_puzzle_generator.state import AgentState, AgentStateMapping, ColorIterator
 
@@ -375,3 +375,92 @@ def backtrack_rule(
         return states[-2], colors
 
     return None
+
+
+def uncharge_rule(
+        states: Sequence[AgentState],
+        colors: ColorIterator,
+        collision: PointSet,
+        collision_mapping: AgentStateMapping
+) -> ActionResult:
+    """
+    Reduce the agent's charge by 1.
+
+    :param states: The current states of the agent.
+    :param colors: An iterator over the agent's colors.
+    :param collision: The set of points that are in collision with the agent.
+    :param collision_mapping: The mapping between collision points and the agent's colors.
+    :return: A new state with the charge set to 0.
+    """
+
+    return AgentState(
+        position=states[-1].position,
+        direction=states[-1].direction,
+        color=next(colors),
+        charge=max(0, states[-1].charge - 1)
+    ), colors
+
+
+class GravityRule(Rule):
+    def __init__(
+            self,
+            grid_size: Point
+    ):
+        self.grid_size = grid_size
+
+    def __call__(
+            self,
+            states: Sequence[AgentState],
+            colors: ColorIterator,
+            collision: PointSet,
+            collision_mapping: AgentStateMapping
+    ) -> ActionResult:
+
+        directions: list[Direction] = ["down", "left", "right"]
+        for direction in directions:
+            sub_collision = resolve_point_set_selectors_with_direction(
+                states[-1].position, collision, direction
+            )
+
+            if len(sub_collision) == 0:
+                next_position = states[-1].position.shift(direction_to_unit_vector(direction))
+                min_x = min(pos[0] for pos in next_position)
+                max_x = max(pos[0] for pos in next_position)
+                min_y = min(pos[1] for pos in next_position)
+                max_y = max(pos[1] for pos in next_position)
+
+                # If there is no collision and the next position is within the grid bounds
+                if min_x >= 0 and max_x < self.grid_size[0] and \
+                        min_y >= 0 and max_y < self.grid_size[1]:
+                    return AgentState(
+                        position=next_position,
+                        direction=states[-1].direction,
+                        color=next(colors),
+                        charge=states[-1].charge - 1 if states[-1].charge > 0 else states[-1].charge
+                    ), colors
+
+        return None
+
+
+class BackFillColorRule(Rule):
+    def __init__(self, fill_color: int):
+        """
+        A rule that fills the background with a specific color.
+
+        :param fill_color: The color to fill the background with.
+        """
+        self.fill_color = fill_color
+
+    def __call__(
+            self,
+            states: Sequence[AgentState],
+            colors: ColorIterator,
+            collision: PointSet,
+            collision_mapping: AgentStateMapping
+    ) -> ActionResult:
+        return AgentState(
+            position=states[-2].position,
+            direction=states[-2].direction,
+            color=self.fill_color,
+            charge=states[-2].charge
+        ), chain([self.fill_color], colors)
