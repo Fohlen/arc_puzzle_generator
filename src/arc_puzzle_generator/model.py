@@ -104,13 +104,12 @@ class Model(Iterator[np.ndarray], Iterable[np.ndarray]):
     def step(self) -> None:
         if self.execution_mode == "sequential":
             # Sequential: process one agent at a time until it is inactive
-            while self.current_agent_idx < len(self.agents):
+            if self.current_agent_idx < len(self.agents):
                 agent = self.agents[self.current_agent_idx]
                 if agent.active:
                     self._process_agent(agent)
                     if not agent.active:
                         self.current_agent_idx += 1
-                    break  # Only process one agent per step
                 else:
                     self.current_agent_idx += 1
         elif self.execution_mode == "parallel":
