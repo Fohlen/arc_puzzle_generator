@@ -1,11 +1,13 @@
+import logging
 from typing import Iterator, Iterable
 
-from arc_puzzle_generator.rule import RuleNode
 from arc_puzzle_generator.geometry import PointSet
-from arc_puzzle_generator.neighbourhood import Neighbourhood
 from arc_puzzle_generator.physics import Direction
+from arc_puzzle_generator.rule import RuleNode
 from arc_puzzle_generator.state import AgentState, AgentStateMapping
-from arc_puzzle_generator.topology import Topology
+from arc_puzzle_generator.utils.callable import get_callable_name
+
+logger = logging.getLogger(__name__)
 
 
 class Agent:
@@ -53,11 +55,12 @@ class Agent:
         stack = [self.node]
 
         while stack:
-            curr = stack.pop()
-            result = curr.rule(states, self.colors, collision, collision_mapping)
+            current = stack.pop()
+            result = current.rule(states, self.colors, collision, collision_mapping)
 
             if result is not None:
                 state, colors = result
+                logger.debug(f"Rule {get_callable_name(current.rule)} produced state: {state}")
 
                 self.position = state.position
                 self.direction = state.direction
@@ -67,9 +70,9 @@ class Agent:
                 self.history.append(state)
                 states.append(state)
 
-                if curr.next_node is not None:
-                    stack.append(curr.next_node)
-            elif curr.alternative_node is not None:
-                stack.append(curr.alternative_node)
+                if current.next_node is not None:
+                    stack.append(current.next_node)
+            elif current.alternative_node is not None:
+                stack.append(current.alternative_node)
 
-        return states[:-1]
+        return states[1:]
