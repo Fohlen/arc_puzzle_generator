@@ -6,12 +6,11 @@ import numpy as np
 
 from arc_puzzle_generator.agent import Agent
 from arc_puzzle_generator.geometry import unmask, PointSet
-from arc_puzzle_generator.playground import Playground
 from arc_puzzle_generator.neighbourhood import moore_neighbours
+from arc_puzzle_generator.playground import Playground
 from arc_puzzle_generator.rule import RuleNode, identity_rule, OutOfGridRule, uncharge_rule, Rule, \
-    BackFillColorRule, backtrack_rule, GravityRule
+    GravityRule
 from arc_puzzle_generator.topology import all_topology
-
 
 
 def puzzle_eighteen(input_grid: np.ndarray) -> Playground:
@@ -44,12 +43,6 @@ def puzzle_eighteen(input_grid: np.ndarray) -> Playground:
             OutOfGridRule(grid_size=input_grid.shape),
             alternative_node=RuleNode(
                 GravityRule(grid_size=input_grid.shape),
-                next_node=RuleNode(
-                    BackFillColorRule(fill_color=0),
-                    next_node=RuleNode(
-                        cast(Rule, backtrack_rule)
-                    )
-                ),
                 alternative_node=RuleNode(
                     cast(Rule, uncharge_rule)
                 )
@@ -64,5 +57,6 @@ def puzzle_eighteen(input_grid: np.ndarray) -> Playground:
         agents,
         neighbourhood=moore_neighbours,
         topology=all_topology,
-        execution_mode="parallel"
+        execution_mode="parallel",
+        backfill_color=0
     )

@@ -444,29 +444,3 @@ class GravityRule(Rule):
                     ), colors
 
         return None
-
-
-class BackFillColorRule(Rule):
-    def __init__(self, fill_color: int):
-        """
-        A rule that fills the background with a specific color.
-
-        :param fill_color: The color to fill the background with.
-        """
-        self.fill_color = fill_color
-
-    def __call__(
-            self,
-            states: Sequence[AgentState],
-            colors: ColorIterator,
-            collision: PointSet,
-            collision_mapping: AgentStateMapping
-    ) -> ActionResult:
-        colors = chain([self.fill_color], colors)
-
-        return AgentState(
-            position=states[-2].position,
-            direction=states[-2].direction,
-            color=next(colors),
-            charge=states[-1].charge
-        ), colors

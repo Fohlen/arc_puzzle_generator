@@ -11,7 +11,7 @@ from arc_puzzle_generator.playground import Playground
 from arc_puzzle_generator.rule import RuleNode, identity_rule, DirectionRule
 
 
-class ModelTest(TestCase):
+class PlaygroundTestCase(TestCase):
     def test_only_one_agent_steps_called_per_step(self):
         # Create two agents with mocked processing functions
         agent1 = Agent(
@@ -86,3 +86,31 @@ class ModelTest(TestCase):
         model1.step()
         self.assertEqual(1, agent1.steps.call_count)
         self.assertEqual(1, agent2.steps.call_count)
+
+    def test_agent_backfill(self):
+        # Agent starts at (0,0), moves right twice
+        agent = Agent(
+            position=PointSet([(0, 0)]),
+            direction="right",
+            label='A',
+            node=RuleNode(DirectionRule(identity_direction)),
+            colors=iter([1, 1, 1]),
+            charge=3
+        )
+        grid = np.full((1, 3), 9, dtype=int)
+        backfill_color = 9
+        model = Playground(grid, [agent], backfill_color=backfill_color)
+
+        self.assertEqual(1, model.output_grid[0, 0].item())
+        self.assertEqual(backfill_color, model.output_grid[0, 1].item())
+        self.assertEqual(backfill_color, model.output_grid[0, 2].item())
+
+        model.step()
+        self.assertEqual(backfill_color, model.output_grid[0, 0].item())
+        self.assertEqual(1, model.output_grid[0, 1].item())
+        self.assertEqual(backfill_color, model.output_grid[0, 2].item())
+
+        model.step()
+        self.assertEqual(backfill_color, model.output_grid[0, 0].item())
+        self.assertEqual(backfill_color, model.output_grid[0, 1].item())
+        self.assertEqual(1, model.output_grid[0, 2].item())
