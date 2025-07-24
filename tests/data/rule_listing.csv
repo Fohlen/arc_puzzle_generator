@@ -1,0 +1,12 @@
+Rule;Description;Parameter1;Parameter2;Parameter3;;
+identity_rule;Produce the same state again;;;;;
+DirectionRule;if not collision: apply direction_transformer, charge -= 1;direction_transformer (next direction);select_direction: collide on neighbourhood or strictly;;;
+CollisionDirectionRule;if collision: apply direction_transformer, charge -= 1 ;direction_transformer;select_direction;;;
+OutOfGridRule;if out_of_grid: charge = 0   ;grid_size;;;;
+collision_color_mapping_rule;if collision: apply color from collision ;;;;;
+TrappedCollisionRule;if collision: try apply direction_transformer, charge -= 1;direction_transformer;select_direction;;;
+CollisionBorderRule;if collision: apply border_color to collision ;border_color;direction_transformer;select_direction;;
+CollisionFillRule;if collision and current_color == fill_color: apply fill_color to collision;fill_color;;;;
+backtrack_rule;return states[-2];;;;;
+uncharge_rule;charge -= 1;;;;;
+GravityRule;try down, left, right;grid_size;;;;
