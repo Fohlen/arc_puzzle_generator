@@ -13,26 +13,26 @@ class PuzzleFourTestCase(unittest.TestCase):
         self.puzzle = load_puzzle(file_path)
 
     def test_generate_48d8fb45(self):
-        model = puzzle_four(self.puzzle.train[0].input)
-        *_, output_grid = model
+        playground = puzzle_four(self.puzzle.train[0].input)
+        *_, output_grid = playground
         self.assertTrue(np.array_equal(output_grid, self.puzzle.train[0].output))
 
     def test_generate_48d8fb45_second(self):
-        model = puzzle_four(self.puzzle.train[1].input)
-        *_, output_grid = model
+        playground = puzzle_four(self.puzzle.train[1].input)
+        *_, output_grid = playground
         self.assertTrue(np.array_equal(output_grid, self.puzzle.train[1].output))
 
     def test_generate_48d8fb45_third(self):
-        model = puzzle_four(self.puzzle.train[2].input)
-        *_, output_grid = model
+        playground = puzzle_four(self.puzzle.train[2].input)
+        *_, output_grid = playground
         self.assertTrue(np.array_equal(output_grid, self.puzzle.train[2].output))
 
     def test_generate_48d8fb45_prompt(self):
-        model = puzzle_four(self.puzzle.test[0].input)
-        *_, output_grid = model
+        playground = puzzle_four(self.puzzle.test[0].input)
+        *_, output_grid = playground
         self.assertTrue(np.array_equal(output_grid, self.puzzle.test[0].output))
 
     def test_generate_48d8fb45_prompt_second(self):
-        model = puzzle_four(self.puzzle.test[1].input)
-        *_, output_grid = model
+        playground = puzzle_four(self.puzzle.test[1].input)
+        *_, output_grid = playground
         self.assertTrue(np.array_equal(output_grid, self.puzzle.test[1].output))

@@ -9,7 +9,7 @@ from arc_puzzle_generator.rule import OutOfGridRule, CollisionDirectionRule, Dir
 from arc_puzzle_generator.agent import Agent
 from arc_puzzle_generator.direction import identity_direction, orthogonal_direction
 from arc_puzzle_generator.geometry import PointSet
-from arc_puzzle_generator.model import Model
+from arc_puzzle_generator.playground import Playground
 from arc_puzzle_generator.neighbourhood import zero_neighbours, moore_neighbours
 from arc_puzzle_generator.physics import Direction, starting_point
 from arc_puzzle_generator.topology import FixedGroupTopology, identity_topology
@@ -17,7 +17,7 @@ from arc_puzzle_generator.utils.entities import find_colors, find_connected_obje
 from arc_puzzle_generator.utils.grid import make_smallest_square_from_mask
 
 
-def puzzle_four(input_grid: np.ndarray) -> Model:
+def puzzle_four(input_grid: np.ndarray) -> Playground:
     """
     The laser shooter puzzle.
     :param input_grid: The input grid for the puzzle.
@@ -79,7 +79,7 @@ def puzzle_four(input_grid: np.ndarray) -> Model:
         charge=-1,
     ) for color, bbox, direction in l_shapes]
 
-    return Model(
+    return Playground(
         output_grid=input_grid.copy(),
         agents=agents,
         neighbourhood=moore_neighbours,

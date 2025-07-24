@@ -6,7 +6,7 @@ from arc_puzzle_generator.rule import DirectionRule, RuleNode
 from arc_puzzle_generator.agent import Agent
 from arc_puzzle_generator.utils.color_sequence_iterator import ColorSequenceIterator
 from arc_puzzle_generator.geometry import PointSet
-from arc_puzzle_generator.model import Model
+from arc_puzzle_generator.playground import Playground
 from arc_puzzle_generator.neighbourhood import zero_neighbours
 from arc_puzzle_generator.physics import Direction
 from arc_puzzle_generator.direction import identity_direction
@@ -14,7 +14,7 @@ from arc_puzzle_generator.topology import identity_topology
 from arc_puzzle_generator.utils.entities import colour_count, find_connected_objects
 
 
-def puzzle_one(input_grid: np.ndarray) -> Model:
+def puzzle_one(input_grid: np.ndarray) -> Playground:
     """
     The color iteration puzzle.
     :param input_grid: The input grid for the puzzle.
@@ -60,7 +60,7 @@ def puzzle_one(input_grid: np.ndarray) -> Model:
         color_sequence = color_order.items() if direction == "left" else reversed(color_order.items())
         color_sequences.append((index, list(color_sequence)))
 
-    return Model(
+    return Playground(
         output_grid=output_grid,
         agents=[Agent(
             position=PointSet([(row, start_col)]),

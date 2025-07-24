@@ -10,13 +10,13 @@ from arc_puzzle_generator.rule import OutOfGridRule, TrappedCollisionRule, Colli
 from arc_puzzle_generator.agent import Agent
 from arc_puzzle_generator.direction import identity_direction, snake_direction
 from arc_puzzle_generator.geometry import PointSet, unmask
-from arc_puzzle_generator.model import Model
+from arc_puzzle_generator.playground import Playground
 from arc_puzzle_generator.neighbourhood import zero_neighbours, von_neumann_neighbours
 from arc_puzzle_generator.topology import FixedGroupTopology, identity_topology
 from arc_puzzle_generator.utils.entities import colour_count, find_colors, find_connected_objects
 
 
-def puzzle_ten(input_grid: np.ndarray) -> Model:
+def puzzle_ten(input_grid: np.ndarray) -> Playground:
     """
     Puzzle 10: The Snake
     :param input_grid: The input grid for the puzzle.
@@ -95,7 +95,7 @@ def puzzle_ten(input_grid: np.ndarray) -> Model:
         charge=-1,
     ) for row in start_rows]
 
-    return Model(
+    return Playground(
         input_grid.copy(),
         agents=agents,
         neighbourhood=von_neumann_neighbours,

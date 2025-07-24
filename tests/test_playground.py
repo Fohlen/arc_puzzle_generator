@@ -7,7 +7,7 @@ import numpy as np
 from arc_puzzle_generator.agent import Agent
 from arc_puzzle_generator.direction import identity_direction
 from arc_puzzle_generator.geometry import PointSet
-from arc_puzzle_generator.model import Model
+from arc_puzzle_generator.playground import Playground
 from arc_puzzle_generator.rule import RuleNode, identity_rule, DirectionRule
 
 
@@ -33,7 +33,7 @@ class ModelTest(TestCase):
 
         # Create model with sequential execution
         grid = np.zeros((2, 2), dtype=int)
-        model1 = Model(grid, [agent1, agent2])
+        model1 = Playground(grid, [agent1, agent2])
 
         # Mock the _process_agent method to avoid actual processing
         model1._process_agent = MagicMock(return_value=None)
@@ -71,7 +71,7 @@ class ModelTest(TestCase):
 
         # Create model with sequential execution
         grid = np.zeros((2, 2), dtype=int)
-        model1 = Model(grid, [agent1, agent2], execution_mode='sequential')
+        model1 = Playground(grid, [agent1, agent2], execution_mode='sequential')
 
         agent1.steps = MagicMock(side_effect=agent1.steps)
         agent2.steps = MagicMock(side_effect=agent2.steps)

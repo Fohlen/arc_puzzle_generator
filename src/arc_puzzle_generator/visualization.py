@@ -19,7 +19,7 @@ from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from matplotlib.colors import ListedColormap
 from matplotlib.figure import Figure
 
-from arc_puzzle_generator.model import Model
+from arc_puzzle_generator.playground import Playground
 from arc_puzzle_generator.utils.data_loader import load_puzzle, Puzzle
 
 

@@ -7,7 +7,7 @@ from arc_puzzle_generator.rule import DirectionRule, RuleNode
 from arc_puzzle_generator.agent import Agent
 from arc_puzzle_generator.utils.color_sequence_iterator import ColorSequenceIterator
 from arc_puzzle_generator.geometry import PointSet
-from arc_puzzle_generator.model import Model
+from arc_puzzle_generator.playground import Playground
 from arc_puzzle_generator.neighbourhood import zero_neighbours
 from arc_puzzle_generator.physics import Direction, box_distance, relative_box_direction, starting_point
 from arc_puzzle_generator.direction import identity_direction
@@ -15,7 +15,7 @@ from arc_puzzle_generator.topology import identity_topology
 from arc_puzzle_generator.utils.entities import colour_count, find_connected_objects
 
 
-def puzzle_two(input_grid: np.ndarray) -> Model:
+def puzzle_two(input_grid: np.ndarray) -> Playground:
     """
     The rectangle iteration order puzzle.
 
@@ -94,7 +94,7 @@ def puzzle_two(input_grid: np.ndarray) -> Model:
     assert box_size is not None
     beam_width = ceil(box_size / 2)
 
-    return Model(
+    return Playground(
         output_grid=input_grid.copy(),
         agents=[
             Agent(

@@ -24,11 +24,11 @@ from arc_puzzle_generator.puzzles import puzzle_two
 file_path = Path("3e6067c3.json")
 puzzle = load_puzzle(file_path)
 
-model = puzzle_two(puzzle.train[0].input)
-*_, output_grid = model
+playground = puzzle_two(puzzle.train[0].input)
+*_, output_grid = playground
 ```
 
-The model creates an `Iterable[np.ndarray]` which will yield one output grid for every agentic step taken on the
+The `playground` creates an `Iterable[np.ndarray]` which will yield one output grid for every agentic step taken on the
 input grid.
 The last state corresponds to the final solution.
 

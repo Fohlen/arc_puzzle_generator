@@ -9,14 +9,14 @@ from arc_puzzle_generator.rule import RuleNode, OutOfGridRule, CollisionFillRule
 from arc_puzzle_generator.agent import Agent
 from arc_puzzle_generator.direction import identity_direction
 from arc_puzzle_generator.geometry import unmask
-from arc_puzzle_generator.model import Model
+from arc_puzzle_generator.playground import Playground
 from arc_puzzle_generator.neighbourhood import zero_neighbours, AxisNeighbourhood
 from arc_puzzle_generator.physics import Direction
 from arc_puzzle_generator.topology import identity_topology, FixedGroupTopology
 from arc_puzzle_generator.utils.entities import find_connected_objects
 
 
-def puzzle_fourteen(input_grid: np.ndarray) -> Model:
+def puzzle_fourteen(input_grid: np.ndarray) -> Playground:
     """
     Puzzle 14: The cloud shooter puzzle.
     :param input_grid: A 2D numpy array representing the input grid.
@@ -73,7 +73,7 @@ def puzzle_fourteen(input_grid: np.ndarray) -> Model:
         charge=input_grid.shape[0] if direction in ["up", "down"] else input_grid.shape[1],
     )]
 
-    return Model(
+    return Playground(
         output_grid=input_grid,
         agents=agents,
         neighbourhood=AxisNeighbourhood(

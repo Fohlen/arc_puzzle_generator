@@ -6,7 +6,7 @@ import numpy as np
 
 from arc_puzzle_generator.agent import Agent
 from arc_puzzle_generator.geometry import unmask, PointSet
-from arc_puzzle_generator.model import Model
+from arc_puzzle_generator.playground import Playground
 from arc_puzzle_generator.neighbourhood import moore_neighbours
 from arc_puzzle_generator.rule import RuleNode, identity_rule, OutOfGridRule, uncharge_rule, Rule, \
     BackFillColorRule, backtrack_rule, GravityRule
@@ -14,7 +14,7 @@ from arc_puzzle_generator.topology import all_topology
 
 
 
-def puzzle_eighteen(input_grid: np.ndarray) -> Model:
+def puzzle_eighteen(input_grid: np.ndarray) -> Playground:
     """
     Generate the output grid for puzzle eighteen simulating water flow.
 
@@ -59,7 +59,7 @@ def puzzle_eighteen(input_grid: np.ndarray) -> Model:
         charge=40 if point[0] < input_grid.shape[0] - 1 else 0
     ) for point in sorted(unmask(water_mask), reverse=True)]
 
-    return Model(
+    return Playground(
         input_grid.copy(),
         agents,
         neighbourhood=moore_neighbours,

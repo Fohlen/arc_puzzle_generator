@@ -18,7 +18,7 @@ ExecutionMode = Literal["sequential", "parallel"]
 CollisionMode = Literal["current", "history"]
 
 
-class Model(Iterator[np.ndarray], Iterable[np.ndarray]):
+class Playground(Iterator[np.ndarray], Iterable[np.ndarray]):
     def __init__(
             self,
             output_grid: np.ndarray,
@@ -52,7 +52,7 @@ class Model(Iterator[np.ndarray], Iterable[np.ndarray]):
         """Check if any agent is active."""
         return any(agent.active for agent in self.agents)
 
-    def __iter__(self) -> 'Model':
+    def __iter__(self) -> 'Playground':
         return self
 
     def __next__(self) -> np.ndarray:
@@ -121,4 +121,4 @@ class Model(Iterator[np.ndarray], Iterable[np.ndarray]):
             raise NotImplementedError
 
 
-ModelSetup = Callable[[np.ndarray], Model]
+ModelSetup = Callable[[np.ndarray], Playground]
