@@ -1,6 +1,6 @@
 from collections import defaultdict
 from itertools import chain
-from typing import cast, Iterator, Iterable, Callable, Literal, Sequence
+from typing import cast, Iterator, Iterable, Callable, Literal, Sequence, Optional
 
 import numpy as np
 
@@ -19,6 +19,10 @@ CollisionMode = Literal["current", "history"]
 
 
 class Playground(Iterator[np.ndarray], Iterable[np.ndarray]):
+    """
+    A playground simulates a grid-based environment where agents can interact based on defined rules.
+    """
+
     def __init__(
             self,
             output_grid: np.ndarray,
@@ -27,13 +31,27 @@ class Playground(Iterator[np.ndarray], Iterable[np.ndarray]):
             topology: Topology = identity_topology,
             execution_mode: ExecutionMode = "parallel",
             collision_mode: CollisionMode = "current",
+            backfill_color: Optional[int] = None,
     ):
+        """
+        The playground constructor accepts a grid and a list of agents, initializing the simulation environment.
+        :param output_grid: The grid where the simulation takes place, represented as a 2D numpy array.
+        :param agents: A sequence of Agent objects that will interact within the playground.
+        :param neighbourhood: A neighbourhood function that defines how agents perceive their surroundings.
+        :param topology: A topology function that defines the relationships between agent labels.
+        :param execution_mode: In which order agents are processed. Options are "sequential" or "parallel".
+        :param collision_mode: Whether collisions are processed based on the current state of agents or their history.
+        :param backfill_color: If supplied, this color will be used to fill the grid where agents previously used to be.
+        """
         self.output_grid = output_grid
         self.agents = agents
         self.neighbourhood = neighbourhood
         self.topology = topology
         self.execution_mode = execution_mode
         self.collision_mode = collision_mode
+        self.backfill_color = backfill_color
+
+        # initialize internal properties
         self.current_agent_idx = 0
         self.agents_by_label = defaultdict(list)
         self.labels = set(agent.label for agent in agents)
@@ -93,12 +111,21 @@ class Playground(Iterator[np.ndarray], Iterable[np.ndarray]):
             for point in position_intersect
         }
 
+        previous_position = agent.position
+
         for step in agent.steps(position_intersect, position_intersect_mapping):
             pos, _, color, charge = step
             if charge > 0 or charge == -1:
                 position = np.array(list(pos))
                 logger.debug("Position: %s, Color: %s", pos, color)
                 self.output_grid[position[:, 0], position[:, 1]] = color
+
+                # Fill the previous position with the backfill color if specified
+                if self.backfill_color is not None and previous_position is not pos:
+                    previous_pos = np.array(list(previous_position))
+                    self.output_grid[previous_pos[:, 0], previous_pos[:, 1]] = self.backfill_color
+
+                previous_position = agent.position
                 self.steps.append(self.output_grid.copy())
 
     def step(self) -> None:
