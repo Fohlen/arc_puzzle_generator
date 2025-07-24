@@ -11,7 +11,7 @@ from arc_puzzle_generator.playground import Playground
 from arc_puzzle_generator.rule import RuleNode, identity_rule, DirectionRule
 
 
-class ModelTest(TestCase):
+class PlaygroundTestCase(TestCase):
     def test_only_one_agent_steps_called_per_step(self):
         # Create two agents with mocked processing functions
         agent1 = Agent(
