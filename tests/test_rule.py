@@ -181,9 +181,8 @@ class RuleTest(TestCase):
         ]
 
         colors = iter([1, 2])
-        collision = PointSet([(1, 0)])
 
-        result = backtrack_rule(states, colors, collision, {})
+        result = backtrack_rule(states, colors, PointSet(), {})
         self.assertIsNotNone(result)
         new_state, new_colors = result
 
