@@ -1,3 +1,4 @@
+import random
 from itertools import chain, cycle
 from typing import Protocol, Optional, Sequence, Callable, Iterator
 
@@ -412,7 +413,14 @@ class GravityRule(Rule):
             collision: PointSet,
             collision_mapping: AgentStateMapping
     ) -> ActionResult:
-        directions: list[Direction] = ["down", "left", "right"]
+        chance = random.uniform(0, 1)
+
+        directions: list[Direction]
+        if chance < 0.5:
+            directions = ["down", "left", "right"]
+        else:
+            directions = ["down", "right", "left"]
+
         for direction in directions:
             sub_collision = resolve_point_set_selectors_with_direction(
                 states[-1].position, collision, direction

@@ -1,4 +1,4 @@
-import logging
+import random
 from itertools import cycle
 from typing import cast
 
@@ -12,7 +12,6 @@ from arc_puzzle_generator.rule import RuleNode, identity_rule, OutOfGridRule, un
     BackFillColorRule, backtrack_rule, GravityRule
 from arc_puzzle_generator.topology import all_topology
 
-logging.basicConfig(level=logging.DEBUG)
 
 
 def puzzle_eighteen(input_grid: np.ndarray) -> Model:
@@ -21,6 +20,9 @@ def puzzle_eighteen(input_grid: np.ndarray) -> Model:
 
     :return: Model instance with the output grid.
     """
+
+    # set up random seed for reproducibility
+    random.seed(42)
 
     colors = np.unique(input_grid).tolist()
 
@@ -54,7 +56,7 @@ def puzzle_eighteen(input_grid: np.ndarray) -> Model:
             ),
         ),
         colors=cycle([1]),
-        charge=20 if point[0] < input_grid.shape[0] - 1 else 0
+        charge=40 if point[0] < input_grid.shape[0] - 1 else 0
     ) for point in sorted(unmask(water_mask), reverse=True)]
 
     return Model(
