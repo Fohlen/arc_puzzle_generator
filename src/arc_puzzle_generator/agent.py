@@ -19,6 +19,7 @@ class Agent:
             node: RuleNode,
             colors: Iterator[int],
             charge: int = 0,
+            commit: bool = True,
     ):
         self.position = position
         self.direction = direction
@@ -26,6 +27,7 @@ class Agent:
         self.node = node
         self.colors = colors
         self.charge = charge
+        self.commit = commit
         self.color = next(colors)
         self.history: list[AgentState] = []
 
@@ -39,7 +41,8 @@ class Agent:
             position=self.position,
             direction=self.direction,
             color=self.color,
-            charge=self.charge
+            charge=self.charge,
+            commit=self.commit,
         )
 
     def steps(
@@ -66,6 +69,7 @@ class Agent:
                 self.direction = state.direction
                 self.color = state.color
                 self.charge = state.charge
+                self.commit = state.commit
                 self.colors = colors
                 self.history.append(state)
                 states.append(state)

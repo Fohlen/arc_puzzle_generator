@@ -106,7 +106,8 @@ class Playground(Iterator[np.ndarray], Iterable[np.ndarray]):
                 position=agent_position_mapping[point].position,
                 direction=agent_position_mapping[point].direction,
                 color=self.output_grid[point[0], point[1]].item(),
-                charge=agent_position_mapping[point].charge
+                charge=agent_position_mapping[point].charge,
+                commit=agent_position_mapping[point].commit,
             )
             for point in position_intersect
         }
@@ -114,11 +115,13 @@ class Playground(Iterator[np.ndarray], Iterable[np.ndarray]):
         previous_position = agent.position
 
         for step in agent.steps(position_intersect, position_intersect_mapping):
-            pos, _, color, charge = step
+            pos, direction, color, charge, commit = step
             if charge > 0 or charge == -1:
                 position = np.array(list(pos))
                 logger.debug("Position: %s, Color: %s", pos, color)
-                self.output_grid[position[:, 0], position[:, 1]] = color
+
+                if commit:
+                    self.output_grid[position[:, 0], position[:, 1]] = color
 
                 # Fill the previous position with the backfill color if specified
                 if self.backfill_color is not None and previous_position is not pos:
