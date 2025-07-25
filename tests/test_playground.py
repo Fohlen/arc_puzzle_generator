@@ -9,7 +9,7 @@ from arc_puzzle_generator.agent import Agent
 from arc_puzzle_generator.direction import identity_direction
 from arc_puzzle_generator.geometry import PointSet
 from arc_puzzle_generator.playground import Playground
-from arc_puzzle_generator.rule import RuleNode, identity_rule, DirectionRule, Rule, ActionResult
+from arc_puzzle_generator.rule import RuleNode, identity_rule, DirectionRule, Rule, RuleResult
 from arc_puzzle_generator.state import AgentState, ColorIterator, AgentStateMapping
 
 
@@ -18,7 +18,7 @@ def toggle_commit_rule(
         colors: ColorIterator,
         *args,
         **kwargs
-) -> ActionResult:
+) -> RuleResult:
     return AgentState(
         position=states[-1].position,
         direction=states[-1].direction,
