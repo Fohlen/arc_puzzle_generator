@@ -8,7 +8,7 @@ from arc_puzzle_generator.physics import direction_to_unit_vector, collision_axi
 from arc_puzzle_generator.selection import resolve_point_set_selectors_with_direction
 from arc_puzzle_generator.state import AgentState, AgentStateMapping, ColorIterator
 
-ActionResult = Optional[tuple[AgentState, ColorIterator]]
+RuleResult = Optional[tuple[AgentState, ColorIterator]]
 
 
 class Rule(Protocol):
@@ -22,7 +22,7 @@ class Rule(Protocol):
             colors: ColorIterator,
             collision: PointSet,
             collision_map: AgentStateMapping
-    ) -> ActionResult:
+    ) -> RuleResult:
         pass
 
 
@@ -49,7 +49,7 @@ class RuleNode:
         self.alternative_node = alternative_node
 
 
-def identity_rule(states: Sequence[AgentState], colors: ColorIterator, *args) -> ActionResult:
+def identity_rule(states: Sequence[AgentState], colors: ColorIterator, *args) -> RuleResult:
     """
     An identity rule that returns the state unchanged.
 
@@ -80,7 +80,7 @@ class DirectionRule(Rule):
             colors: ColorIterator,
             collision: PointSet,
             *args
-    ) -> ActionResult:
+    ) -> RuleResult:
         """
         Change the direction of the agent based on the direction rule.
 
@@ -116,7 +116,7 @@ class OutOfGridRule(Rule):
     def __init__(self, grid_size: Point) -> None:
         self.grid_size = grid_size
 
-    def __call__(self, states: Sequence[AgentState], colors: ColorIterator, collision: PointSet, *args) -> ActionResult:
+    def __call__(self, states: Sequence[AgentState], colors: ColorIterator, collision: PointSet, *args) -> RuleResult:
         """
         Remove the agent from the grid.
 
@@ -164,7 +164,7 @@ class CollisionDirectionRule(Rule):
             colors: ColorIterator,
             collision: PointSet,
             collision_mapping: AgentStateMapping
-    ) -> ActionResult:
+    ) -> RuleResult:
         """
         Handle the collision by returning the current state unchanged.
 
@@ -199,7 +199,7 @@ def collision_color_mapping_rule(
         colors: ColorIterator,
         collision: PointSet,
         collision_mapping: AgentStateMapping
-) -> ActionResult:
+) -> RuleResult:
     """
     Handle the collision by updating the agent's colors based on the collision points.
 
@@ -242,7 +242,7 @@ class TrappedCollisionRule(Rule):
             colors: ColorIterator,
             collision: PointSet,
             collision_mapping: AgentStateMapping
-    ) -> ActionResult:
+    ) -> RuleResult:
         """
         Terminate the agent if it is trapped in a collision.
 
@@ -296,7 +296,7 @@ class CollisionBorderRule(Rule):
             colors: ColorIterator,
             collision: PointSet,
             collision_mapping: AgentStateMapping,
-    ) -> ActionResult:
+    ) -> RuleResult:
         sub_collision = resolve_point_set_selectors_with_direction(
             states[-1].position, collision, states[-1].direction
         ) if self.direction_rule is not None and self.select_direction else collision
@@ -330,7 +330,7 @@ class CollisionFillRule(Rule):
             colors: ColorIterator,
             collision: PointSet,
             collision_mapping: AgentStateMapping
-    ) -> ActionResult:
+    ) -> RuleResult:
         """
         Fill the collision area with the fill color.
 
@@ -361,7 +361,7 @@ def backtrack_rule(
         colors: ColorIterator,
         collision: PointSet,
         collision_mapping: AgentStateMapping
-) -> ActionResult:
+) -> RuleResult:
     """
     Backtrack the agent to its previous position
 
@@ -380,7 +380,7 @@ def uncharge_rule(
         colors: ColorIterator,
         collision: PointSet,
         collision_mapping: AgentStateMapping
-) -> ActionResult:
+) -> RuleResult:
     """
     Reduce the agent's charge by 1.
 
@@ -412,7 +412,7 @@ class GravityRule(Rule):
             colors: ColorIterator,
             collision: PointSet,
             collision_mapping: AgentStateMapping
-    ) -> ActionResult:
+    ) -> RuleResult:
         chance = random.uniform(0, 1)
 
         directions: list[Direction]
