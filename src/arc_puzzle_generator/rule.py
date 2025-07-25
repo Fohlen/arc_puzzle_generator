@@ -102,7 +102,8 @@ class DirectionRule(Rule):
                 position=new_position,
                 direction=new_direction,
                 color=next(colors),
-                charge=states[-1].charge - 1 if states[-1].charge > 0 else states[-1].charge
+                charge=states[-1].charge - 1 if states[-1].charge > 0 else states[-1].charge,
+                commit=states[-1].commit
             ), colors
 
         return None
@@ -139,7 +140,8 @@ class OutOfGridRule(Rule):
                 position=states[-1].position,
                 direction=states[-1].direction,
                 color=next(colors),
-                charge=0  # Set charge to 0 to indicate removal
+                charge=0,  # Set charge to 0 to indicate removal
+                commit=states[-1].commit
             ), colors
 
         return None
@@ -188,7 +190,8 @@ class CollisionDirectionRule(Rule):
                 position=new_position,
                 direction=new_direction,
                 color=next(colors),
-                charge=states[-1].charge - 1 if states[-1].charge > 0 else states[-1].charge
+                charge=states[-1].charge - 1 if states[-1].charge > 0 else states[-1].charge,
+                commit=states[-1].commit
             ), colors
 
         return None
@@ -217,7 +220,8 @@ def collision_color_mapping_rule(
             position=states[-1].position,
             direction=states[-1].direction,
             color=next(new_colors),
-            charge=states[-1].charge
+            charge=states[-1].charge,
+            commit=states[-1].commit
         ), new_colors
 
     return None
@@ -270,7 +274,8 @@ class TrappedCollisionRule(Rule):
                     position=states[-1].position,
                     direction=states[-1].direction,
                     color=next(colors),
-                    charge=0  # Set charge to 0 to indicate termination
+                    charge=0,  # Set charge to 0 to indicate termination
+                    commit=states[-1].commit
                 ), colors
         return None
 
@@ -311,7 +316,8 @@ class CollisionBorderRule(Rule):
                     position=PointSet(sub_collision),
                     direction=states[-1].direction,
                     color=next(new_colors),
-                    charge=states[-1].charge
+                    charge=states[-1].charge,
+                    commit=states[-1].commit
                 ), new_colors
 
         return None
@@ -350,7 +356,8 @@ class CollisionFillRule(Rule):
                     position=PointSet(states[-1].position | collision),
                     direction=states[-1].direction,
                     color=next(new_colors),
-                    charge=states[-1].charge
+                    charge=states[-1].charge,
+                    commit=states[-1].commit
                 ), new_colors
 
         return None
@@ -395,7 +402,8 @@ def uncharge_rule(
         position=states[-1].position,
         direction=states[-1].direction,
         color=next(colors),
-        charge=max(0, states[-1].charge - 1)
+        charge=max(0, states[-1].charge - 1),
+        commit=states[-1].commit
     ), colors
 
 
@@ -440,7 +448,8 @@ class GravityRule(Rule):
                         position=next_position,
                         direction=states[-1].direction,
                         color=next(colors),
-                        charge=states[-1].charge - 1 if states[-1].charge > 0 else states[-1].charge
+                        charge=states[-1].charge - 1 if states[-1].charge > 0 else states[-1].charge,
+                        commit=states[-1].commit
                     ), colors
 
         return None
