@@ -19,7 +19,7 @@ class AgentState(NamedTuple):
     direction: Direction
     color: int
     charge: int
-    commit: bool = True
+    commit: bool
 
 
 AgentStateMapping = Mapping[Point, AgentState]

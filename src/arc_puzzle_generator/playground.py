@@ -106,7 +106,8 @@ class Playground(Iterator[np.ndarray], Iterable[np.ndarray]):
                 position=agent_position_mapping[point].position,
                 direction=agent_position_mapping[point].direction,
                 color=self.output_grid[point[0], point[1]].item(),
-                charge=agent_position_mapping[point].charge
+                charge=agent_position_mapping[point].charge,
+                commit=agent_position_mapping[point].commit,
             )
             for point in position_intersect
         }
