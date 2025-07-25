@@ -128,6 +128,43 @@ def box_distance(box1: np.ndarray, box2: np.ndarray, direction: Direction) -> in
     raise ValueError("Unknown direction {}".format(direction))
 
 
+def relative_point_direction(
+        point1: Point,
+        point2: Point,
+) -> Direction:
+    """
+    Returns the relative direction between two points.
+    :param point1: The point to determine a relative direction for.
+    :param point2: The point to determine a relative direction to.
+    :return: The relative direction between the two points.
+    """
+
+    left = point2[1] < point1[1]
+    right = point1[1] < point2[1]
+    up = point2[0] < point1[0]
+    down = point1[0] < point2[0]
+
+    match (left, right, up, down):
+        case (True, False, False, False):
+            return "left"
+        case (False, True, False, False):
+            return "right"
+        case (False, False, True, False):
+            return "up"
+        case (False, False, False, True):
+            return "down"
+        case (True, False, True, False):
+            return "top_left"
+        case (False, True, True, False):
+            return "top_right"
+        case (True, False, False, True):
+            return "bottom_left"
+        case (False, True, False, True):
+            return "bottom_right"
+        case _:
+            raise ValueError("Unknown direction")
+
+
 def relative_box_direction(box1: np.ndarray, box2: np.ndarray) -> Direction:
     """
     Returns the relative direction between two boxes.

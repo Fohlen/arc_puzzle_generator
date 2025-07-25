@@ -1,10 +1,12 @@
+import math
 import random
 from itertools import chain, cycle
+from logging import currentframe
 from typing import Protocol, Optional, Sequence, Callable, Iterator
 
 from arc_puzzle_generator.direction import DirectionTransformer
 from arc_puzzle_generator.geometry import PointSet, Point
-from arc_puzzle_generator.physics import direction_to_unit_vector, collision_axis, Direction
+from arc_puzzle_generator.physics import direction_to_unit_vector, collision_axis, Direction, relative_point_direction
 from arc_puzzle_generator.selection import resolve_point_set_selectors_with_direction
 from arc_puzzle_generator.state import AgentState, AgentStateMapping, ColorIterator
 
@@ -442,5 +444,57 @@ class GravityRule(Rule):
                         color=next(colors),
                         charge=states[-1].charge - 1 if states[-1].charge > 0 else states[-1].charge
                     ), colors
+
+        return None
+
+
+class ProximityRule(Rule):
+    def __init__(
+            self,
+            target: PointSet,
+            points: PointSet
+    ):
+        self.proximity_mapping = {
+            point: min(math.dist(point, target_point) for target_point in target)
+            for point in points
+        }
+
+    def __call__(
+            self,
+            states: Sequence[AgentState],
+            colors: ColorIterator,
+            collision: PointSet,
+            collision_mapping: AgentStateMapping
+    ) -> RuleResult:
+        """
+        Apply proximity-based logic to the agent's state.
+
+        :param states: The current states of the agent.
+        :param colors: An iterator over the agent's colors.
+        :param collision: The set of points that are in collision with the agent.
+        :param collision_mapping: The mapping between collision points and the agent's colors.
+        :return: A new state based on proximity logic.
+        """
+
+        current_position = states[-1].position
+        eligible_points = [
+            point for point in self.proximity_mapping.keys()
+            if any(math.dist(point, target_point) <= 1 for target_point in current_position)
+        ]
+
+        if len(eligible_points) > 0:
+            min_point = min(eligible_points, key=lambda point: self.proximity_mapping[point])
+            closest_point = min(current_position, key=lambda point: math.dist(point, min_point))
+            relative_direction = relative_point_direction(
+                closest_point, min_point
+            )
+            next_position = current_position.shift(direction_to_unit_vector(relative_direction))
+
+            return AgentState(
+                position=next_position,
+                direction=relative_direction,
+                color=next(colors),
+                charge=states[-1].charge - 1 if states[-1].charge > 0 else states[-1].charge
+            ), colors
 
         return None
