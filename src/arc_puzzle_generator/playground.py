@@ -120,9 +120,11 @@ class Playground(Iterator[np.ndarray], Iterable[np.ndarray]):
                 logger.debug("Position: %s, Color: %s", pos, color)
                 self.output_grid[position[:, 0], position[:, 1]] = color
 
+                diff = previous_position - pos
+
                 # Fill the previous position with the backfill color if specified
-                if self.backfill_color is not None and previous_position is not pos:
-                    previous_pos = np.array(list(previous_position))
+                if self.backfill_color is not None and len(diff):
+                    previous_pos = np.array(list(diff))
                     self.output_grid[previous_pos[:, 0], previous_pos[:, 1]] = self.backfill_color
 
                 previous_position = agent.position
