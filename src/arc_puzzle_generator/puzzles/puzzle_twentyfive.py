@@ -3,10 +3,12 @@ from itertools import cycle
 import numpy as np
 
 from arc_puzzle_generator.agent import Agent
+from arc_puzzle_generator.direction import orthogonal_direction, snake_direction
 from arc_puzzle_generator.geometry import unmask
 from arc_puzzle_generator.neighbourhood import moore_neighbours
 from arc_puzzle_generator.playground import Playground
-from arc_puzzle_generator.rule import RuleNode, identity_rule, TrappedCollisionRule, ProximityRule
+from arc_puzzle_generator.rule import RuleNode, identity_rule, TrappedCollisionRule, ProximityRule, \
+    CollisionDirectionRule
 from arc_puzzle_generator.topology import all_topology
 
 
@@ -39,16 +41,28 @@ def puzzle_twentyfive(input_grid: np.ndarray) -> Playground:
         ),
         Agent(
             agent_points,
-            direction="none",
+            direction="up",
             label="agent",
             node=RuleNode(
-                ProximityRule(
-                    target=goal_points,
-                    points=foreground_points,
+                TrappedCollisionRule(
+                    direction_rule=snake_direction,
+                    select_direction=True,
+                ),
+                next_node=RuleNode(
+                    CollisionDirectionRule(
+                        direction_rule=snake_direction,
+                        select_direction=True,
+                    )
+                ),
+                alternative_node=RuleNode(
+                    ProximityRule(
+                        target=goal_points,
+                        points=foreground_points,
+                    )
                 )
             ),
             colors=cycle([agent_color]),
-            charge=5,
+            charge=10,
         )
     ]
 
