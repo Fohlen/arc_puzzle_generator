@@ -58,7 +58,7 @@ def puzzle_twentyfive(input_grid: np.ndarray) -> Playground:
                 ),
             ),
             colors=cycle([agent_color]),
-            charge=20,
+            charge=25,
         )
     ]
 

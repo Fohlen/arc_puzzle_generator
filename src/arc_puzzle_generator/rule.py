@@ -465,10 +465,14 @@ class ProximityRule(Rule):
             target: PointSet,
             points: PointSet
     ):
+        self.target = target
         self.proximity_mapping = {
             point: min(math.dist(point, target_point) for target_point in target)
             for point in points
         }
+
+        for point in target:
+            self.proximity_mapping[point] = 0
 
     def __call__(
             self,
@@ -488,6 +492,15 @@ class ProximityRule(Rule):
         """
 
         current_position = states[-1].position
+
+        if current_position == self.target:
+            return AgentState(
+                position=current_position,
+                direction=states[-1].direction,
+                color=next(colors),
+                charge=0
+            ), colors
+
         possible_points = PointSet(self.proximity_mapping.keys()) - collision - current_position
         eligible_points = [
             point for point in possible_points
