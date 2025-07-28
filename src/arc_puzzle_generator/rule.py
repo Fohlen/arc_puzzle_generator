@@ -233,10 +233,12 @@ class TrappedCollisionRule(Rule):
     def __init__(
             self,
             direction_rule: DirectionTransformer,
-            select_direction: bool = False
+            select_direction: bool = False,
+            num_directions: int = 1,
     ) -> None:
         self.direction_rule = direction_rule
         self.select_direction = select_direction
+        self.num_directions = num_directions
 
     def __call__(
             self,
@@ -260,20 +262,29 @@ class TrappedCollisionRule(Rule):
         ) if self.select_direction else collision
 
         if len(sub_collision) > 0:
-            next_direction = self.direction_rule(states[-1].direction)
-            next_position = states[-1].position.shift(direction_to_unit_vector(next_direction))
-            next_sub_collision = resolve_point_set_selectors_with_direction(
-                states[-1].position, collision, next_direction
-            ) if self.select_direction else collision
+            previous_direction = states[-1].direction
 
-            next_collision = next_position & next_sub_collision
-            if len(next_collision) > 0:
-                return AgentState(
-                    position=states[-1].position,
-                    direction=states[-1].direction,
-                    color=next(colors),
-                    charge=0  # Set charge to 0 to indicate termination
-                ), colors
+            for _ in range(self.num_directions):
+                next_direction = self.direction_rule(previous_direction)
+                next_position = states[-1].position.shift(direction_to_unit_vector(next_direction))
+                next_sub_collision = resolve_point_set_selectors_with_direction(
+                    states[-1].position, collision, next_direction
+                ) if self.select_direction else collision
+
+                next_collision = next_position & next_sub_collision
+
+                if len(next_collision) == 0:
+                    return None
+                else:
+                    previous_direction = next_direction
+
+            # If all direction changes lead to a collision, terminate the agent
+            return AgentState(
+                position=states[-1].position,
+                direction=states[-1].direction,
+                color=next(colors),
+                charge=0  # Set charge to 0 to indicate termination
+            ), colors
         return None
 
 
@@ -479,7 +490,7 @@ class ProximityRule(Rule):
         current_position = states[-1].position
         eligible_points = [
             point for point in self.proximity_mapping.keys()
-            if any(math.dist(point, target_point) <= 1 for target_point in current_position)
+            if any(math.dist(point, target_point) == 1 for target_point in current_position)
         ]
 
         if len(eligible_points) > 0:
@@ -492,7 +503,7 @@ class ProximityRule(Rule):
             next_position = current_position.shift(direction_to_unit_vector(relative_direction))
 
             if not any(
-                point in collision for point in next_position
+                    point in collision for point in next_position
             ):
                 return AgentState(
                     position=next_position,

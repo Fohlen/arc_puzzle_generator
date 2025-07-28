@@ -1,4 +1,5 @@
 from itertools import cycle
+from typing import cast
 
 import numpy as np
 
@@ -8,7 +9,7 @@ from arc_puzzle_generator.geometry import unmask
 from arc_puzzle_generator.neighbourhood import moore_neighbours
 from arc_puzzle_generator.playground import Playground
 from arc_puzzle_generator.rule import RuleNode, identity_rule, TrappedCollisionRule, ProximityRule, \
-    CollisionDirectionRule
+    CollisionDirectionRule, Rule
 from arc_puzzle_generator.topology import all_topology
 
 
@@ -35,7 +36,7 @@ def puzzle_twentyfive(input_grid: np.ndarray) -> Playground:
             background_points,
             direction="none",
             label="background",
-            node=RuleNode(identity_rule),
+            node=RuleNode(cast(Rule, identity_rule)),
             colors=iter([background_color]),
             charge=0,
         ),
@@ -47,6 +48,7 @@ def puzzle_twentyfive(input_grid: np.ndarray) -> Playground:
                 TrappedCollisionRule(
                     direction_rule=clockwise_direction_90,
                     select_direction=True,
+                    num_directions=4,
                 ),
                 next_node=RuleNode(
                     CollisionDirectionRule(
@@ -72,4 +74,5 @@ def puzzle_twentyfive(input_grid: np.ndarray) -> Playground:
         neighbourhood=moore_neighbours,
         topology=all_topology,
         backfill_color=foreground_color,
+        collision_mode="history",
     )
