@@ -1,8 +1,7 @@
 import math
 import random
 from itertools import chain, cycle
-from logging import currentframe
-from typing import Protocol, Optional, Sequence, Callable, Iterator
+from typing import Protocol, Optional, Sequence
 
 from arc_puzzle_generator.direction import DirectionTransformer
 from arc_puzzle_generator.geometry import PointSet, Point
