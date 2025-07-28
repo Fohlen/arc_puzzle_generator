@@ -50,18 +50,12 @@ def puzzle_twentyfive(input_grid: np.ndarray) -> Playground:
                     select_direction=True,
                     num_directions=4,
                 ),
-                next_node=RuleNode(
-                    CollisionDirectionRule(
-                        direction_rule=clockwise_direction_90,
-                        select_direction=True,
-                    )
-                ),
                 alternative_node=RuleNode(
                     ProximityRule(
                         target=goal_points,
                         points=foreground_points,
                     )
-                )
+                ),
             ),
             colors=cycle([agent_color]),
             charge=20,
