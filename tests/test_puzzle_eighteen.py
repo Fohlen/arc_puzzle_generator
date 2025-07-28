@@ -7,7 +7,7 @@ from arc_puzzle_generator.utils.data_loader import load_puzzle
 from tests.utils import test_dir
 
 
-class PuzzleTwoTestCase(unittest.TestCase):
+class PuzzleEighteenTestCase(unittest.TestCase):
     def setUp(self):
         file_path = test_dir / "data" / "28a6681f.json"
         self.puzzle = load_puzzle(file_path)

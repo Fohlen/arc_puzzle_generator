@@ -128,18 +128,13 @@ def box_distance(box1: np.ndarray, box2: np.ndarray, direction: Direction) -> in
     raise ValueError("Unknown direction {}".format(direction))
 
 
-def relative_box_direction(box1: np.ndarray, box2: np.ndarray) -> Direction:
+def combine_directions(directions: tuple[bool, bool, bool, bool]) -> Direction:
     """
-    Returns the relative direction between two boxes.
-    :param box1: The box to determine a relative direction for.
-    :param box2: The box to determine a relative direction to.
-    :return: The relative direction between the two boxes.
+    Combines four boolean cardinal directions into a single direction.
+    :param directions: The cardinal directions as a tuple of booleans (left, right, up, down).
+    :return: A string representing the combined direction.
     """
-
-    left = (box2[3, 1] < box1[0, 1]).item()
-    right = (box1[3, 1] < box2[0, 1]).item()
-    up = (box2[0, 0] < box1[1, 0]).item()
-    down = (box1[0, 0] < box2[1, 0]).item()
+    left, right, up, down = directions
 
     match (left, right, up, down):
         case (True, False, False, False):
@@ -160,6 +155,41 @@ def relative_box_direction(box1: np.ndarray, box2: np.ndarray) -> Direction:
             return "bottom_right"
         case _:
             raise ValueError("Unknown direction")
+
+
+def relative_point_direction(
+        point1: Point,
+        point2: Point,
+) -> Direction:
+    """
+    Returns the relative direction between two points.
+    :param point1: The point to determine a relative direction for.
+    :param point2: The point to determine a relative direction to.
+    :return: The relative direction between the two points.
+    """
+
+    left = point2[1] < point1[1]
+    right = point1[1] < point2[1]
+    up = point2[0] < point1[0]
+    down = point1[0] < point2[0]
+
+    return combine_directions((left, right, up, down))
+
+
+def relative_box_direction(box1: np.ndarray, box2: np.ndarray) -> Direction:
+    """
+    Returns the relative direction between two boxes.
+    :param box1: The box to determine a relative direction for.
+    :param box2: The box to determine a relative direction to.
+    :return: The relative direction between the two boxes.
+    """
+
+    left = (box2[3, 1] < box1[0, 1]).item()
+    right = (box1[3, 1] < box2[0, 1]).item()
+    up = (box2[0, 0] < box1[1, 0]).item()
+    down = (box1[0, 0] < box2[1, 0]).item()
+
+    return combine_directions((left, right, up, down))
 
 
 def starting_point(

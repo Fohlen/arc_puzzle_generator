@@ -67,3 +67,41 @@ def orthogonal_direction(direction: Direction, axis: Axis = "horizontal") -> Dir
                     return "bottom_right"
 
     raise ValueError("Unknown axis {}".format(axis))
+
+
+def clockwise_direction_45(direction: Direction, *args, **kwargs) -> Direction:
+    """
+    Returns the clockwise direction of the given direction rotated by 45 degrees.
+    :param direction: The direction to rotate.
+    :return: The clockwise direction of the given direction.
+    """
+
+    match direction:
+        case "left":
+            return "top_left"
+        case "top_left":
+            return "up"
+        case "up":
+            return "top_right"
+        case "top_right":
+            return "right"
+        case "right":
+            return "bottom_right"
+        case "bottom_right":
+            return "down"
+        case "down":
+            return "bottom_left"
+        case "bottom_left":
+            return "left"
+
+    raise ValueError("Unknown direction {}".format(direction))
+
+
+def clockwise_direction_90(direction: Direction, *args, **kwargs) -> Direction:
+    """
+    Returns the clockwise direction of the given direction rotated by 90 degrees.
+    :param direction: The input direction.
+    :return: The rotated direction of the given direction.
+    """
+    return clockwise_direction_45(clockwise_direction_45(direction))
+
