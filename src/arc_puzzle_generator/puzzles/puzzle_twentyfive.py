@@ -4,12 +4,12 @@ from typing import cast
 import numpy as np
 
 from arc_puzzle_generator.agent import Agent
-from arc_puzzle_generator.direction import clockwise_direction_90
+from arc_puzzle_generator.direction import clockwise_direction_90, identity_direction
 from arc_puzzle_generator.geometry import unmask
 from arc_puzzle_generator.neighbourhood import moore_neighbours
 from arc_puzzle_generator.playground import Playground
 from arc_puzzle_generator.rule import RuleNode, identity_rule, TrappedCollisionRule, ProximityRule, \
-    CollisionDirectionRule, Rule
+    Rule, DirectionRule
 from arc_puzzle_generator.topology import all_topology
 
 
@@ -54,11 +54,17 @@ def puzzle_twentyfive(input_grid: np.ndarray) -> Playground:
                     ProximityRule(
                         target=goal_points,
                         points=foreground_points,
+                    ),
+                    alternative_node=RuleNode(
+                        DirectionRule(
+                            direction_rule=identity_direction,
+                            select_direction=True,
+                        )
                     )
                 ),
             ),
             colors=cycle([agent_color]),
-            charge=25,
+            charge=50,
         )
     ]
 

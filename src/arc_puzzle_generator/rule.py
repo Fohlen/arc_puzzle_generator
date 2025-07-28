@@ -508,29 +508,26 @@ class ProximityRule(Rule):
         ]
 
         if len(eligible_points) > 0:
-            min_point = min(eligible_points, key=lambda point: self.proximity_mapping[point])
-            closest_point = min(current_position, key=lambda point: math.dist(point, min_point))
-
-            relative_direction = relative_point_direction(
-                closest_point, min_point
+            sorted_eligible_points = sorted(
+                eligible_points,
+                key=lambda point: self.proximity_mapping[point]
             )
-            next_position = current_position.shift(direction_to_unit_vector(relative_direction))
+            for min_point in sorted_eligible_points:
+                closest_point = min(current_position, key=lambda point: math.dist(point, min_point))
 
-            if not any(
-                    point in collision for point in next_position
-            ):
-                return AgentState(
-                    position=next_position,
-                    direction=relative_direction,
-                    color=next(colors),
-                    charge=states[-1].charge - 1 if states[-1].charge > 0 else states[-1].charge
-                ), colors
-            else:
-                return AgentState(
-                    position=current_position.shift(direction_to_unit_vector(states[-1].direction)),
-                    direction=states[-1].direction,
-                    color=next(colors),
-                    charge=states[-1].charge - 1 if states[-1].charge > 0 else states[-1].charge
-                ), colors
+                relative_direction = relative_point_direction(
+                    closest_point, min_point
+                )
+                next_position = current_position.shift(direction_to_unit_vector(relative_direction))
+
+                if not any(
+                        point in collision for point in next_position
+                ):
+                    return AgentState(
+                        position=next_position,
+                        direction=relative_direction,
+                        color=next(colors),
+                        charge=states[-1].charge - 1 if states[-1].charge > 0 else states[-1].charge
+                    ), colors
 
         return None
