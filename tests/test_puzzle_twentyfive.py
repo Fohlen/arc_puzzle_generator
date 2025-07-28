@@ -30,6 +30,11 @@ class PuzzleTwentyFiveTestCase(unittest.TestCase):
         *_, output_grid = playground
         self.assertTrue(np.array_equal(output_grid, self.puzzle.train[2].output))
 
+    def test_generate_332f06d7_fourth(self):
+        playground = puzzle_twentyfive(self.puzzle.train[3].input)
+        *_, output_grid = playground
+        self.assertTrue(np.array_equal(output_grid, self.puzzle.train[3].output))
+
     def test_generate_332f06d7_prompt(self):
         playground = puzzle_twentyfive(self.puzzle.test[0].input)
         *_, output_grid = playground
