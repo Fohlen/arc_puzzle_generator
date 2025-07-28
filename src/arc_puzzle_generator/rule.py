@@ -488,7 +488,7 @@ class ProximityRule(Rule):
         """
 
         current_position = states[-1].position
-        possible_points = PointSet(self.proximity_mapping.keys()) - current_position
+        possible_points = PointSet(self.proximity_mapping.keys()) - collision - current_position
         eligible_points = [
             point for point in possible_points
             if any(math.dist(point, target_point) == 1 for target_point in current_position)
