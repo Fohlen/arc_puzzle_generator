@@ -3,8 +3,9 @@ import unittest
 import numpy as np
 
 from arc_puzzle_generator.geometry import PointSet
-from arc_puzzle_generator.physics import collision_axis, direction_to_numpy_unit_vector, box_distance, relative_box_direction, \
-    starting_point
+from arc_puzzle_generator.physics import collision_axis, direction_to_numpy_unit_vector, box_distance, \
+    relative_box_direction, \
+    starting_point, box_contained
 
 
 class PhysicsTestCase(unittest.TestCase):
@@ -111,3 +112,20 @@ class PhysicsTestCase(unittest.TestCase):
         orientation = collision_axis(agent)
 
         self.assertEqual("horizontal", orientation)
+
+    def test_box_contained(self):
+        box_a = np.array([
+            [4, 0], [0, 0], [0, 4], [4, 4]
+        ])
+
+        box_b = np.array([
+            [2, 2], [1, 2], [1, 3], [2, 3]
+        ])
+
+        box_c = np.array([
+            [5, 5], [4, 5], [4, 6], [5, 6]
+        ])
+
+        self.assertTrue(box_contained(box_b, box_a))
+        self.assertFalse(box_contained(box_a, box_b))
+        self.assertFalse(box_contained(box_c, box_a))
