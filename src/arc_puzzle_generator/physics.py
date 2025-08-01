@@ -279,5 +279,5 @@ def extreme_point(mask: np.ndarray, direction: Direction) -> Point:
             row = np.max(np.where(mask)[0]).item()
             col = np.where(mask[row, :])[0][0].item()
             return row, col
-        case "_":
-            raise ValueError("Unknown direction {}".format(direction))
+
+    raise ValueError("Unknown direction {}".format(direction))

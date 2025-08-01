@@ -20,7 +20,6 @@ class PuzzleThirtyTestCase(unittest.TestCase):
             self.puzzle.train[0].input, directions=iter(["right", "left"])
         )
         *_, output_grid = playground
-        output_grid = playground.steps[-1]  # wtf Python
         self.assertTrue(np.array_equal(output_grid, self.puzzle.train[0].output))
 
     def test_generate_3dc255db_second(self):
