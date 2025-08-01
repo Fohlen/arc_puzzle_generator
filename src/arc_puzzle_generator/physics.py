@@ -2,10 +2,6 @@
 The physics module contains world *physics*, for instance, calculating direction vectors and other physical properties.
 """
 
-import math
-
-import numpy as np
-
 from arc_puzzle_generator.geometry import Point, PointSet, Axis, Direction
 
 """
@@ -64,63 +60,6 @@ def collision_axis(collision_position: PointSet) -> Axis:
         raise ValueError("Collision point cannot be the same as agent position.")
 
 
-def direction_to_numpy_unit_vector(direction: Direction) -> np.ndarray:
-    """
-    Returns the unit vector corresponding to the given direction.
-    :param direction: The direction to convert.
-    :return: A unit vector for the given direction.
-    """
-
-    match direction:
-        case "left":
-            return np.array([0, -1])
-        case "right":
-            return np.array([0, 1])
-        case "up":
-            return np.array([-1, 0])
-        case "down":
-            return np.array([1, 0])
-        case "bottom_left":
-            return np.array([1, -1])
-        case "top_left":
-            return np.array([-1, -1])
-        case "top_right":
-            return np.array([-1, 1])
-        case "bottom_right":
-            return np.array([1, 1])
-
-    raise ValueError("Unknown direction {}".format(direction))
-
-
-def box_distance(box1: np.ndarray, box2: np.ndarray, direction: Direction) -> int:
-    """
-    Returns the distance between two bounding boxes given a direction.
-    :param box1: The first box.
-    :param box2: The second box.
-    :param direction: The direction between the two boxes.
-    :return: The distance between the two points.
-    """
-
-    if direction == "left":
-        return int(math.dist(box1[0], box2[3]))
-    elif direction == "right":
-        return int(math.dist(box1[3], box2[0]))
-    elif direction == "up":
-        return int(math.dist(box1[1], box2[0]))
-    elif direction == "down":
-        return int(math.dist(box1[0], box2[1]))
-    elif direction == "top_left":
-        return int(math.dist(box1[1], box2[3]))
-    elif direction == "top_right":
-        return int(math.dist(box1[2], box2[0]))
-    elif direction == "bottom_left":
-        return int(math.dist(box1[0], box2[2]))
-    elif direction == "bottom_right":
-        return int(math.dist(box1[3], box2[1]))
-
-    raise ValueError("Unknown direction {}".format(direction))
-
-
 def combine_directions(directions: tuple[bool, bool, bool, bool]) -> Direction:
     """
     Combines four boolean cardinal directions into a single direction.
@@ -165,21 +104,5 @@ def relative_point_direction(
     right = point1[1] < point2[1]
     up = point2[0] < point1[0]
     down = point1[0] < point2[0]
-
-    return combine_directions((left, right, up, down))
-
-
-def relative_box_direction(box1: np.ndarray, box2: np.ndarray) -> Direction:
-    """
-    Returns the relative direction between two boxes.
-    :param box1: The box to determine a relative direction for.
-    :param box2: The box to determine a relative direction to.
-    :return: The relative direction between the two boxes.
-    """
-
-    left = (box2[3, 1] < box1[0, 1]).item()
-    right = (box1[3, 1] < box2[0, 1]).item()
-    up = (box2[0, 0] < box1[1, 0]).item()
-    down = (box1[0, 0] < box2[1, 0]).item()
 
     return combine_directions((left, right, up, down))

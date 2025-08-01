@@ -9,10 +9,10 @@ from arc_puzzle_generator.utils.color_sequence_iterator import ColorSequenceIter
 from arc_puzzle_generator.geometry import PointSet, Direction
 from arc_puzzle_generator.playground import Playground
 from arc_puzzle_generator.neighbourhood import zero_neighbours
-from arc_puzzle_generator.physics import box_distance, relative_box_direction
 from arc_puzzle_generator.direction import identity_direction
 from arc_puzzle_generator.topology import identity_topology
-from arc_puzzle_generator.utils.entities import colour_count, find_connected_objects, starting_point
+from arc_puzzle_generator.utils.entities import colour_count, find_connected_objects, starting_point, \
+    relative_box_direction, box_distance
 
 
 def puzzle_two(input_grid: np.ndarray) -> Playground:

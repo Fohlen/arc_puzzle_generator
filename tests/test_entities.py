@@ -4,7 +4,7 @@ import numpy as np
 
 from arc_puzzle_generator.utils.data_loader import load_puzzle
 from arc_puzzle_generator.utils.entities import find_connected_objects, is_l_shape, find_colors, extreme_point, \
-    box_contained, starting_point
+    box_contained, starting_point, relative_box_direction, box_distance
 from tests.utils import test_dir
 
 
@@ -72,6 +72,37 @@ class EntityTestCase(unittest.TestCase):
         self.assertEqual(is_l_shape(array11), None)
         self.assertEqual(is_l_shape(array12), None)
         self.assertEqual(is_l_shape(array13), None)
+
+    def test_box_distance(self):
+        point_a = np.array([[5, 3], [5, 3], [5, 3], [5, 3]])
+        point_b = np.array([[5, 2], [5, 2], [5, 2], [5, 2]])
+        point_c = np.array([[5, 4], [5, 4], [5, 4], [5, 4]])
+        point_d = np.array([[4, 4], [4, 4], [4, 4], [4, 4]])
+        point_e = np.array([[4, 2], [4, 2], [4, 2], [4, 2]])
+
+        self.assertEqual(box_distance(point_a, point_b, "left"), 1)
+        self.assertEqual(box_distance(point_b, point_c, "right"), 2)
+        self.assertEqual(box_distance(point_c, point_d, "down"), 1)
+        self.assertEqual(box_distance(point_d, point_c, "up"), 1)
+        self.assertEqual(box_distance(point_a, point_d, "top_right"), 1)
+        self.assertEqual(box_distance(point_d, point_a, "bottom_left"), 1)
+        self.assertEqual(box_distance(point_a, point_e, "top_left"), 1)
+        self.assertEqual(box_distance(point_e, point_a, "bottom_right"), 1)
+
+    def test_relative_box_direction(self):
+        point_a = np.array([[5, 3], [5, 3], [5, 3], [5, 3]])
+        point_b = np.array([[5, 2], [5, 2], [5, 2], [5, 2]])
+        point_c = np.array([[4, 3], [4, 3], [4, 3], [4, 3]])
+        point_d = np.array([[4, 2], [4, 2], [4, 2], [4, 2]])
+
+        self.assertEqual(relative_box_direction(point_a, point_b), "left")
+        self.assertEqual(relative_box_direction(point_b, point_a), "right")
+        self.assertEqual(relative_box_direction(point_a, point_c), "up")
+        self.assertEqual(relative_box_direction(point_c, point_a), "down")
+        self.assertEqual(relative_box_direction(point_c, point_b), "bottom_left")
+        self.assertEqual(relative_box_direction(point_b, point_c), "top_right")
+        self.assertEqual(relative_box_direction(point_a, point_d), "top_left")
+        self.assertEqual(relative_box_direction(point_d, point_a), "bottom_right")
 
     def test_starting_point(self):
         point_a = np.array([[5, 3], [5, 3], [5, 3], [5, 3]])
