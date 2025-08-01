@@ -234,3 +234,50 @@ def starting_point(
             return np.array([start_pos + (direction_to_numpy_unit_vector("top_right") * i) for i in range(point_width)])
 
     raise ValueError("Unknown direction {}".format(direction))
+
+
+def box_contained(box_a: np.ndarray, box_b: np.ndarray) -> bool:
+    """
+    Compares two bounding boxes and checks if box_a is contained within box_b.
+    :param box_a: The bounding box to check for containment.
+    :param box_b: The bounding box to check against.
+    :return: True if box_a is contained within box_b, False otherwise.
+    """
+
+    min_x, min_y = np.min(box_b, axis=0)
+    max_x, max_y = np.max(box_b, axis=0)
+    return np.all(
+        (box_a[:, 0] >= min_x) &
+        (box_a[:, 0] <= max_x) &
+        (box_a[:, 1] >= min_y) &
+        (box_a[:, 1] <= max_y)
+    ).item()
+
+
+def extreme_point(mask: np.ndarray, direction: Direction) -> Point:
+    """
+    Get the extreme point (leftmost, rightmost, topmost, bottommost) of a numpy mask based on the direction.
+    :param mask: A 2D numpy array where True represents the region of interest.
+    :param direction: The direction to find the extreme point ('left', 'right', 'top', 'bottom').
+    :return: A tuple (row, col) representing the coordinates of the extreme point.
+    """
+
+    match direction:
+        case "left":
+            col = np.min(np.where(mask)[1]).item()
+            row = np.where(mask[:, col])[0][0].item()
+            return row, col
+        case "right":
+            col = np.max(np.where(mask)[1]).item()
+            row = np.where(mask[:, col])[0][0].item()
+            return row, col
+        case "up":
+            row = np.min(np.where(mask)[0]).item()
+            col = np.where(mask[row, :])[0][0].item()
+            return row, col
+        case "down":
+            row = np.max(np.where(mask)[0]).item()
+            col = np.where(mask[row, :])[0][0].item()
+            return row, col
+
+    raise ValueError("Unknown direction {}".format(direction))

@@ -7,6 +7,7 @@ from typing import Optional
 import numpy as np
 
 from arc_puzzle_generator.direction import Direction
+from arc_puzzle_generator.neighbourhood import Neighbourhood, von_neumann_neighbours
 
 
 def find_colors(grid: np.ndarray, background: Optional[int] = None) -> set[int]:
@@ -35,10 +36,14 @@ def colour_count(grid: np.ndarray) -> list[tuple[int, int]]:
     return [(values[idx], counts[idx]) for idx in sorted_counts]
 
 
-def find_connected_objects(mask) -> tuple[np.ndarray, np.ndarray, int]:
+def find_connected_objects(
+        mask: np.ndarray,
+        neighbourhood: Neighbourhood = von_neumann_neighbours,
+) -> tuple[np.ndarray, np.ndarray, int]:
     """
     Find connected objects in a binary mask.
     :param mask: The input binary mask.
+    :param neighbourhood: The neighbourhood to use.
     :return: A tuple containing:
              - The labeled mask
              - A 2D array of bounding boxes (one per object) with coordinates in order:
@@ -68,8 +73,7 @@ def find_connected_objects(mask) -> tuple[np.ndarray, np.ndarray, int]:
             object_bounds[label]['min_col'] = min(object_bounds[label]['min_col'], col)
             object_bounds[label]['max_col'] = max(object_bounds[label]['max_col'], col)
 
-            # Explore neighbors (4-connectivity: up, down, left, right)
-            neighbors = [(row - 1, col), (row + 1, col), (row, col - 1), (row, col + 1)]
+            neighbors = neighbourhood((row, col))
             for nr, nc in neighbors:
                 if is_valid(nr, nc):
                     labeled_mask[nr, nc] = label
