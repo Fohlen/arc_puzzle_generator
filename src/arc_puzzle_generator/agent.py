@@ -1,8 +1,7 @@
 import logging
 from typing import Iterator, Iterable
 
-from arc_puzzle_generator.geometry import PointSet
-from arc_puzzle_generator.physics import Direction
+from arc_puzzle_generator.geometry import PointSet, Direction
 from arc_puzzle_generator.rule import RuleNode
 from arc_puzzle_generator.state import AgentState, AgentStateMapping
 from arc_puzzle_generator.utils.callable import get_callable_name

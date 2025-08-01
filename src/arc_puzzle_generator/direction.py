@@ -1,6 +1,6 @@
 from typing import Protocol
 
-from arc_puzzle_generator.physics import Direction, Axis
+from arc_puzzle_generator.geometry import Axis, Direction
 
 
 class DirectionTransformer(Protocol):

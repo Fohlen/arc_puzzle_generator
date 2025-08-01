@@ -8,10 +8,10 @@ from arc_puzzle_generator.rule import OutOfGridRule, CollisionDirectionRule, Dir
     RuleNode, identity_rule
 from arc_puzzle_generator.agent import Agent
 from arc_puzzle_generator.direction import identity_direction, orthogonal_direction
-from arc_puzzle_generator.geometry import PointSet
+from arc_puzzle_generator.geometry import PointSet, Direction
 from arc_puzzle_generator.playground import Playground
 from arc_puzzle_generator.neighbourhood import zero_neighbours, moore_neighbours
-from arc_puzzle_generator.physics import Direction, starting_point
+from arc_puzzle_generator.physics import starting_point
 from arc_puzzle_generator.topology import FixedGroupTopology, identity_topology
 from arc_puzzle_generator.utils.entities import find_colors, find_connected_objects, is_l_shape
 from arc_puzzle_generator.utils.grid import make_smallest_square_from_mask

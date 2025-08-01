@@ -6,7 +6,7 @@ from typing import Optional
 
 import numpy as np
 
-from arc_puzzle_generator.direction import Direction
+from arc_puzzle_generator.geometry import Direction
 from arc_puzzle_generator.neighbourhood import Neighbourhood, von_neumann_neighbours
 
 

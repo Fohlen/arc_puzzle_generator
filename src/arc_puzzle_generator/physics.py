@@ -3,18 +3,11 @@ The physics module contains world *physics*, for instance, calculating direction
 """
 
 import math
-from typing import Literal
 
 import numpy as np
 
-from arc_puzzle_generator.geometry import Point, PointSet
+from arc_puzzle_generator.geometry import Point, PointSet, Axis, Direction
 
-Axis = Literal["horizontal", "vertical", "diagonal"]
-"""
-The axis of a line.
-"""
-
-Direction = Literal["left", "right", "up", "down", "top_left", "top_right", "bottom_left", "bottom_right", "none"]
 """
 The possible directions we can go in our universe.
 """

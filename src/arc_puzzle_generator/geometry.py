@@ -1,9 +1,21 @@
-from typing import cast, Mapping
+from typing import cast, Mapping, Literal
 
 import numpy as np
 
 Point = tuple[int, int]
+"""
+A point in 2D space represented as a tuple of (x, y) coordinates.
+"""
+
 ColorMapping = Mapping[Point, int]
+"""
+A mapping from points to colors, where each point is represented as a tuple of (x, y) coordinates and each color is represented as an integer.
+"""
+
+Axis = Literal["horizontal", "vertical", "diagonal"]
+"""
+The axis of a line.
+"""
 
 
 class PointSet(set[tuple[int, int]]):
@@ -40,3 +52,6 @@ def unmask(input_mask: np.ndarray) -> PointSet:
     indices = np.where(input_mask)
 
     return PointSet(list(zip(indices[0].tolist(), indices[1].tolist())))
+
+
+Direction = Literal["left", "right", "up", "down", "top_left", "top_right", "bottom_left", "bottom_right", "none"]
