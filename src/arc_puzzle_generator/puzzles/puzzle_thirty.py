@@ -1,5 +1,5 @@
 from itertools import permutations, cycle
-from typing import Iterable
+from typing import Iterator
 
 import numpy as np
 
@@ -15,7 +15,7 @@ from arc_puzzle_generator.utils.entities import colour_count, find_connected_obj
 
 def puzzle_thirty(
         input_grid: np.ndarray,
-        directions: Iterable[Direction] = cycle(["left"])
+        directions: Iterator[Direction] = cycle(["left"])
 ) -> Playground:
     """
     Generates a playground for puzzle thirty based on the provided input grid.
@@ -58,7 +58,7 @@ def puzzle_thirty(
     # finally one can initialise the playground with agents, where the charge of each agent is the number of objects in the box
     for outer_box, inner_box in target_boxes:
         output_grid[labels[inner_box]] = background_color
-        direction = next(directions)
+        direction: Direction = next(directions)
         charge = (np.count_nonzero(labels[inner_box]) + 1)   # +1 for the extreme point (the agent itself)
         colors = [box_colors[outer_box]] + [box_colors[inner_box]] * charge
 
