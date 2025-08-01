@@ -5,7 +5,7 @@ import numpy as np
 from arc_puzzle_generator.geometry import PointSet
 from arc_puzzle_generator.physics import collision_axis, direction_to_numpy_unit_vector, box_distance, \
     relative_box_direction, \
-    starting_point, box_contained
+    starting_point, box_contained, extreme_point
 
 
 class PhysicsTestCase(unittest.TestCase):
@@ -129,3 +129,16 @@ class PhysicsTestCase(unittest.TestCase):
         self.assertTrue(box_contained(box_b, box_a))
         self.assertFalse(box_contained(box_a, box_b))
         self.assertFalse(box_contained(box_c, box_a))
+
+    def test_extreme_point(self):
+        mask = np.array([
+            [False, False, True, False],
+            [False, True, True, True],
+            [False, False, True, False],
+            [True, True, True, False],
+        ])
+
+        self.assertEqual((3, 0), extreme_point(mask, "left"))
+        self.assertEqual((1, 3), extreme_point(mask, "right"))
+        self.assertEqual((0, 2), extreme_point(mask, "up"))
+        self.assertEqual((3, 0), extreme_point(mask, "down"))

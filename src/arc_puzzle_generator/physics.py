@@ -252,3 +252,32 @@ def box_contained(box_a: np.ndarray, box_b: np.ndarray) -> bool:
         (box_a[:, 1] >= min_y) &
         (box_a[:, 1] <= max_y)
     ).item()
+
+
+def extreme_point(mask: np.ndarray, direction: Direction) -> Point:
+    """
+    Get the extreme point (leftmost, rightmost, topmost, bottommost) of a numpy mask based on the direction.
+    :param mask: A 2D numpy array where True represents the region of interest.
+    :param direction: The direction to find the extreme point ('left', 'right', 'top', 'bottom').
+    :return: A tuple (row, col) representing the coordinates of the extreme point.
+    """
+
+    match direction:
+        case "left":
+            col = np.min(np.where(mask)[1]).item()
+            row = np.where(mask[:, col])[0][0].item()
+            return row, col
+        case "right":
+            col = np.max(np.where(mask)[1]).item()
+            row = np.where(mask[:, col])[0][0].item()
+            return row, col
+        case "up":
+            row = np.min(np.where(mask)[0]).item()
+            col = np.where(mask[row, :])[0][0].item()
+            return row, col
+        case "down":
+            row = np.max(np.where(mask)[0]).item()
+            col = np.where(mask[row, :])[0][0].item()
+            return row, col
+        case "_":
+            raise ValueError("Unknown direction {}".format(direction))

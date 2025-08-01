@@ -1,3 +1,4 @@
+import logging
 import unittest
 
 import numpy as np
@@ -6,6 +7,8 @@ from arc_puzzle_generator.puzzles.puzzle_thirty import puzzle_thirty
 from arc_puzzle_generator.utils.data_loader import load_puzzle
 from tests.utils import test_dir
 
+logging.basicConfig(level=logging.DEBUG)
+
 
 class PuzzleThirtyTestCase(unittest.TestCase):
     def setUp(self):
@@ -13,7 +16,9 @@ class PuzzleThirtyTestCase(unittest.TestCase):
         self.puzzle = load_puzzle(file_path)
 
     def test_generate_3dc255db(self):
-        playground = puzzle_thirty(self.puzzle.train[0].input)
+        playground = puzzle_thirty(
+            self.puzzle.train[0].input, directions=iter(["right", "left"])
+        )
         *_, output_grid = playground
         self.assertTrue(np.array_equal(output_grid, self.puzzle.train[0].output))
 
