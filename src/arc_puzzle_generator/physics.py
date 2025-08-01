@@ -4,10 +4,6 @@ The physics module contains world *physics*, for instance, calculating direction
 
 from arc_puzzle_generator.geometry import Point, PointSet, Axis, Direction
 
-"""
-The possible directions we can go in our universe.
-"""
-
 
 def direction_to_unit_vector(direction: Direction) -> Point:
     """

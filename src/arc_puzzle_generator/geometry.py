@@ -12,6 +12,11 @@ ColorMapping = Mapping[Point, int]
 A mapping from points to colors, where each point is represented as a tuple of (x, y) coordinates and each color is represented as an integer.
 """
 
+Direction = Literal["left", "right", "up", "down", "top_left", "top_right", "bottom_left", "bottom_right", "none"]
+"""
+The possible directions we can go in our universe.
+"""
+
 Axis = Literal["horizontal", "vertical", "diagonal"]
 """
 The axis of a line.
@@ -41,4 +46,3 @@ class PointSet(set[tuple[int, int]]):
         return PointSet((x.item(), y.item()) for x, y in array)
 
 
-Direction = Literal["left", "right", "up", "down", "top_left", "top_right", "bottom_left", "bottom_right", "none"]
