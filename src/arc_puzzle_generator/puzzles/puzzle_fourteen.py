@@ -8,7 +8,8 @@ from arc_puzzle_generator.rule import RuleNode, OutOfGridRule, CollisionFillRule
     DirectionRule
 from arc_puzzle_generator.agent import Agent
 from arc_puzzle_generator.direction import identity_direction
-from arc_puzzle_generator.geometry import unmask, Direction
+from arc_puzzle_generator.geometry import Direction
+from arc_puzzle_generator.utils.grid import unmask
 from arc_puzzle_generator.playground import Playground
 from arc_puzzle_generator.neighbourhood import zero_neighbours, AxisNeighbourhood
 from arc_puzzle_generator.topology import identity_topology, FixedGroupTopology

@@ -2,10 +2,10 @@ from unittest import TestCase
 
 import numpy as np
 
-from arc_puzzle_generator.geometry import unmask
+from arc_puzzle_generator.utils.grid import unmask
 
 
-class GeometryTestCase(TestCase):
+class GridTestCase(TestCase):
     def test_unmask(self):
         test_grid = np.array([
             [False, True, False],
