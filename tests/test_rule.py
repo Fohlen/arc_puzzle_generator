@@ -1,8 +1,7 @@
 from unittest import TestCase
 
 from arc_puzzle_generator.direction import orthogonal_direction, snake_direction
-from arc_puzzle_generator.geometry import PointSet
-from arc_puzzle_generator.physics import Direction
+from arc_puzzle_generator.geometry import PointSet, Direction
 from arc_puzzle_generator.rule import identity_rule, DirectionRule, CollisionDirectionRule, OutOfGridRule, \
     collision_color_mapping_rule, TrappedCollisionRule, CollisionBorderRule, CollisionFillRule, backtrack_rule
 from arc_puzzle_generator.state import AgentState

@@ -1,8 +1,7 @@
 from itertools import chain
 from typing import Protocol, cast
 
-from arc_puzzle_generator.geometry import Point, PointSet
-from arc_puzzle_generator.physics import Axis
+from arc_puzzle_generator.geometry import Point, PointSet, Axis
 
 
 class Neighbourhood(Protocol):

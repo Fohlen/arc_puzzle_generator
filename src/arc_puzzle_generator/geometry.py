@@ -1,9 +1,26 @@
-from typing import cast, Mapping
+from typing import Mapping, Literal
 
 import numpy as np
 
 Point = tuple[int, int]
+"""
+A point in 2D space represented as a tuple of (x, y) coordinates.
+"""
+
 ColorMapping = Mapping[Point, int]
+"""
+A mapping from points to colors, where each point is represented as a tuple of (x, y) coordinates and each color is represented as an integer.
+"""
+
+Direction = Literal["left", "right", "up", "down", "top_left", "top_right", "bottom_left", "bottom_right", "none"]
+"""
+The possible directions we can go in our universe.
+"""
+
+Axis = Literal["horizontal", "vertical", "diagonal"]
+"""
+The axis of a line.
+"""
 
 
 class PointSet(set[tuple[int, int]]):
@@ -29,14 +46,3 @@ class PointSet(set[tuple[int, int]]):
         return PointSet((x.item(), y.item()) for x, y in array)
 
 
-def unmask(input_mask: np.ndarray) -> PointSet:
-    """
-    Convert a 2D mask of booleans to a set of points.
-
-    :param input_mask: A 2D list where True indicates a point is present.
-    :return: A set of points (x, y) where the mask is True.
-    """
-
-    indices = np.where(input_mask)
-
-    return PointSet(list(zip(indices[0].tolist(), indices[1].tolist())))

@@ -1,7 +1,6 @@
 from typing import Protocol
 
-from arc_puzzle_generator.geometry import Point, PointSet
-from arc_puzzle_generator.physics import Direction
+from arc_puzzle_generator.geometry import Point, PointSet, Direction
 
 
 class Selector(Protocol):

@@ -5,6 +5,8 @@ import math
 
 import numpy as np
 
+from arc_puzzle_generator.geometry import PointSet
+
 
 def make_smallest_square_from_mask(original_matrix: np.ndarray, binary_mask: np.typing.ArrayLike) -> np.ndarray | None:
     """
@@ -38,3 +40,16 @@ def make_smallest_square_from_mask(original_matrix: np.ndarray, binary_mask: np.
     squared_array = np.zeros((side, side), dtype=cropped_array.dtype)
     squared_array[:rows_cropped, :cols_cropped] = cropped_array
     return squared_array
+
+
+def unmask(input_mask: np.ndarray) -> PointSet:
+    """
+    Convert a 2D mask of booleans to a set of points.
+
+    :param input_mask: A 2D list where True indicates a point is present.
+    :return: A set of points (x, y) where the mask is True.
+    """
+
+    indices = np.where(input_mask)
+
+    return PointSet(list(zip(indices[0].tolist(), indices[1].tolist())))
