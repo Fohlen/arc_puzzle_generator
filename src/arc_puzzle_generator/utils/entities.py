@@ -6,8 +6,9 @@ from typing import Optional
 
 import numpy as np
 
-from arc_puzzle_generator.geometry import Direction
+from arc_puzzle_generator.geometry import Direction, Point
 from arc_puzzle_generator.neighbourhood import Neighbourhood, von_neumann_neighbours
+from arc_puzzle_generator.physics import direction_to_numpy_unit_vector
 
 
 def find_colors(grid: np.ndarray, background: Optional[int] = None) -> set[int]:
@@ -169,3 +170,94 @@ def is_l_shape(arr: np.ndarray) -> Optional[Direction]:
             return "top_right"
 
     return None
+
+
+def starting_point(
+        bounding_box: np.ndarray,
+        direction: Direction,
+        point_width: int = 1,
+) -> np.ndarray:
+    """
+    Returns the starting point of a structure with a given bounding box and direction.
+    :param bounding_box: The bounding box of the structure.
+    :param direction: The direction of the structure.
+    :param point_width: The width of the starting point.
+    :return: Starting point of the structure.
+    """
+
+    match direction:
+        case "left":
+            start_pos = ((bounding_box[0] + bounding_box[1]) // 2)
+            return np.array([start_pos + [i, 0] for i in range(point_width)])
+        case "right":
+            start_pos = ((bounding_box[2] + bounding_box[3]) // 2)
+            return np.array([start_pos + [i, 0] for i in range(point_width)])
+        case "up":
+            start_pos = ((bounding_box[1] + bounding_box[2]) // 2)
+            return np.array([start_pos + [0, i] for i in range(point_width)])
+        case "down":
+            start_pos = ((bounding_box[0] + bounding_box[3]) // 2)
+            return np.array([start_pos + [0, i] for i in range(point_width)])
+        case "bottom_left":
+            start_pos = bounding_box[0]
+            return np.array(
+                [start_pos + (direction_to_numpy_unit_vector("bottom_right") * i) for i in range(point_width)])
+        case "top_left":
+            start_pos = bounding_box[1]
+            return np.array([start_pos + (direction_to_numpy_unit_vector("top_right") * i) for i in range(point_width)])
+        case "top_right":
+            start_pos = bounding_box[2]
+            return np.array(
+                [start_pos + (direction_to_numpy_unit_vector("bottom_right") * i) for i in range(point_width)])
+        case "bottom_right":
+            start_pos = bounding_box[3]
+            return np.array([start_pos + (direction_to_numpy_unit_vector("top_right") * i) for i in range(point_width)])
+
+    raise ValueError("Unknown direction {}".format(direction))
+
+
+def box_contained(box_a: np.ndarray, box_b: np.ndarray) -> bool:
+    """
+    Compares two bounding boxes and checks if box_a is contained within box_b.
+    :param box_a: The bounding box to check for containment.
+    :param box_b: The bounding box to check against.
+    :return: True if box_a is contained within box_b, False otherwise.
+    """
+
+    min_x, min_y = np.min(box_b, axis=0)
+    max_x, max_y = np.max(box_b, axis=0)
+    return np.all(
+        (box_a[:, 0] >= min_x) &
+        (box_a[:, 0] <= max_x) &
+        (box_a[:, 1] >= min_y) &
+        (box_a[:, 1] <= max_y)
+    ).item()
+
+
+def extreme_point(mask: np.ndarray, direction: Direction) -> Point:
+    """
+    Get the extreme point (leftmost, rightmost, topmost, bottommost) of a numpy mask based on the direction.
+    :param mask: A 2D numpy array where True represents the region of interest.
+    :param direction: The direction to find the extreme point ('left', 'right', 'top', 'bottom').
+    :return: A tuple (row, col) representing the coordinates of the extreme point.
+    """
+
+    match direction:
+        case "left":
+            col = np.min(np.where(mask)[1]).item()
+            row = np.where(mask[:, col])[0][0].item()
+            return row, col
+        case "right":
+            col = np.max(np.where(mask)[1]).item()
+            row = np.where(mask[:, col])[0][0].item()
+            return row, col
+        case "up":
+            row = np.min(np.where(mask)[0]).item()
+            col = np.where(mask[row, :])[0][0].item()
+            return row, col
+        case "down":
+            row = np.max(np.where(mask)[0]).item()
+            col = np.where(mask[row, :])[0][0].item()
+            return row, col
+
+    raise ValueError("Unknown direction {}".format(direction))

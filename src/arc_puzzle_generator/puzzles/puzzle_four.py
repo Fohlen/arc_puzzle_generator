@@ -11,9 +11,8 @@ from arc_puzzle_generator.direction import identity_direction, orthogonal_direct
 from arc_puzzle_generator.geometry import PointSet, Direction
 from arc_puzzle_generator.playground import Playground
 from arc_puzzle_generator.neighbourhood import zero_neighbours, moore_neighbours
-from arc_puzzle_generator.physics import starting_point
 from arc_puzzle_generator.topology import FixedGroupTopology, identity_topology
-from arc_puzzle_generator.utils.entities import find_colors, find_connected_objects, is_l_shape
+from arc_puzzle_generator.utils.entities import find_colors, find_connected_objects, is_l_shape, starting_point
 from arc_puzzle_generator.utils.grid import make_smallest_square_from_mask
 
 
