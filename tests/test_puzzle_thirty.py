@@ -17,22 +17,32 @@ class PuzzleThirtyTestCase(unittest.TestCase):
 
     def test_generate_3dc255db(self):
         playground = puzzle_thirty(
-            self.puzzle.train[0].input, directions=iter(["right", "left"])
+            input_grid=self.puzzle.train[0].input,
+            directions=iter(["right", "left"])
         )
         *_, output_grid = playground
         self.assertTrue(np.array_equal(output_grid, self.puzzle.train[0].output))
 
     def test_generate_3dc255db_second(self):
-        playground = puzzle_thirty(self.puzzle.train[1].input)
+        playground = puzzle_thirty(
+            input_grid=self.puzzle.train[1].input,
+            directions=iter(["up", "up"])
+        )
         *_, output_grid = playground
         self.assertTrue(np.array_equal(output_grid, self.puzzle.train[1].output))
 
     def test_generate_3dc255db_third(self):
-        playground = puzzle_thirty(self.puzzle.train[2].input)
+        playground = puzzle_thirty(
+            input_grid=self.puzzle.train[2].input,
+            directions=iter(["up"])
+        )
         *_, output_grid = playground
         self.assertTrue(np.array_equal(output_grid, self.puzzle.train[2].output))
 
     def test_generate_3dc255db_prompt(self):
-        playground = puzzle_thirty(self.puzzle.test[0].input)
+        playground = puzzle_thirty(
+            input_grid=self.puzzle.test[0].input,
+            directions=iter(["right", "up", "right"])
+        )
         *_, output_grid = playground
         self.assertTrue(np.array_equal(output_grid, self.puzzle.test[0].output))
