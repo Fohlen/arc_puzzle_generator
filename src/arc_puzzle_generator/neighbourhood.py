@@ -52,9 +52,9 @@ class MooreNeighbourhood(Neighbourhood):
         points = PointSet([point])
 
         for _ in range(1, self.size + 1):
-            new_points: list[Point] = []
+            new_points: set[Point] = set()
             for p in points:
-                new_points.extend(moore_neighbours(p))
+                new_points.update(moore_neighbours(p))
 
             points.update(new_points)
 
