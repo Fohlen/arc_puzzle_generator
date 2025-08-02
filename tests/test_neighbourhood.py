@@ -25,6 +25,21 @@ class NeighbourhoodTestCase(TestCase):
 
         self.assertEqual(expected, neighbourhood(self.point))
 
+    def test_neighbourhood_size(self):
+        point = (10, 10)
+        neighbourhood_a = VonNeumannNeighbourhood()
+        self.assertEqual(4, len(neighbourhood_a(point)))
+
+        neighbourhood_b = VonNeumannNeighbourhood(size=2)
+        self.assertEqual(8, len(neighbourhood_b(point)))
+
+        neighbourhood_c = MooreNeighbourhood(size=1)
+        self.assertEqual(8, len(neighbourhood_c(point)))
+
+        neighbourhood_d = MooreNeighbourhood(size=2)
+        self.assertEqual(24, len(neighbourhood_d(point)))
+
+
     def test_point_set_neighbours(self):
         point_set = PointSet({(1, 1), (1, 2)})
         expected_van_neumann = {
