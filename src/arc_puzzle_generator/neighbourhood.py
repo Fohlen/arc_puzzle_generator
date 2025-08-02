@@ -26,7 +26,7 @@ class VonNeumannNeighbourhood(Neighbourhood):
         x, y = point
         points = []
 
-        for i in range(self.size, self.size + 1):
+        for i in range(1, self.size + 1):
             points.extend([
                 (x - i, y),  # Up
                 (x + i, y),  # Down
@@ -49,20 +49,16 @@ class MooreNeighbourhood(Neighbourhood):
 
     def __call__(self, point: Point) -> PointSet:
         x, y = point
-        points = []
+        points = PointSet([point])
 
-        for i in range(self.size, self.size + 1):
-            points.extend([
-                (x - i, y - i),  # Top-left
-                (x - i, y),      # Up
-                (x - i, y + i),  # Top-right
-                (x, y - i),      # Left
-                (x, y + i),      # Right
-                (x + i, y - i),  # Bottom-left
-                (x + i, y),      # Down
-                (x + i, y + i),  # Bottom-right
-            ])
+        for _ in range(1, self.size + 1):
+            new_points: list[Point] = []
+            for p in points:
+                new_points.extend(moore_neighbours(p))
 
+            points.update(new_points)
+
+        points.remove(point)
         return PointSet(points)
 
 
