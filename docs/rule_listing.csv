@@ -9,4 +9,5 @@ CollisionBorderRule;if collision: apply border_color to collision ;border_color;
 CollisionFillRule;if collision and current_color == fill_color: apply fill_color to collision;fill_color;;;;
 backtrack_rule;return states[-2];;;;;
 uncharge_rule;charge -= 1;;;;;
-GravityRule;try down, left, right;grid_size;;;;
+GravityRule;"if not collision: try down, left, right; charge -= 1";grid_size;;;;
+ProximityRule;"if not collision: direction -> minimum; charge -= 1";target (PointSet);points (PointSet);;;
