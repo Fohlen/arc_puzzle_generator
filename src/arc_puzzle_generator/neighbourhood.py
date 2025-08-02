@@ -12,6 +12,60 @@ class Neighbourhood(Protocol):
         pass
 
 
+class VonNeumannNeighbourhood(Neighbourhood):
+    """
+    A neighbourhood that returns the Von Neumann neighbourhood of a point.
+    :param point: A tuple representing the point (x, y).
+    :return: The Von Neumann neighbourhood of the point as a set of points.
+    """
+
+    def __init__(self, size: int = 1) -> None:
+        self.size = size
+
+    def __call__(self, point: Point) -> PointSet:
+        x, y = point
+        points = []
+
+        for i in range(self.size, self.size + 1):
+            points.extend([
+                (x - i, y),  # Up
+                (x + i, y),  # Down
+                (x, y - i),  # Left
+                (x, y + i),  # Right
+            ])
+
+        return PointSet(points)
+
+
+class MooreNeighbourhood(Neighbourhood):
+    """
+    A neighbourhood that returns the Moore neighbourhood of a point.
+    :param point: A tuple representing the point (x, y).
+    :return: The Moore neighbourhood of the point as a set of points.
+    """
+
+    def __init__(self, size: int = 1) -> None:
+        self.size = size
+
+    def __call__(self, point: Point) -> PointSet:
+        x, y = point
+        points = []
+
+        for i in range(self.size, self.size + 1):
+            points.extend([
+                (x - i, y - i),  # Top-left
+                (x - i, y),      # Up
+                (x - i, y + i),  # Top-right
+                (x, y - i),      # Left
+                (x, y + i),      # Right
+                (x + i, y - i),  # Bottom-left
+                (x + i, y),      # Down
+                (x + i, y + i),  # Bottom-right
+            ])
+
+        return PointSet(points)
+
+
 def von_neumann_neighbours(point: Point) -> PointSet:
     """
     Return the Von Neumann neighbourhood of a point.
@@ -40,12 +94,12 @@ def moore_neighbours(point: Point) -> PointSet:
 
     return PointSet([
         (x - 1, y - 1),  # Top-left
-        (x - 1, y),      # Up
+        (x - 1, y),  # Up
         (x - 1, y + 1),  # Top-right
-        (x, y - 1),      # Left
-        (x, y + 1),      # Right
+        (x, y - 1),  # Left
+        (x, y + 1),  # Right
         (x + 1, y - 1),  # Bottom-left
-        (x + 1, y),      # Down
+        (x + 1, y),  # Down
         (x + 1, y + 1),  # Bottom-right
     ])
 
