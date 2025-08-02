@@ -4,17 +4,17 @@ from typing import Mapping, cast
 
 import numpy as np
 
-from arc_puzzle_generator.rule import OutOfGridRule, TrappedCollisionRule, CollisionDirectionRule, \
-    DirectionRule, \
-    CollisionBorderRule, backtrack_rule, Rule, RuleNode, identity_rule
 from arc_puzzle_generator.agent import Agent
 from arc_puzzle_generator.direction import identity_direction, snake_direction
 from arc_puzzle_generator.geometry import PointSet
-from arc_puzzle_generator.utils.grid import unmask
+from arc_puzzle_generator.neighbourhood import VonNeumannNeighbourhood
 from arc_puzzle_generator.playground import Playground
-from arc_puzzle_generator.neighbourhood import zero_neighbours, von_neumann_neighbours
-from arc_puzzle_generator.topology import FixedGroupTopology, identity_topology
+from arc_puzzle_generator.rule import OutOfGridRule, TrappedCollisionRule, CollisionDirectionRule, \
+    DirectionRule, \
+    CollisionBorderRule, backtrack_rule, Rule, RuleNode, identity_rule
+from arc_puzzle_generator.topology import FixedGroupTopology
 from arc_puzzle_generator.utils.entities import colour_count, find_colors, find_connected_objects
+from arc_puzzle_generator.utils.grid import unmask
 
 
 def puzzle_ten(input_grid: np.ndarray) -> Playground:
@@ -99,6 +99,6 @@ def puzzle_ten(input_grid: np.ndarray) -> Playground:
     return Playground(
         input_grid.copy(),
         agents=agents,
-        neighbourhood=von_neumann_neighbours,
+        neighbourhood=VonNeumannNeighbourhood(),
         topology=topology,
     )
