@@ -3,12 +3,14 @@ from unittest import TestCase
 from arc_puzzle_generator.geometry import PointSet
 from arc_puzzle_generator.neighbourhood import moore_neighbours
 from arc_puzzle_generator.selection import resolve_point_set_selectors_with_direction
+from arc_puzzle_generator.neighbourhood import MooreNeighbourhood, VonNeumannNeighbourhood
 
 
 class SelectorsTestCase(TestCase):
     def setUp(self) -> None:
         self.point = (1, 1)
-        self.neighbourhood = moore_neighbours(self.point)
+        neighbourhood = MooreNeighbourhood()
+        self.neighbourhood = neighbourhood(self.point)
 
     def test_top_selector(self):
         expected = {(0, 1)}

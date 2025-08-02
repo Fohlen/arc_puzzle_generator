@@ -1,8 +1,8 @@
 from unittest import TestCase
 
 from arc_puzzle_generator.geometry import PointSet
-from arc_puzzle_generator.neighbourhood import von_neumann_neighbours, moore_neighbours, \
-    resolve_point_set_neighbourhood, VonNeumannNeighbourhood, MooreNeighbourhood
+from arc_puzzle_generator.neighbourhood import resolve_point_set_neighbourhood, VonNeumannNeighbourhood, \
+    MooreNeighbourhood
 
 
 class NeighbourhoodTestCase(TestCase):
