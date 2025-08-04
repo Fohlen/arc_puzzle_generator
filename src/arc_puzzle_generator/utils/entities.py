@@ -334,3 +334,24 @@ def direction_to_numpy_unit_vector(direction: Direction) -> np.ndarray:
             return np.array([1, 1])
 
     raise ValueError("Unknown direction {}".format(direction))
+
+
+def get_bounding_box(points: np.ndarray) -> np.ndarray:
+    """
+    Calculates the bounding box for a set of 2D points and returns the corners
+    in the order: left bottom, top left, top right, right bottom.
+
+    :param points: A numpy array of 2D points (x, y).
+    :return: A numpy array of points representing the bounding box corners in the specified order.
+    """
+    # Find the minimum and maximum x and y coordinates
+    min_x, min_y = points.min(axis=0)
+    max_x, max_y = points.max(axis=0)
+
+    left_bottom = (min_x, min_y)
+    top_left = (min_x, max_y)
+    top_right = (max_x, max_y)
+    right_bottom = (max_x, min_y)
+
+    # Return the corners as a numpy array
+    return np.array([left_bottom, top_left, top_right, right_bottom])

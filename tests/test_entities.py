@@ -4,7 +4,7 @@ import numpy as np
 
 from arc_puzzle_generator.utils.data_loader import load_puzzle
 from arc_puzzle_generator.utils.entities import find_connected_objects, is_l_shape, find_colors, extreme_point, \
-    box_contained, starting_point, relative_box_direction, box_distance
+    box_contained, starting_point, relative_box_direction, box_distance, get_bounding_box
 from tests.utils import test_dir
 
 
@@ -185,3 +185,34 @@ class EntityTestCase(unittest.TestCase):
         self.assertEqual((1, 3), extreme_point(mask, "right"))
         self.assertEqual((0, 2), extreme_point(mask, "up"))
         self.assertEqual((3, 0), extreme_point(mask, "down"))
+
+    def test_bounding_box(self):
+        # Test case 1: Simple square
+        points = np.array([[1, 1], [1, 3], [3, 3], [3, 1]])
+        expected_bbox = np.array([[1, 1], [1, 3], [3, 3], [3, 1]])
+        result = get_bounding_box(points)
+        self.assertTrue(np.array_equal(result, expected_bbox))
+
+        # Test case 2: Random points
+        points = np.array([[2, 5], [1, 3], [4, 6], [3, 2]])
+        expected_bbox = np.array([[1, 2], [1, 6], [4, 6], [4, 2]])
+        result = get_bounding_box(points)
+        self.assertTrue(np.array_equal(result, expected_bbox))
+
+        # Test case 3: Single point
+        points = np.array([[2, 2]])
+        expected_bbox = np.array([[2, 2], [2, 2], [2, 2], [2, 2]])
+        result = get_bounding_box(points)
+        self.assertTrue(np.array_equal(result, expected_bbox))
+
+        # Test case 4: Vertical line
+        points = np.array([[2, 1], [2, 3], [2, 2]])
+        expected_bbox = np.array([[2, 1], [2, 3], [2, 3], [2, 1]])
+        result = get_bounding_box(points)
+        self.assertTrue(np.array_equal(result, expected_bbox))
+
+        # Test case 5: Horizontal line
+        points = np.array([[1, 2], [3, 2], [2, 2]])
+        expected_bbox = np.array([[1, 2], [1, 2], [3, 2], [3, 2]])
+        result = get_bounding_box(points)
+        self.assertTrue(np.array_equal(result, expected_bbox))
