@@ -48,25 +48,25 @@ def puzzle_thirtynine(
 
             points = [
                 neighbours_np[idx]
-                for idx in neighbours_idx
+                for idx in neighbours_idx[0]
             ]
 
-            colors = [[]] * len(points)
+            colors = [[] for _ in points]
 
             while not any(
-                    point[0, 0] < 0 or point[0, 0] >= input_grid.shape[0] or
-                    point[0, 1] < 0 or point[0, 1] >= input_grid.shape[1] or
-                    input_grid[point[0, 0], point[0, 1]] == background_color
+                    point[0] < 0 or point[0] >= input_grid.shape[0] or
+                    point[1] < 0 or point[1] >= input_grid.shape[1] or
+                    input_grid[point[0], point[1]] == background_color
                     for point in points
             ):
                 for index, point in enumerate(points):
                     points[index] = point + direction_to_numpy_unit_vector(direction)
-                    colors[index].append(input_grid[point[0, 0], point[0, 1]].item())
+                    colors[index].append(input_grid[point[0], point[1]].item())
 
             for point, color_sequence in zip(points, colors):
                 if len(color_sequence) <= 2:  # Hard-coded condition for puzzle 39
                     agents.append(Agent(
-                        position=PointSet([(x.item(), y.item()) for x, y in point]),
+                        position=PointSet([(point[0].item(), point[1].item())]),
                         direction=direction,
                         label=f"agent_{i}",
                         node=RuleNode(
