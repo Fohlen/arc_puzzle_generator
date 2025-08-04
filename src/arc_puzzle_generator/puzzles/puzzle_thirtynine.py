@@ -51,7 +51,7 @@ def puzzle_thirtynine(
                 for idx in neighbours_idx[0]
             ]
 
-            colors = [[] for _ in points]
+            colors: list[list[int]] = [[] for _ in points]
 
             while not any(
                     point[0] < 0 or point[0] >= input_grid.shape[0] or
