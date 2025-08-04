@@ -4,4 +4,7 @@ from .puzzle_four import puzzle_four
 from .puzzle_ten import puzzle_ten
 from .puzzle_fourteen import puzzle_fourteen
 from .puzzle_eighteen import puzzle_eighteen
+from .puzzle_twentyfive import puzzle_twentyfive
+from .puzzle_thirty import puzzle_thirty
+from .puzzle_thirtynine import puzzle_thirtynine
 
