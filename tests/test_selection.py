@@ -1,5 +1,6 @@
 from unittest import TestCase
 
+from arc_puzzle_generator.geometry import PointSet
 from arc_puzzle_generator.neighbourhood import moore_neighbours
 from arc_puzzle_generator.selection import resolve_point_set_selectors_with_direction
 
@@ -37,7 +38,7 @@ class SelectorsTestCase(TestCase):
             resolve_point_set_selectors_with_direction({self.point}, self.neighbourhood, "right")
         )
 
-    def test_direction_selection(self):
+    def test_bottom_right_selector(self):
         expected_bottom_right = {(2, 2)}
         self.assertEqual(
             expected_bottom_right,

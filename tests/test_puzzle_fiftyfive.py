@@ -1,3 +1,4 @@
+import logging
 import unittest
 
 import numpy as np
@@ -5,6 +6,8 @@ import numpy as np
 from arc_puzzle_generator.puzzles.puzzle_fiftyfive import puzzle_fiftyfive
 from arc_puzzle_generator.utils.data_loader import load_puzzle
 from tests.utils import test_dir
+
+logging.basicConfig(level=logging.DEBUG)
 
 
 class PuzzleFiftyFiveTestCase(unittest.TestCase):
