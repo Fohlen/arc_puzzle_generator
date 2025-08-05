@@ -48,19 +48,28 @@ def puzzle_fiftyfive(
                     next_point = shift(next_point, direction_to_unit_vector("bottom_right"))
                     charge += 1
                 else:
-                    agents.append(Agent(
-                        position=PointSet([
-                            shift(point, direction_to_unit_vector("bottom_right")),
-                            shift(point, direction_to_unit_vector("right"))
-                        ]),
-                        direction="bottom_right",
-                        label="agent",
-                        colors=cycle([foreground_color]),
-                        node=RuleNode(
-                            DirectionRule(direction_rule=identity_direction)
+                    agents.extend([
+                        Agent(
+                            position=PointSet([shift(point, direction_to_unit_vector("bottom_right"))]),
+                            direction="bottom_right",
+                            label="agent",
+                            colors=cycle([foreground_color]),
+                            node=RuleNode(
+                                DirectionRule(direction_rule=identity_direction)
+                            ),
+                            charge=charge - 1,
                         ),
-                        charge=charge,
-                    ))
+                        Agent(
+                            position=PointSet([shift(point, direction_to_unit_vector("right"))]),
+                            direction="bottom_right",
+                            label="agent",
+                            colors=cycle([foreground_color]),
+                            node=RuleNode(
+                                DirectionRule(direction_rule=identity_direction)
+                            ),
+                            charge=charge,
+                        )
+                    ])
                     break
 
     return Playground(
