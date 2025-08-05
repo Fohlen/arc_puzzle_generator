@@ -1,6 +1,7 @@
 from typing import Protocol
 
 from arc_puzzle_generator.geometry import Point, PointSet, Direction
+from arc_puzzle_generator.physics import direction_to_unit_vector
 
 
 class Selector(Protocol):
@@ -64,6 +65,18 @@ def right_selector(point: Point, point_set: PointSet) -> PointSet:
     return PointSet((x, y) for (x, y) in point_set if y > point[1] and x == point[0])
 
 
+def direction_selector(point: Point, point_set: PointSet, direction: Direction) -> PointSet:
+    """
+    Selects points in a given direction from the point set.
+    :param point: The reference point.
+    :param point_set: The set of points to select from.
+    :param direction: The direction to select points in.
+    :return: A set of points in the specified direction from the reference point.
+    """
+
+    return PointSet([point]).shift(direction_to_unit_vector(direction)) & point_set
+
+
 def resolve_point_set_selectors(point_set: PointSet, neighbourhood: PointSet, selector: Selector) -> PointSet:
     """
     Resolves a point set using a selector function.
@@ -97,5 +110,4 @@ def resolve_point_set_selectors_with_direction(
         case "right":
             return resolve_point_set_selectors(point_set, neighbourhood, right_selector)
         case _:
-            raise ValueError(f"Unknown direction: {direction}")
-
+            return PointSet(set.union(*[direction_selector(point, neighbourhood, direction) for point in point_set]))

@@ -1,7 +1,8 @@
 from unittest import TestCase
 
 from arc_puzzle_generator.neighbourhood import moore_neighbours, von_neumann_neighbours
-from arc_puzzle_generator.selection import up_selector, down_selector, left_selector, right_selector, resolve_point_set_selectors
+from arc_puzzle_generator.selection import up_selector, down_selector, left_selector, right_selector, \
+    resolve_point_set_selectors, resolve_point_set_selectors_with_direction
 
 
 class SelectorsTestCase(TestCase):
@@ -32,9 +33,13 @@ class SelectorsTestCase(TestCase):
         self.assertEqual(neighbours, combined)
 
     def test_resolve_point_set_selectors(self):
-        expected_top = {(0, 1),}
+        expected_top = {(0, 1), }
         self.assertEqual(expected_top, resolve_point_set_selectors({self.point}, self.neighbourhood, up_selector))
 
-        expected_bottom =  {(2, 1)}
+        expected_bottom = {(2, 1)}
         self.assertEqual(expected_bottom, resolve_point_set_selectors({self.point}, self.neighbourhood, down_selector))
 
+    def test_direction_selection(self):
+        expected_bottom_right = {(2, 2)}
+        self.assertEqual(expected_bottom_right,
+                         resolve_point_set_selectors_with_direction({self.point}, self.neighbourhood, "bottom_right"))
