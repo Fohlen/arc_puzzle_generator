@@ -1,6 +1,6 @@
 from collections import defaultdict
 from itertools import chain
-from typing import cast, Iterator, Iterable, Callable, Literal, Sequence, Optional
+from typing import cast, Iterator, Iterable, Callable, Literal, Sequence, Optional, Mapping
 
 import numpy as np
 
@@ -44,7 +44,7 @@ class Playground(Iterator[np.ndarray], Iterable[np.ndarray]):
         :param backfill_color: If supplied, this color will be used to fill the grid where agents previously used to be.
         """
         self.output_grid = output_grid
-        self.agents = agents
+        self.agents: list[Agent] = []
         self.neighbourhood = neighbourhood
         self.topology = topology
         self.execution_mode = execution_mode
@@ -53,22 +53,27 @@ class Playground(Iterator[np.ndarray], Iterable[np.ndarray]):
 
         # initialize internal properties
         self.current_agent_idx = 0
-        self.agents_by_label = defaultdict(list)
-        self.labels = set(agent.label for agent in agents)
+        self.agents_by_label: Mapping[str, list[Agent]] = defaultdict(list)
+        self.labels: set[str] = set()
         self.steps = [output_grid.copy()]
         self.step_iterator = iter(self.steps)
 
         for agent in agents:
-            self.agents_by_label[agent.label].append(agent)
-
-            if agent.active:
-                position = np.array(list(agent.position))
-                self.output_grid[position[:, 0], position[:, 1]] = agent.color
+            self.add_agent(agent)
 
     @property
     def active(self) -> bool:
         """Check if any agent is active."""
         return any(agent.active for agent in self.agents)
+
+    def add_agent(self, agent: Agent) -> None:
+        self.agents.append(agent)
+        self.labels.add(agent.label)
+        self.agents_by_label[agent.label].append(agent)
+
+        if agent.active:
+            position = np.array(list(agent.position))
+            self.output_grid[position[:, 0], position[:, 1]] = agent.color
 
     def __iter__(self) -> 'Playground':
         return self
