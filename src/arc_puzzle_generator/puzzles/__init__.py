@@ -7,4 +7,4 @@ from .puzzle_eighteen import puzzle_eighteen
 from .puzzle_twentyfive import puzzle_twentyfive
 from .puzzle_thirty import puzzle_thirty
 from .puzzle_thirtynine import puzzle_thirtynine
-
+from .puzzle_fiftyfive import puzzle_fiftyfive

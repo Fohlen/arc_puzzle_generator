@@ -32,7 +32,15 @@ def direction_to_unit_vector(direction: Direction) -> Point:
         case "bottom_right":
             return 1, 1
 
-    raise ValueError("Unknown direction {}".format(direction))
+
+def shift(point: Point, vector: Point) -> Point:
+    """
+    Shifts a point by a given vector.
+    :param point: The point to shift.
+    :param vector: The vector to shift the point by.
+    :return: A new point shifted by the vector.
+    """
+    return point[0] + vector[0], point[1] + vector[1]
 
 
 def collision_axis(collision_position: PointSet) -> Axis:
