@@ -23,7 +23,6 @@ def puzzle_fiftyfive(
     """
 
     sorted_colors = colour_count(input_grid)
-    background_color = sorted_colors[0][0]
     foreground_color = 2
     border_color = sorted_colors[1][0]
 
@@ -43,49 +42,49 @@ def puzzle_fiftyfive(
             next_point = shift(point, direction_to_unit_vector("bottom_right"))
             charge = 1
             diagonal = False
+            hit = False
 
-            while in_grid(next_point, input_grid.shape):
+            while not hit and in_grid(next_point, input_grid.shape):
                 right_point = shift(next_point, direction_to_unit_vector("right"))
                 bottom_point = shift(next_point, direction_to_unit_vector("down"))
 
-                if input_grid[next_point[0], next_point[1]] == background_color and \
-                        in_grid(bottom_point, input_grid.shape) and \
-                        input_grid[bottom_point[0], bottom_point[1]] == background_color and \
-                        in_grid(right_point, input_grid.shape) and \
-                        input_grid[right_point[0], right_point[1]] == background_color:
+                if input_grid[next_point[0], next_point[1]] == border_color:
+                    hit = True
+                elif (in_grid(bottom_point, input_grid.shape) and
+                      input_grid[bottom_point[0], bottom_point[1]] == border_color):
+                    hit = True
+                    diagonal = True
+                elif (in_grid(right_point, input_grid.shape) and
+                      input_grid[right_point[0], right_point[1]] == border_color):
+                    hit = True
+                    diagonal = True
+                else:
                     next_point = shift(next_point, direction_to_unit_vector("bottom_right"))
                     charge += 1
-                else:
-                    # if we hit another line diagonally, we increment the charge
-                    if (in_grid(bottom_point, input_grid.shape) and
-                        input_grid[bottom_point[0], bottom_point[1]] == border_color) or (
-                            in_grid(right_point, input_grid.shape) and input_grid[
-                        right_point[0], right_point[1]] == border_color):
-                        diagonal = True
 
-                    agents.extend([
-                        Agent(
-                            position=PointSet([shift(point, direction_to_unit_vector("bottom_right"))]),
-                            direction="bottom_right",
-                            label="agent",
-                            colors=cycle([foreground_color]),
-                            node=RuleNode(
-                                DirectionRule(direction_rule=identity_direction)
-                            ),
-                            charge=charge if diagonal else charge - 1,
+            if hit:
+                agents.extend([
+                    Agent(
+                        position=PointSet([shift(point, direction_to_unit_vector("bottom_right"))]),
+                        direction="bottom_right",
+                        label="agent",
+                        colors=cycle([foreground_color]),
+                        node=RuleNode(
+                            DirectionRule(direction_rule=identity_direction)
                         ),
-                        Agent(
-                            position=PointSet([shift(point, direction_to_unit_vector("right"))]),
-                            direction="bottom_right",
-                            label="agent",
-                            colors=cycle([foreground_color]),
-                            node=RuleNode(
-                                DirectionRule(direction_rule=identity_direction)
-                            ),
-                            charge=charge,
-                        )
-                    ])
-                    break
+                        charge=charge if diagonal else charge - 1,
+                    ),
+                    Agent(
+                        position=PointSet([shift(point, direction_to_unit_vector("right"))]),
+                        direction="bottom_right",
+                        label="agent",
+                        colors=cycle([foreground_color]),
+                        node=RuleNode(
+                            DirectionRule(direction_rule=identity_direction)
+                        ),
+                        charge=charge,
+                    )
+                ])
 
     return Playground(
         output_grid=input_grid.copy(),
