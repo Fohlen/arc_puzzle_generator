@@ -1,4 +1,5 @@
 from itertools import cycle
+from typing import cast
 
 import numpy as np
 
@@ -6,7 +7,8 @@ from arc_puzzle_generator.agent import Agent
 from arc_puzzle_generator.direction import identity_direction
 from arc_puzzle_generator.neighbourhood import moore_neighbours
 from arc_puzzle_generator.playground import Playground
-from arc_puzzle_generator.rule import identity_rule, RuleNode, OutOfGridRule, TrappedCollisionRule, GravityRule
+from arc_puzzle_generator.rule import identity_rule, RuleNode, OutOfGridRule, TrappedCollisionRule, GravityRule, Rule, \
+    AgentSpawnRule
 from arc_puzzle_generator.topology import all_topology
 from arc_puzzle_generator.utils.entities import find_connected_objects
 from arc_puzzle_generator.utils.grid import unmask
@@ -30,7 +32,7 @@ def puzzle_twentyseven(input_grid: np.ndarray) -> Playground:
             position=unmask(labels == i),
             direction="none",
             label="border",
-            node=RuleNode(identity_rule),
+            node=RuleNode(cast(Rule, identity_rule)),
             colors=iter([border_color]),
             charge=0,
         ))
@@ -45,6 +47,9 @@ def puzzle_twentyseven(input_grid: np.ndarray) -> Playground:
                 OutOfGridRule(grid_size=input_grid.shape),
                 alternative_node=RuleNode(
                     TrappedCollisionRule(select_direction=True, direction_rule=identity_direction),
+                    next_node=RuleNode(
+                        AgentSpawnRule(select_direction=True, directions=["left", "right"])
+                    ),
                     alternative_node=RuleNode(
                         GravityRule(grid_size=input_grid.shape),
                     )
@@ -59,4 +64,5 @@ def puzzle_twentyseven(input_grid: np.ndarray) -> Playground:
         agents=agents,
         neighbourhood=moore_neighbours,
         topology=all_topology,
+        collision_mode="history",
     )

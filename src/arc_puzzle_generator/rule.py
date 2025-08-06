@@ -1,3 +1,4 @@
+import copy
 import math
 import random
 from itertools import chain, cycle
@@ -13,8 +14,6 @@ from arc_puzzle_generator.physics import direction_to_unit_vector, collision_axi
 from arc_puzzle_generator.selection import resolve_point_set_selectors_with_direction
 from arc_puzzle_generator.state import AgentState, AgentStateMapping, ColorIterator
 
-
-# type: ignore
 RuleResult = Optional[tuple[AgentState, ColorIterator, list['Agent']]]
 
 
@@ -25,6 +24,7 @@ class Rule(Protocol):
 
     def __call__(
             self,
+            agent: 'Agent',
             states: Sequence[AgentState],
             colors: ColorIterator,
             collision: PointSet,
@@ -56,10 +56,11 @@ class RuleNode:
         self.alternative_node = alternative_node
 
 
-def identity_rule(states: Sequence[AgentState], colors: ColorIterator, *args) -> RuleResult:
+def identity_rule(agent: 'Agent', states: Sequence[AgentState], colors: ColorIterator, *args) -> RuleResult:
     """
     An identity rule that returns the state unchanged.
 
+    :param agent: The agent whose rule is being evaluated.
     :param states: The current states of the agent.
     :param colors: An iterator over the agent's colors.
     :return: The same state as the input.
@@ -83,6 +84,7 @@ class DirectionRule(Rule):
 
     def __call__(
             self,
+            agent: 'Agent',
             states: Sequence[AgentState],
             colors: ColorIterator,
             collision: PointSet,
@@ -91,6 +93,7 @@ class DirectionRule(Rule):
         """
         Change the direction of the agent based on the direction rule.
 
+        :param agent: The agent whose rule is being evaluated.
         :param states: The current states of the agent.
         :param colors: An iterator over the agent's colors.
         :param collision: The set of points that are in collision with the agent.
@@ -124,10 +127,18 @@ class OutOfGridRule(Rule):
     def __init__(self, grid_size: Point) -> None:
         self.grid_size = grid_size
 
-    def __call__(self, states: Sequence[AgentState], colors: ColorIterator, collision: PointSet, *args) -> RuleResult:
+    def __call__(
+            self,
+            agent: 'Agent',
+            states: Sequence[AgentState],
+            colors: ColorIterator,
+            collision: PointSet,
+            *args
+    ) -> RuleResult:
         """
         Remove the agent from the grid.
 
+        :param agent: The agent whose rule is being evaluated.
         :param states: The current states of the agent.
         :param colors: An iterator over the agent's colors.
         :param collision: The set of points that are in collision with the agent.
@@ -169,6 +180,7 @@ class CollisionDirectionRule(Rule):
 
     def __call__(
             self,
+            agent: 'Agent',
             states: Sequence[AgentState],
             colors: ColorIterator,
             collision: PointSet,
@@ -177,6 +189,7 @@ class CollisionDirectionRule(Rule):
         """
         Handle the collision by returning the current state unchanged.
 
+        :param agent: The agent whose rule is being evaluated.
         :param states: The current states of the agent.
         :param colors: An iterator over the agent's colors.
         :param collision: The set of points that are in collision with the agent.
@@ -251,6 +264,7 @@ class TrappedCollisionRule(Rule):
 
     def __call__(
             self,
+            agent: 'Agent',
             states: Sequence[AgentState],
             colors: ColorIterator,
             collision: PointSet,
@@ -259,6 +273,7 @@ class TrappedCollisionRule(Rule):
         """
         Terminate the agent if it is trapped in a collision.
 
+        :param agent: The agent whose rule is being evaluated.
         :param states: The current states of the agent.
         :param colors: An iterator over the agent's colors.
         :param collision: The set of points that are in collision with the agent.
@@ -315,6 +330,7 @@ class CollisionBorderRule(Rule):
 
     def __call__(
             self,
+            agent: 'Agent',
             states: Sequence[AgentState],
             colors: ColorIterator,
             collision: PointSet,
@@ -350,6 +366,7 @@ class CollisionFillRule(Rule):
 
     def __call__(
             self,
+            agent: 'Agent',
             states: Sequence[AgentState],
             colors: ColorIterator,
             collision: PointSet,
@@ -358,6 +375,7 @@ class CollisionFillRule(Rule):
         """
         Fill the collision area with the fill color.
 
+        :param agent: The agent whose rule is being evaluated.
         :param states: The current states of the agent.
         :param colors: An iterator over the agent's colors.
         :param collision: The set of points that are in collision with the agent.
@@ -382,6 +400,7 @@ class CollisionFillRule(Rule):
 
 
 def backtrack_rule(
+        agent: 'Agent',
         states: Sequence[AgentState],
         colors: ColorIterator,
         collision: PointSet,
@@ -390,6 +409,7 @@ def backtrack_rule(
     """
     Backtrack the agent to its previous position
 
+    :param agent: The agent whose rule is being evaluated.
     :param states: The current states of the agent.
     :param colors: An iterator over the agent's colors.
     :param collision: The set of points that are in collision with the agent.
@@ -401,6 +421,7 @@ def backtrack_rule(
 
 
 def uncharge_rule(
+        agent: 'Agent',
         states: Sequence[AgentState],
         colors: ColorIterator,
         collision: PointSet,
@@ -409,6 +430,7 @@ def uncharge_rule(
     """
     Reduce the agent's charge by 1.
 
+    :param agent: The agent whose rule is being evaluated.
     :param states: The current states of the agent.
     :param colors: An iterator over the agent's colors.
     :param collision: The set of points that are in collision with the agent.
@@ -434,6 +456,7 @@ class GravityRule(Rule):
 
     def __call__(
             self,
+            agent: 'Agent',
             states: Sequence[AgentState],
             colors: ColorIterator,
             collision: PointSet,
@@ -490,6 +513,7 @@ class ProximityRule(Rule):
 
     def __call__(
             self,
+            agent: 'Agent',
             states: Sequence[AgentState],
             colors: ColorIterator,
             collision: PointSet,
@@ -547,3 +571,43 @@ class ProximityRule(Rule):
                     ), colors, []
 
         return None
+
+
+class AgentSpawnRule(Rule):
+    """
+    Creates new agents of the same type and given direction, if possible.
+    """
+
+    def __init__(self, directions: Sequence[Direction], select_direction: bool = False):
+        """
+        Initialize the agent spawn rule with a list of directions.
+        :param directions: The directions in which new agents can be spawned.
+        :param select_direction: If true, the agent will select the direction for collision direction.
+        """
+        self.directions = directions
+        self.select_direction = select_direction
+
+    def __call__(
+            self,
+            agent: 'Agent',
+            states: Sequence[AgentState],
+            colors: ColorIterator,
+            collision: PointSet,
+            collision_mapping: AgentStateMapping
+    ) -> RuleResult:
+        children: list[Agent] = []
+
+        for direction in self.directions:
+            next_position = states[-1].position.shift(direction_to_unit_vector(direction))
+            sub_collision = resolve_point_set_selectors_with_direction(
+                next_position, collision, direction
+            ) if self.select_direction else collision
+
+            if len(sub_collision) == 0:
+                child = copy.copy(agent)
+                child.position = next_position
+                child.direction = direction
+                child.charge = -1
+                children.append(child)
+
+        return states[-1], colors, children

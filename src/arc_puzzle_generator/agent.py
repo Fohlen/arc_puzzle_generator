@@ -44,6 +44,9 @@ class Agent:
             commit=self.commit,
         )
 
+    def replace(self):
+        pass
+
     def steps(
             self,
             collision: PointSet,
@@ -59,7 +62,7 @@ class Agent:
 
         while stack:
             current = stack.pop()
-            result = current.rule(states, self.colors, collision, collision_mapping)
+            result = current.rule(self, states, self.colors, collision, collision_mapping)
 
             if result is not None:
                 state, colors, rule_children = result
