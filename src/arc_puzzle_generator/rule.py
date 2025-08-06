@@ -2,6 +2,10 @@ import math
 import random
 from itertools import chain, cycle
 from typing import Protocol, Optional, Sequence
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from arc_puzzle_generator.agent import Agent  # Import only for type checking
 
 from arc_puzzle_generator.direction import DirectionTransformer
 from arc_puzzle_generator.geometry import PointSet, Point, Direction
