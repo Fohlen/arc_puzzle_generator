@@ -5,6 +5,7 @@ import numpy as np
 
 from arc_puzzle_generator.agent import Agent
 from arc_puzzle_generator.direction import identity_direction
+from arc_puzzle_generator.geometry import PointSet
 from arc_puzzle_generator.neighbourhood import moore_neighbours
 from arc_puzzle_generator.playground import Playground
 from arc_puzzle_generator.rule import identity_rule, RuleNode, OutOfGridRule, TrappedCollisionRule, GravityRule, Rule, \
@@ -39,8 +40,11 @@ def puzzle_twentyseven(input_grid: np.ndarray) -> Playground:
 
     labels_agent, bboxes_agent, num_objects_agent = find_connected_objects(input_grid == agent_color)
     for i in range(1, num_objects_agent + 1):
+        indices = np.argwhere(labels_agent == i)
+        start = (indices[-1][0].item(), indices[-1][1].item())
+
         agents.append(Agent(
-            position=unmask(labels_agent == i),
+            position=PointSet([start]),
             direction="down",
             label="agent",
             node=RuleNode(
