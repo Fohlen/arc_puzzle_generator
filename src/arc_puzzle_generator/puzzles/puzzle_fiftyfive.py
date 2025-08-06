@@ -10,6 +10,7 @@ from arc_puzzle_generator.physics import direction_to_unit_vector, shift
 from arc_puzzle_generator.playground import Playground
 from arc_puzzle_generator.rule import RuleNode, DirectionRule
 from arc_puzzle_generator.utils.entities import colour_count, find_connected_objects
+from arc_puzzle_generator.utils.grid import in_grid
 
 
 def puzzle_fiftyfive(
@@ -41,13 +42,27 @@ def puzzle_fiftyfive(
         for point in line:
             next_point = shift(point, direction_to_unit_vector("bottom_right"))
             charge = 1
+            diagonal = False
 
+            while in_grid(next_point, input_grid.shape):
+                right_point = shift(next_point, direction_to_unit_vector("right"))
+                bottom_point = shift(next_point, direction_to_unit_vector("down"))
 
-            while 0 < next_point[0] < input_grid.shape[0] and 0 < next_point[1] < input_grid.shape[1]:
-                if input_grid[next_point[0], next_point[1]] == background_color:
+                if input_grid[next_point[0], next_point[1]] == background_color and \
+                        in_grid(bottom_point, input_grid.shape) and \
+                        input_grid[bottom_point[0], bottom_point[1]] == background_color and \
+                        in_grid(right_point, input_grid.shape) and \
+                        input_grid[right_point[0], right_point[1]] == background_color:
                     next_point = shift(next_point, direction_to_unit_vector("bottom_right"))
                     charge += 1
                 else:
+                    # if we hit another line diagonally, we increment the charge
+                    if (in_grid(bottom_point, input_grid.shape) and
+                        input_grid[bottom_point[0], bottom_point[1]] == border_color) or (
+                            in_grid(right_point, input_grid.shape) and input_grid[
+                        right_point[0], right_point[1]] == border_color):
+                        diagonal = True
+
                     agents.extend([
                         Agent(
                             position=PointSet([shift(point, direction_to_unit_vector("bottom_right"))]),
@@ -57,7 +72,7 @@ def puzzle_fiftyfive(
                             node=RuleNode(
                                 DirectionRule(direction_rule=identity_direction)
                             ),
-                            charge=charge - 1,
+                            charge=charge if diagonal else charge - 1,
                         ),
                         Agent(
                             position=PointSet([shift(point, direction_to_unit_vector("right"))]),
