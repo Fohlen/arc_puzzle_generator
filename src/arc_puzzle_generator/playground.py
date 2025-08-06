@@ -140,6 +140,9 @@ class Playground(Iterator[np.ndarray], Iterable[np.ndarray]):
                 previous_position = agent.position
                 self.steps.append(self.output_grid.copy())
 
+        for child in children:
+            self.add_agent(child)
+
     def step(self) -> None:
         if self.execution_mode == "sequential":
             # Sequential: process one agent at a time until it is inactive
