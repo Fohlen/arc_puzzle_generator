@@ -38,6 +38,7 @@ def puzzle_fiftyfive(
     # one can brute-force puzzle 55 by running a pre-agent agent simulation
     agents: list[Agent] = []
     for line in lines:
+        # sort the line by y-coordinate, then by x-coordinate
         for point_idx, point in enumerate(sorted(line, key=lambda p: (p[1], p[0]))):
             next_point = shift(point, direction_to_unit_vector("bottom_right"))
             charge = 1
