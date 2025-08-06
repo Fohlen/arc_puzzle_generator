@@ -50,12 +50,10 @@ def puzzle_fiftyfive(
 
                 if input_grid[next_point[0], next_point[1]] == border_color:
                     hit = True
-                elif (in_grid(bottom_point, input_grid.shape) and
-                      input_grid[bottom_point[0], bottom_point[1]] == border_color):
-                    hit = True
-                    diagonal = True
-                elif (in_grid(right_point, input_grid.shape) and
-                      input_grid[right_point[0], right_point[1]] == border_color):
+                elif in_grid(bottom_point, input_grid.shape) and input_grid[
+                    bottom_point[0], bottom_point[1]] == border_color and \
+                        in_grid(right_point, input_grid.shape) and input_grid[
+                    right_point[0], right_point[1]] == border_color:
                     hit = True
                     diagonal = True
                 else:
