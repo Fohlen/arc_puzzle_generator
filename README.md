@@ -38,7 +38,7 @@ This package comes with a simple visualization tool that can be used to visualiz
 You can install it by using `pip` and a package manager of your choice:
 
 ```shell
-brew install python3-tk
+brew install python-tk@3.13
 pip install -e ".[vis]"
 ```
 
