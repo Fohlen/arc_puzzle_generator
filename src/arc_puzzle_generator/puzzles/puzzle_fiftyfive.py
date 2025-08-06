@@ -38,7 +38,7 @@ def puzzle_fiftyfive(
     # one can brute-force puzzle 55 by running a pre-agent agent simulation
     agents: list[Agent] = []
     for line in lines:
-        for point in line:
+        for point_idx, point in enumerate(sorted(line, key=lambda p: (p[1], p[0]))):
             next_point = shift(point, direction_to_unit_vector("bottom_right"))
             charge = 1
             diagonal = False
@@ -61,7 +61,7 @@ def puzzle_fiftyfive(
                     charge += 1
 
             if hit:
-                agents.extend([
+                agents.append(
                     Agent(
                         position=PointSet([shift(point, direction_to_unit_vector("bottom_right"))]),
                         direction="bottom_right",
@@ -71,18 +71,23 @@ def puzzle_fiftyfive(
                             DirectionRule(direction_rule=identity_direction)
                         ),
                         charge=charge if diagonal else charge - 1,
-                    ),
-                    Agent(
-                        position=PointSet([shift(point, direction_to_unit_vector("right"))]),
-                        direction="bottom_right",
-                        label="agent",
-                        colors=cycle([foreground_color]),
-                        node=RuleNode(
-                            DirectionRule(direction_rule=identity_direction)
-                        ),
-                        charge=charge,
                     )
-                ])
+                )
+
+                # all but the last point in the line should have an agent to the right
+                if point_idx < len(line) - 1:
+                    agents.append(
+                        Agent(
+                            position=PointSet([shift(point, direction_to_unit_vector("right"))]),
+                            direction="bottom_right",
+                            label="agent",
+                            colors=cycle([foreground_color]),
+                            node=RuleNode(
+                                DirectionRule(direction_rule=identity_direction)
+                            ),
+                            charge=charge,
+                        )
+                    )
 
     return Playground(
         output_grid=input_grid.copy(),
