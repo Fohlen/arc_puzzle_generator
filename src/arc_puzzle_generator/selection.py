@@ -1,4 +1,4 @@
-from typing import Protocol, cast
+from typing import cast
 
 from arc_puzzle_generator.geometry import Point, PointSet, Direction
 from arc_puzzle_generator.physics import direction_to_unit_vector
