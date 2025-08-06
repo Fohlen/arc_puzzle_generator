@@ -114,7 +114,9 @@ class Playground(Iterator[np.ndarray], Iterable[np.ndarray]):
 
         previous_position = agent.position
 
-        for step in agent.steps(position_intersect, position_intersect_mapping):
+        steps, children = agent.steps(position_intersect, position_intersect_mapping)
+
+        for step in steps:
             pos, direction, color, charge, commit = step
             if charge > 0 or charge == -1:
                 position = np.array(list(pos))
