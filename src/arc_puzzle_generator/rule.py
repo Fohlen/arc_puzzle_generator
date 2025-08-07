@@ -487,7 +487,7 @@ class GravityRule(Rule):
                         min_y >= 0 and max_y < self.grid_size[1]:
                     return AgentState(
                         position=next_position,
-                        direction=states[-1].direction,
+                        direction=direction,
                         color=next(colors),
                         charge=states[-1].charge - 1 if states[-1].charge > 0 else states[-1].charge,
                         commit=states[-1].commit
