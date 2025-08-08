@@ -5,6 +5,7 @@ from .puzzle_ten import puzzle_ten
 from .puzzle_fourteen import puzzle_fourteen
 from .puzzle_eighteen import puzzle_eighteen
 from .puzzle_twentyfive import puzzle_twentyfive
+from .puzzle_twentyseven import puzzle_twentyseven
 from .puzzle_thirty import puzzle_thirty
 from .puzzle_thirtynine import puzzle_thirtynine
 from .puzzle_fiftyfive import puzzle_fiftyfive
