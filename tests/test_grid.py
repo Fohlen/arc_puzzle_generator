@@ -2,7 +2,8 @@ from unittest import TestCase
 
 import numpy as np
 
-from arc_puzzle_generator.utils.grid import unmask, in_grid
+from arc_puzzle_generator.utils.grid import unmask
+from arc_puzzle_generator.geometry import in_grid
 
 
 class GridTestCase(TestCase):

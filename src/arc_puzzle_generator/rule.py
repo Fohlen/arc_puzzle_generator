@@ -5,13 +5,11 @@ from itertools import chain, cycle
 from typing import Protocol, Optional, Sequence
 from typing import TYPE_CHECKING
 
-from arc_puzzle_generator.utils.grid import in_grid
-
 if TYPE_CHECKING:
     from arc_puzzle_generator.agent import Agent  # Import only for type checking
 
 from arc_puzzle_generator.direction import DirectionTransformer
-from arc_puzzle_generator.geometry import PointSet, Point, Direction
+from arc_puzzle_generator.geometry import PointSet, Point, Direction, in_grid
 from arc_puzzle_generator.physics import direction_to_unit_vector, collision_axis, relative_point_direction
 from arc_puzzle_generator.selection import resolve_point_set_selectors_with_direction
 from arc_puzzle_generator.state import AgentState, AgentStateMapping, ColorIterator

@@ -46,3 +46,11 @@ class PointSet(set[tuple[int, int]]):
         return PointSet((x.item(), y.item()) for x, y in array)
 
 
+def in_grid(point: Point, grid_size: Point) -> bool:
+    """
+    Checks if a point is within the bounds of a grid defined by its size.
+    :param point: The point to check, represented as a tuple (x, y).
+    :param grid_size: The size of the grid, represented as a tuple (width, height).
+    :return: A boolean indicating whether the point is within the grid bounds.
+    """
+    return 0 <= point[0] < grid_size[0] and 0 <= point[1] < grid_size[1]
