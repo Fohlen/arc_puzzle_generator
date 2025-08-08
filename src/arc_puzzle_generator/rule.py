@@ -147,13 +147,7 @@ class OutOfGridRule(Rule):
 
         next_position = states[-1].position.shift(direction_to_unit_vector(states[-1].direction))
 
-        min_x = min(pos[0] for pos in next_position)
-        max_x = max(pos[0] for pos in next_position)
-        min_y = min(pos[1] for pos in next_position)
-        max_y = max(pos[1] for pos in next_position)
-
-        if min_x < 0 or max_x >= self.grid_size[0] or \
-                min_y < 0 or max_y >= self.grid_size[1]:
+        if not all(in_grid(point, self.grid_size) for point in next_position):
             return AgentState(
                 position=states[-1].position,
                 direction=states[-1].direction,
