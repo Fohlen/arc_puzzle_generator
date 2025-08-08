@@ -580,7 +580,12 @@ class AgentSpawnRule(Rule):
     Creates new agents of the same type and given direction, if possible.
     """
 
-    def __init__(self, grid_size: Point, directions: Sequence[Direction], select_direction: bool = False):
+    def __init__(
+            self,
+            grid_size: Point,
+            directions: Sequence[Direction],
+            select_direction: bool = False
+    ):
         """
         Initialize the agent spawn rule with a list of directions.
         :param grid_size: The size of the grid in which agents can be spawned.
