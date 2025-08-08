@@ -3,17 +3,16 @@ from typing import cast
 
 import numpy as np
 
-from arc_puzzle_generator.rule import RuleNode, OutOfGridRule, CollisionFillRule, backtrack_rule, Rule, \
-    identity_rule, \
-    DirectionRule
 from arc_puzzle_generator.agent import Agent
 from arc_puzzle_generator.direction import identity_direction
 from arc_puzzle_generator.geometry import Direction
-from arc_puzzle_generator.utils.grid import unmask
+from arc_puzzle_generator.neighbourhood import AxisNeighbourhood
 from arc_puzzle_generator.playground import Playground
-from arc_puzzle_generator.neighbourhood import zero_neighbours, AxisNeighbourhood
-from arc_puzzle_generator.topology import identity_topology, FixedGroupTopology
+from arc_puzzle_generator.rule import RuleNode, OutOfGridRule, CollisionFillRule, backtrack_rule, Rule, \
+    DirectionRule
+from arc_puzzle_generator.topology import FixedGroupTopology
 from arc_puzzle_generator.utils.entities import find_connected_objects
+from arc_puzzle_generator.utils.grid import unmask
 
 
 def puzzle_fourteen(input_grid: np.ndarray) -> Playground:
@@ -50,7 +49,6 @@ def puzzle_fourteen(input_grid: np.ndarray) -> Playground:
         position=unmask(input_grid == foreground_color),
         direction="none",
         label="foreground",
-        node=RuleNode(cast(Rule, identity_rule)),
         colors=cycle([foreground_color]),
         charge=0,
     ), Agent(

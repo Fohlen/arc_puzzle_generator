@@ -11,7 +11,7 @@ from arc_puzzle_generator.neighbourhood import VonNeumannNeighbourhood
 from arc_puzzle_generator.playground import Playground
 from arc_puzzle_generator.rule import OutOfGridRule, TrappedCollisionRule, CollisionDirectionRule, \
     DirectionRule, \
-    CollisionBorderRule, backtrack_rule, Rule, RuleNode, identity_rule
+    CollisionBorderRule, backtrack_rule, Rule, RuleNode
 from arc_puzzle_generator.topology import FixedGroupTopology
 from arc_puzzle_generator.utils.entities import colour_count, find_colors, find_connected_objects
 from arc_puzzle_generator.utils.grid import unmask
@@ -59,7 +59,6 @@ def puzzle_ten(input_grid: np.ndarray) -> Playground:
         position=foreground_position,
         direction="none",
         label="foreground",
-        node=RuleNode(cast(Rule, identity_rule)),
         colors=cycle([outside_color]),
         charge=0,
     )]

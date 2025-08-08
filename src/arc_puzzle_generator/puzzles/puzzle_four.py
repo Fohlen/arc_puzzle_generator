@@ -10,7 +10,7 @@ from arc_puzzle_generator.neighbourhood import MooreNeighbourhood
 from arc_puzzle_generator.playground import Playground
 from arc_puzzle_generator.rule import OutOfGridRule, CollisionDirectionRule, DirectionRule, \
     collision_color_mapping_rule, Rule, \
-    RuleNode, identity_rule
+    RuleNode
 from arc_puzzle_generator.topology import FixedGroupTopology
 from arc_puzzle_generator.utils.entities import find_colors, find_connected_objects, is_l_shape, starting_point
 from arc_puzzle_generator.utils.grid import make_smallest_square_from_mask
@@ -45,7 +45,6 @@ def puzzle_four(input_grid: np.ndarray) -> Playground:
         position=PointSet.from_numpy(bbox),
         direction="none",
         label="bbox",
-        node=RuleNode(cast(Rule, identity_rule)),
         colors=cycle([target_color]),
         charge=0
     ) for target_color, bbox in blocks]
