@@ -600,7 +600,7 @@ class AgentSpawnRule(Rule):
         for direction in self.directions:
             next_position = states[-1].position.shift(direction_to_unit_vector(direction))
             sub_collision = resolve_point_set_selectors_with_direction(
-                next_position, collision, direction
+                states[-1].position, collision, direction
             ) if self.select_direction else collision
 
             if len(sub_collision) == 0:

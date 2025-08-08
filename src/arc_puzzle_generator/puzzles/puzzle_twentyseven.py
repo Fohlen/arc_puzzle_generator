@@ -52,7 +52,7 @@ def puzzle_twentyseven(input_grid: np.ndarray) -> Playground:
                 alternative_node=RuleNode(
                     TrappedCollisionRule(select_direction=True, direction_rule=identity_direction),
                     next_node=RuleNode(
-                        AgentSpawnRule(directions=("left", "right"), select_direction=True),
+                        AgentSpawnRule(directions=("down", "left", "right"), select_direction=True),
                     ),
                     alternative_node=RuleNode(
                         GravityRule(grid_size=input_grid.shape),
