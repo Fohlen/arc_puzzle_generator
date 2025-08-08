@@ -1,11 +1,12 @@
+import random
 from itertools import cycle
-from typing import cast
+from typing import cast, Sequence
 
 import numpy as np
 
 from arc_puzzle_generator.agent import Agent
 from arc_puzzle_generator.direction import identity_direction
-from arc_puzzle_generator.geometry import PointSet
+from arc_puzzle_generator.geometry import PointSet, Direction
 from arc_puzzle_generator.neighbourhood import moore_neighbours
 from arc_puzzle_generator.playground import Playground
 from arc_puzzle_generator.rule import identity_rule, RuleNode, OutOfGridRule, TrappedCollisionRule, GravityRule, Rule, \
@@ -23,6 +24,8 @@ def puzzle_twentyseven(input_grid: np.ndarray) -> Playground:
     :return: The generated playground for puzzle 27.
     """
 
+    random.seed(123)
+
     border_color = 2
     agent_color = 6
 
@@ -38,6 +41,7 @@ def puzzle_twentyseven(input_grid: np.ndarray) -> Playground:
             charge=0,
         ))
 
+    directions: Sequence[Direction] = ("down", "left", "right")
     labels_agent, bboxes_agent, num_objects_agent = find_connected_objects(input_grid == agent_color)
     for i in range(1, num_objects_agent + 1):
         indices = np.argwhere(labels_agent == i)
@@ -49,10 +53,13 @@ def puzzle_twentyseven(input_grid: np.ndarray) -> Playground:
             label="agent",
             node=RuleNode(
                 OutOfGridRule(grid_size=input_grid.shape),
+                next_node=RuleNode(
+                    AgentSpawnRule(directions=directions, select_direction=True, grid_size=input_grid.shape),
+                ),
                 alternative_node=RuleNode(
                     TrappedCollisionRule(select_direction=True, direction_rule=identity_direction),
                     next_node=RuleNode(
-                        AgentSpawnRule(directions=("down", "left", "right"), select_direction=True),
+                        AgentSpawnRule(directions=directions, select_direction=True, grid_size=input_grid.shape),
                     ),
                     alternative_node=RuleNode(
                         GravityRule(grid_size=input_grid.shape),

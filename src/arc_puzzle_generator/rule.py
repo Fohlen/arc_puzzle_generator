@@ -5,6 +5,8 @@ from itertools import chain, cycle
 from typing import Protocol, Optional, Sequence
 from typing import TYPE_CHECKING
 
+from arc_puzzle_generator.utils.grid import in_grid
+
 if TYPE_CHECKING:
     from arc_puzzle_generator.agent import Agent  # Import only for type checking
 
@@ -578,12 +580,14 @@ class AgentSpawnRule(Rule):
     Creates new agents of the same type and given direction, if possible.
     """
 
-    def __init__(self, directions: Sequence[Direction], select_direction: bool = False):
+    def __init__(self, grid_size: Point, directions: Sequence[Direction], select_direction: bool = False):
         """
         Initialize the agent spawn rule with a list of directions.
+        :param grid_size: The size of the grid in which agents can be spawned.
         :param directions: The directions in which new agents can be spawned.
         :param select_direction: If true, the agent will select the direction for collision direction.
         """
+        self.grid_size = grid_size
         self.directions = directions
         self.select_direction = select_direction
 
@@ -599,16 +603,17 @@ class AgentSpawnRule(Rule):
 
         for direction in self.directions:
             next_position = states[-1].position.shift(direction_to_unit_vector(direction))
-            next_sub_collision = resolve_point_set_selectors_with_direction(
-                states[-1].position, collision, direction
-            ) if self.select_direction else collision
-            next_collision = next_position & next_sub_collision
+            if all(in_grid(point, self.grid_size) for point in next_position):
+                next_sub_collision = resolve_point_set_selectors_with_direction(
+                    states[-1].position, collision, direction
+                ) if self.select_direction else collision
+                next_collision = next_position & next_sub_collision
 
-            if len(next_collision) == 0:
-                child = copy.copy(agent)
-                child.position = next_position
-                child.direction = direction
-                child.charge = states[-2].charge - 1 if states[-2].charge > 0 else states[-2].charge
-                children.append(child)
+                if len(next_collision) == 0:
+                    child = copy.copy(agent)
+                    child.position = next_position
+                    child.direction = direction
+                    child.charge = states[-2].charge - 1 if states[-2].charge > 0 else states[-2].charge
+                    children.append(child)
 
         return states[-1], colors, children
