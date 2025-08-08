@@ -607,7 +607,7 @@ class AgentSpawnRule(Rule):
                 child = copy.copy(agent)
                 child.position = next_position
                 child.direction = direction
-                child.charge = -1
+                child.charge = states[-2].charge - 1 if states[-2].charge > 0 else states[-2].charge
                 children.append(child)
 
         return states[-1], colors, children
