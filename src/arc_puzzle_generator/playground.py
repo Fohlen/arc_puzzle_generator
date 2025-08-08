@@ -142,6 +142,7 @@ class Playground(Iterator[np.ndarray], Iterable[np.ndarray]):
 
         for child in children:
             self.add_agent(child)
+            logger.debug("Spawned child agent at position: %s, Color %s", child.position, child.color)
 
     def step(self) -> None:
         if self.execution_mode == "sequential":

@@ -4,13 +4,12 @@ import numpy as np
 
 from arc_puzzle_generator.agent import Agent
 from arc_puzzle_generator.direction import identity_direction
-from arc_puzzle_generator.geometry import PointSet
+from arc_puzzle_generator.geometry import PointSet, in_grid
 from arc_puzzle_generator.neighbourhood import moore_neighbours
 from arc_puzzle_generator.physics import direction_to_unit_vector, shift
 from arc_puzzle_generator.playground import Playground
 from arc_puzzle_generator.rule import RuleNode, DirectionRule
 from arc_puzzle_generator.utils.entities import colour_count, find_connected_objects
-from arc_puzzle_generator.utils.grid import in_grid
 
 
 def puzzle_fiftyfive(

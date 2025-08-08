@@ -1,9 +1,10 @@
 from unittest import TestCase
 
+from arc_puzzle_generator.agent import Agent
 from arc_puzzle_generator.direction import orthogonal_direction, snake_direction
 from arc_puzzle_generator.geometry import PointSet, Direction
 from arc_puzzle_generator.rule import identity_rule, DirectionRule, CollisionDirectionRule, OutOfGridRule, \
-    collision_color_mapping_rule, TrappedCollisionRule, CollisionBorderRule, CollisionFillRule, backtrack_rule
+    collision_color_mapping_rule, TrappedCollisionRule, CollisionBorderRule, CollisionFillRule, backtrack_rule, RuleNode
 from arc_puzzle_generator.state import AgentState
 
 
@@ -187,4 +188,3 @@ class RuleTest(TestCase):
         new_state, new_colors, new_agents = result
 
         self.assertEqual(states[0], new_state)
-
