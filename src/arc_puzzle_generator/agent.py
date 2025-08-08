@@ -28,7 +28,7 @@ class Agent:
         self.charge = charge
         self.commit = commit
         self.color = next(colors)
-        self.history: list[AgentState] = []
+        self.history: list[AgentState] = [self.state]
 
     @property
     def active(self) -> bool:

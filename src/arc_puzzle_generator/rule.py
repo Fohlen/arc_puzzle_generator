@@ -591,6 +591,7 @@ class AgentSpawnRule(Rule):
             collision: PointSet,
             collision_mapping: AgentStateMapping
     ) -> RuleResult:
+        from arc_puzzle_generator.agent import Agent
         children: list[Agent] = []
 
         for direction in self.directions:
@@ -602,10 +603,15 @@ class AgentSpawnRule(Rule):
                 ) if self.select_direction else collision
 
                 if len(next_sub_collision) == 0:
-                    child = copy.copy(agent)
-                    child.position = next_position
-                    child.direction = direction
-                    child.charge = states[-2].charge - 1 if states[-2].charge > 0 else states[-2].charge
+                    child = Agent(
+                        position=next_position,
+                        direction=direction,
+                        label=agent.label,
+                        node=copy.copy(agent.node),
+                        colors=colors,
+                        charge=states[-2].charge if states[-2].charge > 0 else states[-2].charge,
+                        commit=states[-2].commit
+                    )
                     children.append(child)
 
         return states[-1], colors, children
