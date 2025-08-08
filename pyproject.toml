@@ -6,7 +6,7 @@ authors = [
 ]
 description = "A generator for ARC-AGI 2 type puzzles"
 readme = "README.md"
-requires-python = ">=3.13"
+requires-python = ">=3.9"
 classifiers = [
     "Programming Language :: Python :: 3",
     "Operating System :: OS Independent",
