@@ -465,8 +465,17 @@ class ProximityRule(Rule):
             points: PointSet
     ):
         self.target = target
+        distances = {
+            (point, target_point): math.dist(point, target_point)
+            for point in points for target_point in target
+        }
+        min_distance = min(distances.values())
+        max_distance = max(distances.values())
         self.proximity_mapping = {
-            point: min(math.dist(point, target_point) for target_point in target)
+            point: (
+                (min(distances[(point, target_point)] for target_point in target) - min_distance)
+                / (max_distance - min_distance) if max_distance > min_distance else 0.0
+            )
             for point in points
         }
 
