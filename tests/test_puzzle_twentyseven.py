@@ -1,5 +1,3 @@
-import logging
-import unittest
 from unittest import TestCase
 
 import numpy as np
@@ -7,8 +5,6 @@ import numpy as np
 from arc_puzzle_generator.puzzles.puzzle_twentyseven import puzzle_twentyseven
 from arc_puzzle_generator.utils.data_loader import load_puzzle
 from tests.utils import test_dir
-
-logging.basicConfig(level=logging.DEBUG)
 
 
 class PuzzleTwentySevenTestCase(TestCase):

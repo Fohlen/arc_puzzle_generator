@@ -14,7 +14,6 @@ from arc_puzzle_generator.state import AgentState, ColorIterator
 
 
 def toggle_commit_rule(
-        agent: Agent,
         states: Sequence[AgentState],
         colors: ColorIterator,
         *args,
