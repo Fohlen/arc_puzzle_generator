@@ -599,11 +599,12 @@ class AgentSpawnRule(Rule):
 
         for direction in self.directions:
             next_position = states[-1].position.shift(direction_to_unit_vector(direction))
-            sub_collision = resolve_point_set_selectors_with_direction(
+            next_sub_collision = resolve_point_set_selectors_with_direction(
                 states[-1].position, collision, direction
             ) if self.select_direction else collision
+            next_collision = next_position & next_sub_collision
 
-            if len(sub_collision) == 0:
+            if len(next_collision) == 0:
                 child = copy.copy(agent)
                 child.position = next_position
                 child.direction = direction
