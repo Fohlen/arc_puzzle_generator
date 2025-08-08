@@ -292,14 +292,11 @@ class TrappedCollisionRule(Rule):
 
             for _ in range(self.num_directions):
                 next_direction = self.direction_rule(previous_direction)
-                next_position = states[-1].position.shift(direction_to_unit_vector(next_direction))
                 next_sub_collision = resolve_point_set_selectors_with_direction(
                     states[-1].position, collision, next_direction
                 ) if self.select_direction else collision
 
-                next_collision = next_position & next_sub_collision
-
-                if len(next_collision) == 0:
+                if len(next_sub_collision) == 0:
                     return None
                 else:
                     previous_direction = next_direction
