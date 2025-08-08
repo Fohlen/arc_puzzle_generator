@@ -44,9 +44,6 @@ class Agent:
             commit=self.commit,
         )
 
-    def replace(self):
-        pass
-
     def steps(
             self,
             collision: PointSet,
