@@ -62,7 +62,7 @@ class Agent:
 
         while stack:
             current = stack.pop()
-            result = current.rule(self, states, self.colors, collision, collision_mapping)
+            result = current.rule(states, self.colors, collision, collision_mapping)
 
             if result is not None:
                 state, colors, rule_children = result
