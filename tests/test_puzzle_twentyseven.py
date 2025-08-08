@@ -11,7 +11,6 @@ from tests.utils import test_dir
 logging.basicConfig(level=logging.DEBUG)
 
 
-@unittest.skip("skipping test")
 class PuzzleTwentySevenTestCase(TestCase):
     def setUp(self):
         file_path = test_dir / "data" / "36a08778.json"

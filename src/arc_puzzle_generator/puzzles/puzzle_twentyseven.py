@@ -43,6 +43,14 @@ def puzzle_twentyseven(input_grid: np.ndarray) -> Playground:
 
     directions: Sequence[Direction] = ("down", "left", "right")
     labels_agent, bboxes_agent, num_objects_agent = find_connected_objects(input_grid == agent_color)
+
+    agent_spawn_rule = AgentSpawnRule(
+        directions=directions,
+        grid_size=input_grid.shape,
+        denylist=PointSet([(input_grid.shape[0] - 1, y) for y in range(0, input_grid.shape[1])]),
+        select_direction=True
+    )
+
     for i in range(1, num_objects_agent + 1):
         indices = np.argwhere(labels_agent == i)
         start = (indices[-1][0].item(), indices[-1][1].item())
@@ -53,14 +61,10 @@ def puzzle_twentyseven(input_grid: np.ndarray) -> Playground:
             label="agent",
             node=RuleNode(
                 OutOfGridRule(grid_size=input_grid.shape),
-                next_node=RuleNode(
-                    AgentSpawnRule(directions=directions, select_direction=True, grid_size=input_grid.shape),
-                ),
+                next_node=RuleNode(agent_spawn_rule),
                 alternative_node=RuleNode(
                     TrappedCollisionRule(select_direction=True, direction_rule=identity_direction),
-                    next_node=RuleNode(
-                        AgentSpawnRule(directions=directions, select_direction=True, grid_size=input_grid.shape),
-                    ),
+                    next_node=RuleNode(agent_spawn_rule),
                     alternative_node=RuleNode(
                         GravityRule(grid_size=input_grid.shape),
                     )

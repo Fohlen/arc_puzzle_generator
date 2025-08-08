@@ -584,19 +584,22 @@ class AgentSpawnRule(Rule):
 
     def __init__(
             self,
-            grid_size: Point,
             directions: Sequence[Direction],
-            select_direction: bool = False
+            grid_size: Point,
+            select_direction: bool = False,
+            denylist: Optional[PointSet] = None,
     ):
         """
         Initialize the agent spawn rule with a list of directions.
-        :param grid_size: The size of the grid in which agents can be spawned.
         :param directions: The directions in which new agents can be spawned.
+        :param grid_size: The size of the grid in which agents can be spawned.
         :param select_direction: If true, the agent will select the direction for collision direction.
+        :param denylist: The set of points that are in denylist.
         """
-        self.grid_size = grid_size
         self.directions = directions
+        self.grid_size = grid_size
         self.select_direction = select_direction
+        self.denylist = denylist if denylist is not None else PointSet()
 
     def __call__(
             self,
@@ -610,7 +613,8 @@ class AgentSpawnRule(Rule):
 
         for direction in self.directions:
             next_position = states[-1].position.shift(direction_to_unit_vector(direction))
-            if all(in_grid(point, self.grid_size) for point in next_position):
+            if len(next_position & self.denylist) == 0 and all(
+                    in_grid(point, self.grid_size) for point in next_position):
                 next_sub_collision = resolve_point_set_selectors_with_direction(
                     states[-1].position, collision, direction
                 ) if self.select_direction else collision
