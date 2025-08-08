@@ -5,7 +5,7 @@ from arc_puzzle_generator.rule import RuleNode
 from arc_puzzle_generator.state import AgentState
 
 
-def dummy_rule(states, colors, collision, collision_mapping):
+def dummy_rule(agent, states, colors, collision, collision_mapping):
     """
     Always moves the agent to the right, consumes the next color from the iterator, and decrements the charge.
     """
@@ -15,7 +15,7 @@ def dummy_rule(states, colors, collision, collision_mapping):
     return AgentState(new_pos, "right", new_color, last.charge - 1, True), colors, []
 
 
-def collision_rule(states, colors, collision, collision_mapping):
+def collision_rule(agent, states, colors, collision, collision_mapping):
     """
     Rule checks collision and consumes color if there is a collision.
     """

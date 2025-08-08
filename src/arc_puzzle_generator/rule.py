@@ -220,6 +220,7 @@ class CollisionDirectionRule(Rule):
 
 
 def collision_color_mapping_rule(
+        agent: 'Agent',
         states: Sequence[AgentState],
         colors: ColorIterator,
         collision: PointSet,
@@ -228,6 +229,7 @@ def collision_color_mapping_rule(
     """
     Handle the collision by updating the agent's colors based on the collision points.
 
+    :param agent: The agent whose rule is being evaluated.
     :param states: The current states of the agent.
     :param colors: An iterator over the agent's colors.
     :param collision: The set of points that are in collision with the agent.
