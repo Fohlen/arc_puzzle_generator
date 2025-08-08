@@ -61,7 +61,7 @@ class Agent:
             collision_mapping: AgentStateMapping,
     ) -> tuple[Iterable[AgentState], list['Agent']]:
         states = [self.state]
-        children = []
+        children: list['Agent'] = []
 
         if self.node is None:
             return [], children
