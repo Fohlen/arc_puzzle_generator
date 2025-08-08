@@ -79,10 +79,15 @@ class Agent:
 
                 # children inherit label and node from the parent agent
                 for child in rule_children:
-                    child.label = self.label
-                    child.node = self.node
-
-                children.extend(rule_children)
+                    children.append(Agent(
+                        position=child.position,
+                        direction=child.direction,
+                        label=self.label,
+                        node=self.node,
+                        colors=colors,
+                        charge=child.charge,
+                        commit=child.commit,
+                    ))
 
                 if current.next_node is not None:
                     stack.append(current.next_node)

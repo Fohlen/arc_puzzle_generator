@@ -1,12 +1,8 @@
-import copy
-import math
 import random
 from itertools import chain, cycle
 from typing import Protocol, Optional, Sequence
-from typing import TYPE_CHECKING
 
-if TYPE_CHECKING:
-    from arc_puzzle_generator.agent import Agent  # Import only for type checking
+import math
 
 from arc_puzzle_generator.direction import DirectionTransformer
 from arc_puzzle_generator.geometry import PointSet, Point, Direction, in_grid
@@ -14,7 +10,7 @@ from arc_puzzle_generator.physics import direction_to_unit_vector, collision_axi
 from arc_puzzle_generator.selection import resolve_point_set_selectors_with_direction
 from arc_puzzle_generator.state import AgentState, AgentStateMapping, ColorIterator
 
-RuleResult = Optional[tuple[AgentState, ColorIterator, list['Agent']]]
+RuleResult = Optional[tuple[AgentState, ColorIterator, list[AgentState]]]
 
 
 class Rule(Protocol):
@@ -569,8 +565,7 @@ class AgentSpawnRule(Rule):
             collision: PointSet,
             collision_mapping: AgentStateMapping
     ) -> RuleResult:
-        from arc_puzzle_generator.agent import Agent
-        children: list[Agent] = []
+        children: list[AgentState] = []
 
         for direction in self.directions:
             next_position = states[-1].position.shift(direction_to_unit_vector(direction))
@@ -581,12 +576,10 @@ class AgentSpawnRule(Rule):
                 ) if self.select_direction else collision
 
                 if len(next_sub_collision) == 0:
-                    child = Agent(
+                    child = AgentState(
                         position=next_position,
                         direction=direction,
-                        label=None,
-                        node=None,
-                        colors=colors,
+                        color=next(colors),
                         charge=states[-2].charge if states[-2].charge > 0 else states[-2].charge,
                         commit=states[-2].commit
                     )
