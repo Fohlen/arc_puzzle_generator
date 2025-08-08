@@ -28,7 +28,7 @@ class Agent:
         self.charge = charge
         self.commit = commit
         self.color = next(colors)
-        self.history: list[AgentState] = []
+        self.history: list[AgentState] = [self.state]
 
     @property
     def active(self) -> bool:
@@ -48,11 +48,12 @@ class Agent:
             self,
             collision: PointSet,
             collision_mapping: AgentStateMapping,
-    ) -> Iterable[AgentState]:
+    ) -> tuple[Iterable[AgentState], list['Agent']]:
         states = [self.state]
+        children = []
 
         if self.node is None:
-            return []
+            return [], children
 
         stack = [self.node]
 
@@ -61,7 +62,7 @@ class Agent:
             result = current.rule(states, self.colors, collision, collision_mapping)
 
             if result is not None:
-                state, colors = result
+                state, colors, rule_children = result
                 logger.debug(f"Rule {get_callable_name(current.rule)} produced state: {state}")
 
                 self.position = state.position
@@ -73,9 +74,21 @@ class Agent:
                 self.history.append(state)
                 states.append(state)
 
+                # children inherit label and node from the parent agent
+                for child in rule_children:
+                    children.append(Agent(
+                        position=child.position,
+                        direction=child.direction,
+                        label=self.label,
+                        node=self.node,
+                        colors=colors,
+                        charge=child.charge,
+                        commit=child.commit,
+                    ))
+
                 if current.next_node is not None:
                     stack.append(current.next_node)
             elif current.alternative_node is not None:
                 stack.append(current.alternative_node)
 
-        return states[1:]
+        return states[1:], children

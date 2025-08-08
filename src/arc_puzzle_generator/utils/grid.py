@@ -5,7 +5,7 @@ import math
 
 import numpy as np
 
-from arc_puzzle_generator.geometry import PointSet, Point
+from arc_puzzle_generator.geometry import PointSet
 
 
 def make_smallest_square_from_mask(original_matrix: np.ndarray, binary_mask: np.typing.ArrayLike) -> np.ndarray | None:
@@ -53,13 +53,3 @@ def unmask(input_mask: np.ndarray) -> PointSet:
     indices = np.where(input_mask)
 
     return PointSet(list(zip(indices[0].tolist(), indices[1].tolist())))
-
-
-def in_grid(point: Point, grid_size: Point) -> bool:
-    """
-    Checks if a point is within the bounds of a grid defined by its size.
-    :param point: The point to check, represented as a tuple (x, y).
-    :param grid_size: The size of the grid, represented as a tuple (width, height).
-    :return: A boolean indicating whether the point is within the grid bounds.
-    """
-    return 0 <= point[0] < grid_size[0] and 0 <= point[1] < grid_size[1]

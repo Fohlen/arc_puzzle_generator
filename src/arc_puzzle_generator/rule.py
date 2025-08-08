@@ -1,15 +1,16 @@
-import math
 import random
 from itertools import chain, cycle
 from typing import Protocol, Optional, Sequence
 
+import math
+
 from arc_puzzle_generator.direction import DirectionTransformer
-from arc_puzzle_generator.geometry import PointSet, Point, Direction
+from arc_puzzle_generator.geometry import PointSet, Point, Direction, in_grid
 from arc_puzzle_generator.physics import direction_to_unit_vector, collision_axis, relative_point_direction
 from arc_puzzle_generator.selection import resolve_point_set_selectors_with_direction
 from arc_puzzle_generator.state import AgentState, AgentStateMapping, ColorIterator
 
-RuleResult = Optional[tuple[AgentState, ColorIterator]]
+RuleResult = Optional[tuple[AgentState, ColorIterator, list[AgentState]]]
 
 
 class Rule(Protocol):
@@ -59,7 +60,7 @@ def identity_rule(states: Sequence[AgentState], colors: ColorIterator, *args) ->
     :return: The same state as the input.
     """
 
-    return states[-1], colors
+    return states[-1], colors, []
 
 
 class DirectionRule(Rule):
@@ -105,7 +106,7 @@ class DirectionRule(Rule):
                 color=next(colors),
                 charge=states[-1].charge - 1 if states[-1].charge > 0 else states[-1].charge,
                 commit=states[-1].commit
-            ), colors
+            ), colors, []
 
         return None
 
@@ -118,7 +119,13 @@ class OutOfGridRule(Rule):
     def __init__(self, grid_size: Point) -> None:
         self.grid_size = grid_size
 
-    def __call__(self, states: Sequence[AgentState], colors: ColorIterator, collision: PointSet, *args) -> RuleResult:
+    def __call__(
+            self,
+            states: Sequence[AgentState],
+            colors: ColorIterator,
+            collision: PointSet,
+            *args
+    ) -> RuleResult:
         """
         Remove the agent from the grid.
 
@@ -130,20 +137,14 @@ class OutOfGridRule(Rule):
 
         next_position = states[-1].position.shift(direction_to_unit_vector(states[-1].direction))
 
-        min_x = min(pos[0] for pos in next_position)
-        max_x = max(pos[0] for pos in next_position)
-        min_y = min(pos[1] for pos in next_position)
-        max_y = max(pos[1] for pos in next_position)
-
-        if min_x < 0 or max_x >= self.grid_size[0] or \
-                min_y < 0 or max_y >= self.grid_size[1]:
+        if not all(in_grid(point, self.grid_size) for point in next_position):
             return AgentState(
                 position=states[-1].position,
                 direction=states[-1].direction,
                 color=next(colors),
                 charge=0,  # Set charge to 0 to indicate removal
                 commit=states[-1].commit
-            ), colors
+            ), colors, []
 
         return None
 
@@ -193,7 +194,7 @@ class CollisionDirectionRule(Rule):
                 color=next(colors),
                 charge=states[-1].charge - 1 if states[-1].charge > 0 else states[-1].charge,
                 commit=states[-1].commit
-            ), colors
+            ), colors, []
 
         return None
 
@@ -223,7 +224,7 @@ def collision_color_mapping_rule(
             color=next(new_colors),
             charge=states[-1].charge,
             commit=states[-1].commit
-        ), new_colors
+        ), new_colors, []
 
     return None
 
@@ -269,14 +270,11 @@ class TrappedCollisionRule(Rule):
 
             for _ in range(self.num_directions):
                 next_direction = self.direction_rule(previous_direction)
-                next_position = states[-1].position.shift(direction_to_unit_vector(next_direction))
                 next_sub_collision = resolve_point_set_selectors_with_direction(
                     states[-1].position, collision, next_direction
                 ) if self.select_direction else collision
 
-                next_collision = next_position & next_sub_collision
-
-                if len(next_collision) == 0:
+                if len(next_sub_collision) == 0:
                     return None
                 else:
                     previous_direction = next_direction
@@ -288,7 +286,7 @@ class TrappedCollisionRule(Rule):
                 color=next(colors),
                 charge=0,  # Set charge to 0 to indicate termination
                 commit=states[-1].commit
-            ), colors
+            ), colors, []
         return None
 
 
@@ -330,7 +328,7 @@ class CollisionBorderRule(Rule):
                     color=next(new_colors),
                     charge=states[-1].charge,
                     commit=states[-1].commit
-                ), new_colors
+                ), new_colors, []
 
         return None
 
@@ -370,7 +368,7 @@ class CollisionFillRule(Rule):
                     color=next(new_colors),
                     charge=states[-1].charge,
                     commit=states[-1].commit
-                ), new_colors
+                ), new_colors, []
 
         return None
 
@@ -391,7 +389,7 @@ def backtrack_rule(
     :return: A new state with the position set to the previous position.
     """
 
-    return states[-2], colors
+    return states[-2], colors, []
 
 
 def uncharge_rule(
@@ -416,7 +414,7 @@ def uncharge_rule(
         color=next(colors),
         charge=max(0, states[-1].charge - 1),
         commit=states[-1].commit
-    ), colors
+    ), colors, []
 
 
 class GravityRule(Rule):
@@ -448,21 +446,14 @@ class GravityRule(Rule):
 
             if len(sub_collision) == 0:
                 next_position = states[-1].position.shift(direction_to_unit_vector(direction))
-                min_x = min(pos[0] for pos in next_position)
-                max_x = max(pos[0] for pos in next_position)
-                min_y = min(pos[1] for pos in next_position)
-                max_y = max(pos[1] for pos in next_position)
-
-                # If there is no collision and the next position is within the grid bounds
-                if min_x >= 0 and max_x < self.grid_size[0] and \
-                        min_y >= 0 and max_y < self.grid_size[1]:
+                if all(in_grid(point, self.grid_size) for point in next_position):
                     return AgentState(
                         position=next_position,
-                        direction=states[-1].direction,
+                        direction=direction,
                         color=next(colors),
                         charge=states[-1].charge - 1 if states[-1].charge > 0 else states[-1].charge,
                         commit=states[-1].commit
-                    ), colors
+                    ), colors, []
 
         return None
 
@@ -508,7 +499,7 @@ class ProximityRule(Rule):
                 color=next(colors),
                 charge=0,
                 commit=states[-1].commit
-            ), colors
+            ), colors, []
 
         possible_points = PointSet(self.proximity_mapping.keys()) - collision - current_position
         eligible_points = [
@@ -538,6 +529,60 @@ class ProximityRule(Rule):
                         color=next(colors),
                         charge=states[-1].charge - 1 if states[-1].charge > 0 else states[-1].charge,
                         commit=states[-1].commit,
-                    ), colors
+                    ), colors, []
 
         return None
+
+
+class AgentSpawnRule(Rule):
+    """
+    Creates new agents of the same type and given direction, if possible.
+    """
+
+    def __init__(
+            self,
+            directions: Sequence[Direction],
+            grid_size: Point,
+            select_direction: bool = False,
+            denylist: Optional[PointSet] = None,
+    ):
+        """
+        Initialize the agent spawn rule with a list of directions.
+        :param directions: The directions in which new agents can be spawned.
+        :param grid_size: The size of the grid in which agents can be spawned.
+        :param select_direction: If true, the agent will select the direction for collision direction.
+        :param denylist: The set of points that are in denylist.
+        """
+        self.directions = directions
+        self.grid_size = grid_size
+        self.select_direction = select_direction
+        self.denylist = denylist if denylist is not None else PointSet()
+
+    def __call__(
+            self,
+            states: Sequence[AgentState],
+            colors: ColorIterator,
+            collision: PointSet,
+            collision_mapping: AgentStateMapping
+    ) -> RuleResult:
+        children: list[AgentState] = []
+
+        for direction in self.directions:
+            next_position = states[-1].position.shift(direction_to_unit_vector(direction))
+            if len(next_position & self.denylist) == 0 and all(
+                    in_grid(point, self.grid_size) for point in next_position):
+                next_sub_collision = resolve_point_set_selectors_with_direction(
+                    states[-1].position, collision, direction
+                ) if self.select_direction else collision
+
+                if len(next_sub_collision) == 0:
+                    child = AgentState(
+                        position=next_position,
+                        direction=direction,
+                        color=next(colors),
+                        charge=states[-2].charge if states[-2].charge > 0 else states[-2].charge,
+                        commit=states[-2].commit
+                    )
+                    children.append(child)
+
+        return states[-1], colors, children

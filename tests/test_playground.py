@@ -25,7 +25,7 @@ def toggle_commit_rule(
         color=states[-1].color,
         charge=states[-1].charge,
         commit=not states[-1].commit
-    ), colors
+    ), colors, []
 
 
 class PlaygroundTestCase(TestCase):

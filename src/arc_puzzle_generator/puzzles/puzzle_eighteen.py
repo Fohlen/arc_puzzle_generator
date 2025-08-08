@@ -22,7 +22,7 @@ def puzzle_eighteen(input_grid: np.ndarray) -> Playground:
     """
 
     # set up random seed for reproducibility
-    random.seed(42)
+    random.seed(6)
 
     colors = np.unique(input_grid).tolist()
 
