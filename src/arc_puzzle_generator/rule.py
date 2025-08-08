@@ -606,8 +606,8 @@ class AgentSpawnRule(Rule):
                     child = Agent(
                         position=next_position,
                         direction=direction,
-                        label=agent.label,
-                        node=copy.copy(agent.node),
+                        label=None,
+                        node=None,
                         colors=colors,
                         charge=states[-2].charge if states[-2].charge > 0 else states[-2].charge,
                         commit=states[-2].commit

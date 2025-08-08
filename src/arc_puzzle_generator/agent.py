@@ -76,6 +76,12 @@ class Agent:
                 self.colors = colors
                 self.history.append(state)
                 states.append(state)
+
+                # children inherit label and node from the parent agent
+                for child in rule_children:
+                    child.label = self.label
+                    child.node = self.node
+
                 children.extend(rule_children)
 
                 if current.next_node is not None:
