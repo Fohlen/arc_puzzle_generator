@@ -49,7 +49,6 @@ class AgentTestCase(unittest.TestCase):
         self.assertEqual(0, agent.charge)
         self.assertEqual(3, len(agent.history))  # NOTE: Is this correct? Should the initial state be included? -> Yes, it should be included.
 
-    @unittest.skip("Specifying None rules is not supported")
     def test_steps_none_node(self):
         agent = Agent(
             position=PointSet([(0, 0)]),

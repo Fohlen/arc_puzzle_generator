@@ -1,6 +1,6 @@
 import random
 from itertools import cycle
-from typing import cast, Sequence
+from typing import Sequence
 
 import numpy as np
 
@@ -9,8 +9,7 @@ from arc_puzzle_generator.direction import identity_direction
 from arc_puzzle_generator.geometry import PointSet, Direction
 from arc_puzzle_generator.neighbourhood import moore_neighbours
 from arc_puzzle_generator.playground import Playground
-from arc_puzzle_generator.rule import identity_rule, RuleNode, OutOfGridRule, TrappedCollisionRule, GravityRule, Rule, \
-    AgentSpawnRule
+from arc_puzzle_generator.rule import RuleNode, OutOfGridRule, TrappedCollisionRule, GravityRule, AgentSpawnRule
 from arc_puzzle_generator.topology import all_topology
 from arc_puzzle_generator.utils.entities import find_connected_objects
 from arc_puzzle_generator.utils.grid import unmask
@@ -36,7 +35,6 @@ def puzzle_twentyseven(input_grid: np.ndarray) -> Playground:
             position=unmask(labels == i),
             direction="none",
             label="border",
-            node=RuleNode(cast(Rule, identity_rule)),
             colors=iter([border_color]),
             charge=0,
         ))
