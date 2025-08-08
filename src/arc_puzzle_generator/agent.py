@@ -1,5 +1,5 @@
 import logging
-from typing import Iterator, Iterable
+from typing import Iterator, Iterable, Optional
 
 from arc_puzzle_generator.geometry import PointSet, Direction
 from arc_puzzle_generator.rule import RuleNode
@@ -15,11 +15,22 @@ class Agent:
             position: PointSet,
             direction: Direction,
             label: str,
-            node: RuleNode,
             colors: Iterator[int],
+            node: Optional[RuleNode] = None,
             charge: int = 0,
             commit: bool = True,
     ):
+        """
+        An agent that can move through a grid and interact with rules defined in the `RuleNode`.
+        :param position: A set of points representing the agent's position in the grid.
+        :param direction: A direction in which the agent is currently moving, also known as velocity.
+        :param label: The label of the agent, which is used to calculate the topology.
+        :param colors: The colors that the agent can use during its lifetime, provided as an iterator.
+        :param node: A `RuleNode` that defines the rules the agent will follow.
+        :param charge: A charge that the agent has, which can be positive (running), 0 (terminated), or -1 (indefinite).
+        :param commit: Whether the resulting state will be committed to the output grid or not.
+        """
+
         self.position = position
         self.direction = direction
         self.label = label
