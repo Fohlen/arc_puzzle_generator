@@ -1,13 +1,12 @@
+import logging
 from collections import defaultdict
 from itertools import chain
 from typing import cast, Iterator, Iterable, Callable, Literal, Sequence, Optional, Mapping
 
 import numpy as np
 
-import logging
-
 from arc_puzzle_generator.agent import Agent
-from arc_puzzle_generator.geometry import PointSet, Point
+from arc_puzzle_generator.geometry import PointSet
 from arc_puzzle_generator.neighbourhood import resolve_point_set_neighbourhood, Neighbourhood, zero_neighbours
 from arc_puzzle_generator.state import AgentState
 from arc_puzzle_generator.topology import Topology, identity_topology
@@ -160,8 +159,6 @@ class Playground(Iterator[np.ndarray], Iterable[np.ndarray]):
             for agent in self.agents:
                 if agent.active:
                     self._process_agent(agent)
-        else:
-            raise NotImplementedError
 
 
 ModelSetup = Callable[[np.ndarray], Playground]
