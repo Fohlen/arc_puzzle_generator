@@ -9,3 +9,4 @@ from .puzzle_twentyseven import puzzle_twentyseven
 from .puzzle_thirty import puzzle_thirty
 from .puzzle_thirtynine import puzzle_thirtynine
 from .puzzle_fiftyfive import puzzle_fiftyfive
+from .puzzle_sixtyseven import puzzle_sixtyseven
