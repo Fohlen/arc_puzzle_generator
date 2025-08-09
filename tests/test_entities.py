@@ -4,7 +4,7 @@ import numpy as np
 
 from arc_puzzle_generator.utils.data_loader import load_puzzle
 from arc_puzzle_generator.utils.entities import find_connected_objects, is_l_shape, find_colors, extreme_point, \
-    box_contained, starting_point, relative_box_direction, box_distance, get_bounding_box, flood_fill
+    box_contained, starting_point, relative_box_direction, box_distance, get_bounding_box
 from tests.utils import test_dir
 
 
@@ -216,18 +216,3 @@ class EntityTestCase(unittest.TestCase):
         expected_bbox = np.array([[1, 2], [1, 2], [3, 2], [3, 2]])
         result = get_bounding_box(points)
         self.assertTrue(np.array_equal(result, expected_bbox))
-
-    def test_flood_fill(self):
-        polygon_mask = np.array([
-            [0, 0, 1, 1, 1, 0, 0],
-            [0, 1, 0, 0, 0, 1, 0],
-            [1, 0, 0, 0, 0, 0, 1],
-            [0, 1, 0, 0, 0, 1, 0],
-            [0, 0, 1, 1, 1, 0, 0],
-        ], dtype=bool)
-
-        positions = [(x, y) for x, y in flood_fill(polygon_mask).tolist()]
-        self.assertIn((1, 3), positions)
-        self.assertIn((2, 2), positions)
-        self.assertNotIn((0, 0), positions)
-        self.assertNotIn((0, 2), positions)

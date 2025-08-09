@@ -355,25 +355,3 @@ def get_bounding_box(points: np.ndarray) -> np.ndarray:
 
     # Return the corners as a numpy array
     return np.array([left_bottom, top_left, top_right, right_bottom])
-
-
-def flood_fill(mask: np.ndarray) -> np.ndarray:
-    """
-    Fills the interior with a polygon defined by a binary mask using a flood-fill algorithm.
-    :param mask:
-    :return:
-    """
-    filled_polygon = mask.copy()
-    stack = [(0, 0)]  # Start from an outside point (assumes the polygon doesn't touch the edges)
-
-    while stack:
-        x, y = stack.pop()
-        if 0 <= x < filled_polygon.shape[0] and 0 <= y < filled_polygon.shape[1] and not filled_polygon[x, y]:
-            filled_polygon[x, y] = True
-            stack.extend([(x - 1, y), (x + 1, y), (x, y - 1), (x, y + 1)])
-
-    # Invert the filled area to get the interior of the polygon
-    filled_polygon = ~filled_polygon & ~mask
-
-    # Get all positions within the polygon
-    return np.argwhere(filled_polygon)
