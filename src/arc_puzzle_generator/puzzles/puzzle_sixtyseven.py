@@ -1,5 +1,5 @@
 from itertools import cycle
-from typing import Sequence
+from typing import Iterator
 
 import numpy as np
 
@@ -16,7 +16,7 @@ from arc_puzzle_generator.utils.grid import unmask
 
 def puzzle_sixtyseven(
         input_grid: np.ndarray,
-        directions: Sequence[Direction] = cycle(["left"])
+        directions: Iterator[Direction] = cycle(["left"])
 ) -> Playground:
     """
     Generates a playground for puzzle sixty-seven based on the provided input grid.
