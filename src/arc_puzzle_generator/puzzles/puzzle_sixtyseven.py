@@ -5,18 +5,18 @@ import numpy as np
 
 from arc_puzzle_generator.agent import Agent
 from arc_puzzle_generator.direction import identity_direction
-from arc_puzzle_generator.geometry import Direction
+from arc_puzzle_generator.geometry import Direction, PointSet
 from arc_puzzle_generator.neighbourhood import MooreNeighbourhood
 from arc_puzzle_generator.playground import Playground
 from arc_puzzle_generator.rule import RuleNode, TrappedCollisionRule, DirectionRule
 from arc_puzzle_generator.topology import all_topology
-from arc_puzzle_generator.utils.entities import colour_count, find_connected_objects, box_contained
+from arc_puzzle_generator.utils.entities import colour_count, find_connected_objects, flood_fill
 from arc_puzzle_generator.utils.grid import unmask
 
 
 def puzzle_sixtyseven(
         input_grid: np.ndarray,
-        directions: Sequence[Direction] = ("right", "left")
+        directions: Sequence[Direction] = ("left", "right")
 ) -> Playground:
     """
     Generates a playground for puzzle sixty-seven based on the provided input grid.
@@ -30,7 +30,7 @@ def puzzle_sixtyseven(
     sorted_colors = colour_count(input_grid)
     box_colors = [color for color, count in sorted_colors[1:] if count >= 8]
 
-    polygons: list[tuple[Direction, int, np.ndarray, np.ndarray]] = []  # [(direction, color, labels, bboxes), ...]
+    polygons: list[tuple[Direction, int, PointSet]] = []  # [(direction, color, points), ...]
 
     agents: list[Agent] = []
     for box_color, direction in zip(box_colors, directions):
@@ -44,7 +44,7 @@ def puzzle_sixtyseven(
             if np.all(box_labels[row_min:row_max + 1, col_min]) and np.all(box_labels[row_max, col_min:col_max + 1]):
                 pass  # NOTE: In theory one can determine the direction of agents within the box but this is better left for the ARC solver
             else:
-                polygons.append((direction, box_color, box_labels[i], box_bboxes[i - 1]))
+                polygons.append((direction, box_color, PointSet.from_numpy(flood_fill(box_labels == i))))
                 agents.append(Agent(
                     position=unmask(box_labels == i),
                     direction=direction,
@@ -56,8 +56,8 @@ def puzzle_sixtyseven(
     agent_labels, agent_bboxes, num_agents = find_connected_objects(input_grid == agent_color)
 
     for i in range(1, num_agents + 1):
-        for box_direction, _, _, bbox in polygons:
-            if box_contained(agent_bboxes[i - 1], bbox):
+        for box_direction, _, points in polygons:
+            if all((x, y) in points for x, y in np.argwhere(agent_labels == i).tolist()):
                 agents.append(Agent(
                     position=unmask(agent_labels == i),
                     direction=box_direction,
