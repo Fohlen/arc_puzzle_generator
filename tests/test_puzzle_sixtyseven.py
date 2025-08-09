@@ -18,7 +18,7 @@ class PuzzleSixtySevenTestCase(TestCase):
         self.assertTrue(np.array_equal(output_grid, self.puzzle.train[0].output))
 
     def test_generate_88e364bc_second(self):
-        playground = puzzle_sixtyseven(self.puzzle.train[1].input)
+        playground = puzzle_sixtyseven(self.puzzle.train[1].input, directions=("bottom_right",))
         *_, output_grid = playground
         self.assertTrue(np.array_equal(output_grid, self.puzzle.train[1].output))
 
