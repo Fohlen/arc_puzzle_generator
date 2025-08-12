@@ -4,13 +4,15 @@ import numpy as np
 
 from arc_puzzle_generator.agent import Agent
 from arc_puzzle_generator.direction import clockwise_direction_90, identity_direction
-from arc_puzzle_generator.geometry import PointSet, in_grid
+from arc_puzzle_generator.geometry import PointSet, in_grid, Direction
 from arc_puzzle_generator.neighbourhood import MooreNeighbourhood
 from arc_puzzle_generator.physics import direction_to_unit_vector
 from arc_puzzle_generator.playground import Playground
 from arc_puzzle_generator.rule import RuleNode, OutOfGridRule, DirectionRule
 from arc_puzzle_generator.utils.entities import colour_count, find_connected_objects
 from arc_puzzle_generator.utils.grid import unmask
+
+DIAGONAL_DIRECTIONS: list[Direction] = ["top_left", "top_right", "bottom_right", "bottom_left"]
 
 
 def puzzle_sixtyfour(input_grid: np.ndarray) -> Playground:
@@ -44,9 +46,9 @@ def puzzle_sixtyfour(input_grid: np.ndarray) -> Playground:
         for beam_labels, beam_color in beams:
             beam_points = unmask(beam_labels)
 
-            for direction in ["top_left", "top_right", "bottom_right", "bottom_left"]:
+            for direction in DIAGONAL_DIRECTIONS:
                 shifted_points = beam_points.shift(direction_to_unit_vector(direction))
-                if all(in_grid(point, input_grid.shape) and box_labels[point[0], point[1]] for point in shifted_points):
+                if all(in_grid(point, input_grid.shape) and box_labels[point[0], point[1]] for point in shifted_points):  # type: ignore[call-overload]
                     agent_direction = clockwise_direction_90(clockwise_direction_90(direction))
                     agents.extend([
                         Agent(
