@@ -4,7 +4,7 @@ import numpy as np
 
 from arc_puzzle_generator.agent import Agent
 from arc_puzzle_generator.direction import clockwise_direction_90, identity_direction
-from arc_puzzle_generator.geometry import PointSet
+from arc_puzzle_generator.geometry import PointSet, in_grid
 from arc_puzzle_generator.neighbourhood import MooreNeighbourhood
 from arc_puzzle_generator.physics import direction_to_unit_vector
 from arc_puzzle_generator.playground import Playground
@@ -46,7 +46,7 @@ def puzzle_sixtyfour(input_grid: np.ndarray) -> Playground:
 
             for direction in ["top_left", "top_right", "bottom_right", "bottom_left"]:
                 shifted_points = beam_points.shift(direction_to_unit_vector(direction))
-                if all(box_labels[point[0], point[1]] for point in shifted_points):
+                if all(in_grid(point, input_grid.shape) and box_labels[point[0], point[1]] for point in shifted_points):
                     agent_direction = clockwise_direction_90(clockwise_direction_90(direction))
                     agents.extend([
                         Agent(
