@@ -24,7 +24,7 @@ def puzzle_hundredfive(input_grid: np.ndarray) -> Playground:
 
     agents: list[Agent] = []
 
-    for point1, point2 in combinations(points_blue, 2):
+    for point1, point2 in combinations(sorted(points_blue), 2):
         if same_diagonal(point1, point2):
             distance = int(math.dist(point1, point2)) - 1
 

@@ -26,3 +26,13 @@ class PuzzleHundredFiveTestCase(TestCase):
         playground = puzzle_hundredfive(self.puzzle.train[2].input)
         *_, output_grid = playground
         self.assertTrue(np.array_equal(output_grid, self.puzzle.train[2].output))
+
+    def test_generate_db695cfb_fourth(self):
+        playground = puzzle_hundredfive(self.puzzle.train[3].input)
+        *_, output_grid = playground
+        self.assertTrue(np.array_equal(output_grid, self.puzzle.train[3].output))
+
+    def test_generate_db695cfb_fifth(self):
+        playground = puzzle_hundredfive(self.puzzle.train[4].input)
+        *_, output_grid = playground
+        self.assertTrue(np.array_equal(output_grid, self.puzzle.train[4].output))
