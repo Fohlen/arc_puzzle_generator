@@ -84,7 +84,7 @@ def puzzle_fourtyfour(input_grid: np.ndarray) -> Playground:
                     cast(Rule, collision_direction_change),
                 ),
                 alternative_node=RuleNode(
-                    DirectionRule(direction_rule=identity_direction)
+                    DirectionRule(direction_rule=identity_direction, select_direction=True)
                 )
             )
         ),
