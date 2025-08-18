@@ -35,7 +35,7 @@ def puzzle_fourtyfour(input_grid: np.ndarray) -> Playground:
         agents.append(Agent(
             position=unmask(labels_blue == i),
             direction="none",
-            colors=cycle([agent_color]),
+            colors=iter([agent_color]),
             charge=0,
             label=f"ball_{i}",
         ))
@@ -65,7 +65,7 @@ def puzzle_fourtyfour(input_grid: np.ndarray) -> Playground:
         agents.append(Agent(
             position=unmask(labels_green == i),
             direction=direction,
-            colors=cycle([agent_color]),
+            colors=iter([agent_color]),
             charge=0,
             label=f"ball_top_{i}",
         ))
