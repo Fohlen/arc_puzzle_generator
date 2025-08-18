@@ -11,3 +11,4 @@ from .puzzle_thirtynine import puzzle_thirtynine
 from .puzzle_fiftyfive import puzzle_fiftyfive
 from .puzzle_sixtyfour import puzzle_sixtyfour
 from .puzzle_sixtyseven import puzzle_sixtyseven
+from .puzzle_hundredfive import puzzle_hundredfive
