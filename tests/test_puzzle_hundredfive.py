@@ -21,3 +21,8 @@ class PuzzleHundredFiveTestCase(TestCase):
         playground = puzzle_hundredfive(self.puzzle.train[1].input)
         *_, output_grid = playground
         self.assertTrue(np.array_equal(output_grid, self.puzzle.train[1].output))
+
+    def test_generate_db695cfb_third(self):
+        playground = puzzle_hundredfive(self.puzzle.train[2].input)
+        *_, output_grid = playground
+        self.assertTrue(np.array_equal(output_grid, self.puzzle.train[2].output))
