@@ -7,8 +7,9 @@ from arc_puzzle_generator.agent import Agent
 from arc_puzzle_generator.direction import identity_direction
 from arc_puzzle_generator.geometry import Point, PointSet
 from arc_puzzle_generator.playground import Playground
-from arc_puzzle_generator.rule import RuleNode, DirectionRule
+from arc_puzzle_generator.rule import RuleNode, DirectionRule, OutOfGridRule
 from arc_puzzle_generator.utils.grid import unmask
+
 
 def same_diagonal(point1: Point, point2: Point) -> bool:
     x1, y1 = point1
@@ -18,6 +19,7 @@ def same_diagonal(point1: Point, point2: Point) -> bool:
 
 def puzzle_hundredfive(input_grid: np.ndarray) -> Playground:
     points_blue = unmask(input_grid == 1)
+    points_purple = unmask(input_grid == 6)
 
     agents: list[Agent] = []
 
@@ -33,6 +35,38 @@ def puzzle_hundredfive(input_grid: np.ndarray) -> Playground:
                     DirectionRule(direction_rule=identity_direction)
                 )
             ))
+
+            line_points: list[Point] = [point for point in points_purple if same_diagonal(point, point1)]
+            agents.extend([
+                Agent(
+                    position=PointSet([point]),
+                    charge=-1,
+                    direction="bottom_left",
+                    label="purple",
+                    colors=cycle([6]),
+                    node=RuleNode(
+                        OutOfGridRule(grid_size=input_grid.shape),
+                        alternative_node=RuleNode(
+                            DirectionRule(direction_rule=identity_direction),
+                        )
+                    )
+                ) for point in line_points
+            ])
+            agents.extend([
+                Agent(
+                    position=PointSet([point]),
+                    charge=-1,
+                    direction="top_right",
+                    label="purple",
+                    colors=cycle([6]),
+                    node=RuleNode(
+                        OutOfGridRule(grid_size=input_grid.shape),
+                        alternative_node=RuleNode(
+                            DirectionRule(direction_rule=identity_direction),
+                        )
+                    )
+                ) for point in line_points
+            ])
 
     return Playground(
         output_grid=input_grid,
