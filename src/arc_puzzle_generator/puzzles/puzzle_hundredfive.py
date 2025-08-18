@@ -41,7 +41,11 @@ def puzzle_hundredfive(input_grid: np.ndarray) -> Playground:
             direction_vector = direction_to_unit_vector(direction)
             next_position = point1
 
-            line_points: list[Point] = [point for point in points_purple if same_diagonal(point, point1)]
+            line_points: list[Point] = [
+                point for point in points_purple if
+                same_diagonal(point, point1) and
+                same_diagonal(point, point2)
+            ]
             colors = [1]
             while next_position != point2:
                 next_position = shift(next_position, direction_vector)
