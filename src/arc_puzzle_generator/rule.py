@@ -799,3 +799,67 @@ class CollisionConditionDirectionRule(Rule):
             ), colors, []
 
         return None
+
+def collision_entity_color_rule(
+        states: Sequence[AgentState],
+        colors: ColorIterator,
+        collision: PointSet,
+        collision_mapping: AgentStateMapping
+) -> RuleResult:
+    """
+    Colors the entity in the agents color on collision.
+    :return: A tuple containing the current state, colors, and an empty list of children.
+    """
+
+    sub_collision = resolve_point_set_selectors_with_direction(
+        states[-1].position, collision, states[-1].direction
+    )
+
+    if len(sub_collision) > 0:
+        positions = PointSet(
+            [entity_point for point in sub_collision for entity_point in collision_mapping[point].position]
+        )
+
+        return AgentState(
+            position=positions,
+            direction=states[-1].direction,
+            color=next(colors),
+            charge=states[-1].charge,
+        ), colors, []
+
+    return None
+
+
+def collision_direction_change(
+        states: Sequence[AgentState],
+        colors: ColorIterator,
+        collision: PointSet,
+        collision_mapping: AgentStateMapping
+) -> RuleResult:
+    """
+    Changes the direction of the agent on collision.
+    :return: A tuple containing the current state, colors, and an empty list of children.
+    """
+
+    sub_collision = resolve_point_set_selectors_with_direction(
+        states[-1].position, collision, states[-1].direction
+    )
+
+    if len(sub_collision) > 0:
+        directions = set(collision_mapping[point].direction for point in sub_collision)
+
+        if len(directions) == 1:
+            direction = next(iter(directions))
+            if direction != "none":
+                positions = PointSet(
+                    [entity_point for point in sub_collision for entity_point in collision_mapping[point].position]
+                )
+
+                return AgentState(
+                    position=positions,
+                    direction=direction,
+                    color=next(colors),
+                    charge=states[-1].charge,
+                ), colors, []
+
+    return None
