@@ -5,7 +5,8 @@ import numpy as np
 
 from arc_puzzle_generator.agent import Agent
 from arc_puzzle_generator.direction import identity_direction
-from arc_puzzle_generator.geometry import Point, PointSet
+from arc_puzzle_generator.geometry import Point, PointSet, Direction
+from arc_puzzle_generator.physics import shift, direction_to_unit_vector
 from arc_puzzle_generator.playground import Playground
 from arc_puzzle_generator.rule import RuleNode, DirectionRule, OutOfGridRule
 from arc_puzzle_generator.utils.grid import unmask
@@ -25,18 +26,31 @@ def puzzle_hundredfive(input_grid: np.ndarray) -> Playground:
 
     for point1, point2 in combinations(points_blue, 2):
         if same_diagonal(point1, point2):
+            distance = int(math.dist(point1, point2)) - 1
+            direction: Direction = "bottom_right"
+            direction_vector = direction_to_unit_vector(direction)
+            next_position = point1
+
+            line_points: list[Point] = [point for point in points_purple if same_diagonal(point, point1)]
+            colors = [1]
+            for _ in range(distance):
+                next_position = shift(next_position, direction_vector)
+                if next_position in line_points:
+                    colors.append(6)
+                else:
+                    colors.append(1)
+
             agents.append(Agent(
                 position=PointSet([point1]),
-                charge=int(math.dist(point1, point2)),
+                charge=distance,
                 direction="bottom_right",
                 label="blue",
-                colors=cycle([1]),
+                colors=iter(colors),
                 node=RuleNode(
                     DirectionRule(direction_rule=identity_direction)
                 )
             ))
 
-            line_points: list[Point] = [point for point in points_purple if same_diagonal(point, point1)]
             agents.extend([
                 Agent(
                     position=PointSet([point]),
