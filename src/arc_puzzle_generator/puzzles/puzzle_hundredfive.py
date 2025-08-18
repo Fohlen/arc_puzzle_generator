@@ -26,8 +26,6 @@ def puzzle_hundredfive(input_grid: np.ndarray) -> Playground:
 
     for point1, point2 in combinations(sorted(points_blue), 2):
         if same_diagonal(point1, point2):
-            distance = int(math.dist(point1, point2)) - 1
-
             direction: Direction
             beam1: Direction
             beam2: Direction
@@ -45,16 +43,18 @@ def puzzle_hundredfive(input_grid: np.ndarray) -> Playground:
 
             line_points: list[Point] = [point for point in points_purple if same_diagonal(point, point1)]
             colors = [1]
-            for _ in range(distance):
+            while next_position != point2:
                 next_position = shift(next_position, direction_vector)
                 if next_position in line_points:
                     colors.append(6)
                 else:
                     colors.append(1)
 
+            colors.append(1) # to include the last point
+
             agents.append(Agent(
                 position=PointSet([point1]),
-                charge=distance,
+                charge=len(colors) - 1,
                 direction=direction,
                 label="blue",
                 colors=iter(colors),
