@@ -27,7 +27,19 @@ def puzzle_hundredfive(input_grid: np.ndarray) -> Playground:
     for point1, point2 in combinations(points_blue, 2):
         if same_diagonal(point1, point2):
             distance = int(math.dist(point1, point2)) - 1
-            direction: Direction = "bottom_right"
+
+            direction: Direction
+            beam1: Direction
+            beam2: Direction
+            if point1[1] < point2[1]:
+                direction = "bottom_right"
+                beam1 = "top_right"
+                beam2 = "bottom_left"
+            else:
+                direction = "bottom_left"
+                beam1 = "top_left"
+                beam2 = "bottom_right"
+
             direction_vector = direction_to_unit_vector(direction)
             next_position = point1
 
@@ -43,7 +55,7 @@ def puzzle_hundredfive(input_grid: np.ndarray) -> Playground:
             agents.append(Agent(
                 position=PointSet([point1]),
                 charge=distance,
-                direction="bottom_right",
+                direction=direction,
                 label="blue",
                 colors=iter(colors),
                 node=RuleNode(
@@ -55,7 +67,7 @@ def puzzle_hundredfive(input_grid: np.ndarray) -> Playground:
                 Agent(
                     position=PointSet([point]),
                     charge=-1,
-                    direction="bottom_left",
+                    direction=beam1,
                     label="purple",
                     colors=cycle([6]),
                     node=RuleNode(
@@ -70,7 +82,7 @@ def puzzle_hundredfive(input_grid: np.ndarray) -> Playground:
                 Agent(
                     position=PointSet([point]),
                     charge=-1,
-                    direction="top_right",
+                    direction=beam2,
                     label="purple",
                     colors=cycle([6]),
                     node=RuleNode(
