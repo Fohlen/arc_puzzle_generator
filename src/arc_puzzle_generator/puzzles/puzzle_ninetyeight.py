@@ -10,7 +10,7 @@ from arc_puzzle_generator.playground import Playground
 from arc_puzzle_generator.rule import RuleNode, OutOfGridRule, RewardRule
 from arc_puzzle_generator.topology import all_topology
 from arc_puzzle_generator.utils.entities import find_connected_objects
-from arc_puzzle_generator.utils.grid import unmask
+from arc_puzzle_generator.utils.grid import unmask, point_dict_to_numpy
 
 
 def puzzle_ninetyeight(input_grid: np.ndarray) -> Playground:
@@ -65,6 +65,14 @@ def puzzle_ninetyeight(input_grid: np.ndarray) -> Playground:
         direction = "left"
         target = PointSet([(i, 0) for i in range(0, input_grid.shape[1])])
 
+    reward_rule = RewardRule(
+        input_grid=input_grid,
+        background_color=8,
+        directions=["left", "right", "up", "down"],
+        target=target,
+    )
+    reward_rule_np = point_dict_to_numpy(reward_rule.q_table)
+
     agents.append(Agent(
         position=agent_pos,
         direction=direction,
@@ -73,12 +81,7 @@ def puzzle_ninetyeight(input_grid: np.ndarray) -> Playground:
         node=RuleNode(
             OutOfGridRule(grid_size=input_grid.shape),
             alternative_node=RuleNode(
-                RewardRule(
-                    input_grid=input_grid,
-                    background_color=8,
-                    directions=["left", "right", "up", "down"],
-                    target=target,
-                )
+                reward_rule
             )
         ),
         charge=-1,
