@@ -42,7 +42,7 @@ def puzzle_ninetyeight(input_grid: np.ndarray) -> Playground:
         output_grid[labels_obstacles == i] = 2
 
     agent_color = 3
-    agent_pos = unmask(output_grid == agent_color)
+    agent_pos = unmask(input_grid == agent_color)
     start_pos = next(iter(agent_pos))
     target: PointSet
     grid = PointSet([
