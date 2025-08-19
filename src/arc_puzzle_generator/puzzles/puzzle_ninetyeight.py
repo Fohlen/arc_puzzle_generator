@@ -60,10 +60,10 @@ def puzzle_ninetyeight(input_grid: np.ndarray) -> Playground:
         target = PointSet([(0, i) for i in range(0, input_grid.shape[1])])
     elif start_pos[1] == 0:
         direction = "right"
-        target = PointSet([(input_grid.shape[0] - 1, i) for i in range(0, input_grid.shape[1])])
+        target = PointSet([(i, input_grid.shape[1] - 1) for i  in range(0, input_grid.shape[1])])
     else:
         direction = "left"
-        target = PointSet([(i, 0) for i in range(0, input_grid.shape[0])])
+        target = PointSet([(i, 0) for i  in range(0, input_grid.shape[1])])
 
     agents.append(Agent(
         position=agent_pos,
