@@ -21,6 +21,8 @@ def puzzle_ninetyeight(input_grid: np.ndarray) -> Playground:
     """
 
     output_grid = input_grid.copy()
+
+    obstacles = PointSet()
     agents: list[Agent] = []
     labels_obstacles, bbox_obstacles, num_obstacles = find_connected_objects(
         (input_grid == 1) | (input_grid == 2)
@@ -29,9 +31,10 @@ def puzzle_ninetyeight(input_grid: np.ndarray) -> Playground:
         obstacle_size = np.sum((labels_obstacles == i) & (input_grid == 1))
         obstacle = unmask(labels_obstacles == i)
         neighbourhood = MooreNeighbourhood(size=obstacle_size)
+        extended_obstacle = resolve_point_set_neighbourhood(obstacle, neighbourhood)
 
         agents.append(Agent(
-            position=resolve_point_set_neighbourhood(obstacle, neighbourhood),
+            position=extended_obstacle,
             direction="none",
             label=f"obstacle_{i}",
             colors=iter([1]),
@@ -40,6 +43,7 @@ def puzzle_ninetyeight(input_grid: np.ndarray) -> Playground:
         ))
 
         output_grid[labels_obstacles == i] = 2
+        obstacles.update(extended_obstacle)
 
     agent_color = 3
     agent_pos = unmask(input_grid == agent_color)
@@ -64,7 +68,7 @@ def puzzle_ninetyeight(input_grid: np.ndarray) -> Playground:
         (x, y)
         for x in range(0, input_grid.shape[0])
         for y in range(0, input_grid.shape[1])
-        if input_grid[x, y] == 8
+        if (x, y) not in obstacles
     ])
     proximity_rule = ProximityRule(
         target=target,
