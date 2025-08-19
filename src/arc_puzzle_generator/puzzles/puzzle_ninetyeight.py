@@ -7,7 +7,7 @@ from arc_puzzle_generator.geometry import Direction, PointSet
 from arc_puzzle_generator.neighbourhood import resolve_point_set_neighbourhood, MooreNeighbourhood, \
     von_neumann_neighbours
 from arc_puzzle_generator.playground import Playground
-from arc_puzzle_generator.rule import RuleNode, OutOfGridRule, ProximityRule
+from arc_puzzle_generator.rule import RuleNode, OutOfGridRule, RewardRule
 from arc_puzzle_generator.topology import all_topology
 from arc_puzzle_generator.utils.entities import find_connected_objects
 from arc_puzzle_generator.utils.grid import unmask
@@ -60,10 +60,10 @@ def puzzle_ninetyeight(input_grid: np.ndarray) -> Playground:
         target = PointSet([(0, i) for i in range(0, input_grid.shape[1])])
     elif start_pos[1] == 0:
         direction = "right"
-        target = PointSet([(i, input_grid.shape[1] - 1) for i  in range(0, input_grid.shape[1])])
+        target = PointSet([(i, input_grid.shape[1] - 1) for i in range(0, input_grid.shape[1])])
     else:
         direction = "left"
-        target = PointSet([(i, 0) for i  in range(0, input_grid.shape[1])])
+        target = PointSet([(i, 0) for i in range(0, input_grid.shape[1])])
 
     agents.append(Agent(
         position=agent_pos,
@@ -73,9 +73,11 @@ def puzzle_ninetyeight(input_grid: np.ndarray) -> Playground:
         node=RuleNode(
             OutOfGridRule(grid_size=input_grid.shape),
             alternative_node=RuleNode(
-                ProximityRule(
+                RewardRule(
+                    input_grid=input_grid,
+                    background_color=8,
+                    directions=["left", "right", "up", "down"],
                     target=target,
-                    points=grid - target,
                 )
             )
         ),
@@ -87,4 +89,5 @@ def puzzle_ninetyeight(input_grid: np.ndarray) -> Playground:
         agents=agents,
         neighbourhood=von_neumann_neighbours,
         topology=all_topology,
+        collision_mode="history",
     )
