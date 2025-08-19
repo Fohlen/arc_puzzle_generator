@@ -554,7 +554,7 @@ class RewardRule(Rule):
             point: 1.0 for point in target
         }
 
-        visited = PointSet()
+        visited = PointSet(target)
         points = deque(target)
 
         while len(points) > 0:
