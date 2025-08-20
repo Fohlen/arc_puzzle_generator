@@ -142,3 +142,40 @@ def counterclockwise_direction_90(direction: Direction, *args, **kwargs) -> Dire
     """
 
     return counterclockwise_direction_45(counterclockwise_direction_45(direction))
+
+
+def absolute_direction(origin: Direction, relative_direction: Direction, *args, **kwargs) -> Direction:
+    """
+    Returns the absolute direction based on an origin and a relative direction.
+    :param origin: The origin direction from which to calculate the absolute direction.
+    :param relative_direction: The relative direction to apply to the origin.
+    :param args:
+    :param kwargs:
+    :return:
+    """
+
+    num_rotations: int = 0
+
+    match relative_direction:
+        case "left":
+            num_rotations = 6
+        case "top_left":
+            num_rotations = 7
+        case "up":
+            num_rotations = 0
+        case "top_right":
+            num_rotations = 1
+        case "right":
+            num_rotations = 2
+        case "bottom_right":
+            num_rotations = 3
+        case "down":
+            num_rotations = 4
+        case "bottom_left":
+            num_rotations = 5
+
+    direction = origin
+    for _ in range(num_rotations):
+        direction = clockwise_direction_45(direction)
+
+    return direction

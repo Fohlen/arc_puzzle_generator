@@ -4,7 +4,7 @@ from typing import Protocol, Optional, Sequence
 
 import math
 
-from arc_puzzle_generator.direction import DirectionTransformer
+from arc_puzzle_generator.direction import DirectionTransformer, absolute_direction
 from arc_puzzle_generator.geometry import PointSet, Point, Direction, in_grid
 from arc_puzzle_generator.physics import direction_to_unit_vector, collision_axis, relative_point_direction
 from arc_puzzle_generator.selection import resolve_point_set_selectors_with_direction
@@ -699,7 +699,8 @@ class CollisionConditionDirectionRule(Rule):
         """
 
         conditions_met = []
-        for condition, direction in self.conditions:
+        for condition, condition_direction in self.conditions:
+            direction = absolute_direction(states[-1].direction, condition_direction)
             sub_collision = resolve_point_set_selectors_with_direction(
                 states[-1].position, collision, direction
             )
