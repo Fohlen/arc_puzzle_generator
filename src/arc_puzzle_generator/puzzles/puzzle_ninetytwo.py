@@ -23,15 +23,13 @@ def puzzle_ninetytwo(input_grid: np.ndarray, orientation: Direction = "right", c
     agents: list[Agent] = []
 
     if orientation == "right":
-        rotation = 0
+        pattern_grid = input_grid.copy()
     elif orientation == "up":
-        rotation = 3
+        pattern_grid = np.rot90(input_grid, k=3)
     elif orientation == "left":
-        rotation = 2
+        pattern_grid = np.fliplr(input_grid)
     else:
-        rotation = 1
-
-    pattern_grid = np.rot90(input_grid, k=rotation)
+        pattern_grid = np.rot90(input_grid, k=1)
 
     for row_idx, row in enumerate(pattern_grid):
         if np.any(row != background_color):

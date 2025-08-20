@@ -35,3 +35,19 @@ class PuzzleNinetyTwoTest(unittest.TestCase):
         )
         *_, output_grid = playground
         self.assertTrue(np.array_equal(output_grid, self.puzzle.train[2].output))
+
+    def test_generate_16de56c4_prompt(self):
+        playground = puzzle_ninetytwo(
+            self.puzzle.test[0].input,
+            orientation="left",
+        )
+        *_, output_grid = playground
+        self.assertTrue(np.array_equal(output_grid, self.puzzle.test[0].output))
+
+    def test_generate_16de56c4_prompt_second(self):
+        playground = puzzle_ninetytwo(
+            self.puzzle.test[1].input,
+            orientation="down",
+        )
+        *_, output_grid = playground
+        self.assertTrue(np.array_equal(output_grid, self.puzzle.test[1].output))
