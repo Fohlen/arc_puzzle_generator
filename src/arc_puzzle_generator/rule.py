@@ -4,7 +4,7 @@ from typing import Protocol, Optional, Sequence
 
 import math
 
-from arc_puzzle_generator.direction import DirectionTransformer
+from arc_puzzle_generator.direction import DirectionTransformer, absolute_direction
 from arc_puzzle_generator.geometry import PointSet, Point, Direction, in_grid
 from arc_puzzle_generator.physics import direction_to_unit_vector, collision_axis, relative_point_direction
 from arc_puzzle_generator.selection import resolve_point_set_selectors_with_direction
@@ -595,3 +595,133 @@ class AgentSpawnRule(Rule):
                     children.append(child)
 
         return states[-1], colors, children
+
+
+class StayInGridRule(Rule):
+    """
+    A rule that ensures the agent stays within the grid boundaries.
+    """
+
+    def __init__(self, grid_size: Point, direction_rule: DirectionTransformer):
+        self.grid_size = grid_size
+        self.direction_rule = direction_rule
+
+    def __call__(
+            self,
+            states: Sequence[AgentState],
+            colors: ColorIterator,
+            collision: PointSet,
+            collision_mapping: AgentStateMapping
+    ) -> RuleResult:
+        next_position = states[-1].position.shift(direction_to_unit_vector(states[-1].direction))
+
+        if not all(in_grid(point, self.grid_size) for point in next_position):
+            alternative_direction = self.direction_rule(states[-1].direction)
+            alternative_position = states[-1].position.shift(direction_to_unit_vector(alternative_direction))
+
+            if all(in_grid(point, self.grid_size) for point in alternative_position):
+                return AgentState(
+                    position=alternative_position,
+                    direction=alternative_direction,
+                    color=next(colors),
+                    charge=states[-1].charge - 1 if states[-1].charge > 0 else states[-1].charge,
+                    commit=states[-1].commit
+                ), colors, []
+
+        return None
+
+
+class TerminateAtPoint(Rule):
+    """
+    A rule that terminates the agent once it reaches a specific target point.
+    """
+
+    def __init__(self, target: PointSet):
+        self.target = target
+
+    def __call__(
+            self,
+            states: Sequence[AgentState],
+            colors: ColorIterator,
+            collision: PointSet,
+            collision_mapping: AgentStateMapping
+    ) -> RuleResult:
+        """
+        Terminate the agent if it reaches the target point.
+
+        :param states: The current states of the agent.
+        :param colors: An iterator over the agent's colors.
+        :param collision: The set of points that are in collision with the agent.
+        :param collision_mapping: The mapping between collision points and the agent's colors.
+        :return: A new state with charge set to 0 if the target is reached, otherwise None.
+        """
+
+        next_position = states[-1].position.shift(direction_to_unit_vector(states[-1].direction))
+
+        if next_position == self.target:
+            return AgentState(
+                position=states[-1].position,
+                direction=states[-1].direction,
+                color=next(colors),
+                charge=0,  # Set charge to 0 to indicate termination
+                commit=states[-1].commit
+            ), colors, []
+
+        return None
+
+
+class CollisionConditionDirectionRule(Rule):
+    """
+    The CollisionConditionDirectionRule applies a direction rule based on a set of conditions.
+    Each condition is a tuple of boolean and Direction, where the boolean indicates whether the condition must be met,
+    and the Direction specifies which direction to select to check for a collision.
+    If all conditions are met, the direction rule is applied to the agent's current direction.
+    """
+
+    def __init__(self, direction_rule: DirectionTransformer, conditions: Sequence[tuple[bool, Direction]]):
+        self.direction_rule = direction_rule
+        self.conditions = conditions
+
+    def __call__(
+            self,
+            states: Sequence[AgentState],
+            colors: ColorIterator,
+            collision: PointSet,
+            collision_mapping: AgentStateMapping
+    ) -> RuleResult:
+        """
+        Apply the direction rule based on the conditions.
+        :param states: The current states of the agent.
+        :param colors: The iterator over the agent's colors.
+        :param collision: The set of points that are in collision with the agent.
+        :param collision_mapping: The mapping between collision points and the agent's colors.
+        :return: A new state with the updated direction if all conditions are met, otherwise None.
+        """
+
+        conditions_met = []
+        for condition, condition_direction in self.conditions:
+            direction = absolute_direction(states[-1].direction, condition_direction)
+            sub_collision = resolve_point_set_selectors_with_direction(
+                states[-1].position, collision, direction
+            )
+
+            if condition and len(sub_collision) > 0:
+                conditions_met.append(True)
+            elif not condition and len(sub_collision) == 0:
+                conditions_met.append(True)
+            else:
+                conditions_met.append(False)
+
+        if all(conditions_met):
+            new_direction = self.direction_rule(states[-1].direction)
+            new_position = states[-1].position.shift(direction_to_unit_vector(new_direction))
+
+            return AgentState(
+                position=new_position,
+                direction=new_direction,
+                color=next(colors),
+                charge=states[-1].charge - 1 if states[-1].charge > 0 else states[-1].charge,
+                commit=states[-1].commit
+            ), colors, []
+
+        return None
