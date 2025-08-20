@@ -28,15 +28,15 @@ def puzzle_ninetytwo(input_grid: np.ndarray, orientation: Direction = "right") -
             end = len(row)
             irregular_patterns = []
 
-            #for i in range(4, end):
-            #    for idx in pattern:
-            #        # if a pattern exactly matches another we stop there
-            #        if (i + 1) % (idx + 1) == 0:
-            #            color = row[i]
-            #            end = i
-            #            break
-            #        elif row[i] != background_color:
-            #            irregular_patterns.append((i, row[i]))
+            for i in range(4, end):
+                for idx in pattern[1:]:
+                    if row[i] != background_color:
+                        if i % (idx + 1) == 0:
+                            color = row[i]
+                            end = i
+                            break
+                        else:
+                            irregular_patterns.append((i, row[i]))
 
             agents.append(Agent(
                 position=PointSet([(row_idx, 0)]),
