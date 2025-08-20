@@ -6,7 +6,8 @@ from arc_puzzle_generator.agent import Agent
 from arc_puzzle_generator.direction import identity_direction, counterclockwise_direction_90
 from arc_puzzle_generator.neighbourhood import MooreNeighbourhood
 from arc_puzzle_generator.playground import Playground
-from arc_puzzle_generator.rule import RuleNode, DirectionRule, TrappedCollisionRule, CollisionDirectionRule
+from arc_puzzle_generator.rule import RuleNode, DirectionRule, TrappedCollisionRule, CollisionDirectionRule, \
+    StayInGridRule
 from arc_puzzle_generator.topology import all_topology
 from arc_puzzle_generator.utils.grid import unmask
 
@@ -29,9 +30,12 @@ def puzzle_seventyfour(input_grid: np.ndarray) -> Playground:
         direction="right",
         label="snake",
         node=RuleNode(
-            CollisionDirectionRule(direction_rule=counterclockwise_direction_90, select_direction=True),
+            StayInGridRule(grid_size=input_grid.shape, direction_rule=counterclockwise_direction_90),
             alternative_node=RuleNode(
-                DirectionRule(direction_rule=identity_direction, select_direction=True),
+                CollisionDirectionRule(direction_rule=counterclockwise_direction_90, select_direction=True),
+                alternative_node=RuleNode(
+                    DirectionRule(direction_rule=identity_direction, select_direction=True),
+                )
             )
         ),
         colors=cycle([7]),
