@@ -631,7 +631,7 @@ class StayInGridRule(Rule):
         return None
 
 
-class TerminateAtPoint(Rule):
+class TerminateAtPointRule(Rule):
     """
     A rule that terminates the agent once it reaches a specific target point.
     """
