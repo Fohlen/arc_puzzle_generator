@@ -7,8 +7,6 @@ from arc_puzzle_generator.puzzles.puzzle_seventyfour import puzzle_seventyfour
 from arc_puzzle_generator.utils.data_loader import load_puzzle
 from tests.utils import test_dir
 
-logging.basicConfig(level=logging.DEBUG)
-
 
 class PuzzleSeventyFourTestCase(TestCase):
     def setUp(self):
@@ -26,3 +24,13 @@ class PuzzleSeventyFourTestCase(TestCase):
         playground = puzzle_seventyfour(self.puzzle.train[1].input)
         *_, output_grid = playground
         self.assertTrue(np.array_equal(output_grid, self.puzzle.train[1].output))
+
+    def test_generate_8f3a5a89_third(self):
+        playground = puzzle_seventyfour(self.puzzle.train[2].input)
+        *_, output_grid = playground
+        self.assertTrue(np.array_equal(output_grid, self.puzzle.train[2].output))
+
+    def test_generate_8f3a5a89_prompt(self):
+        playground = puzzle_seventyfour(self.puzzle.test[0].input)
+        *_, output_grid = playground
+        self.assertTrue(np.array_equal(output_grid, self.puzzle.test[0].output))
