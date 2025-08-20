@@ -29,3 +29,9 @@ class PuzzleEightySixTestCase(TestCase):
         playground = puzzle_eightysix(self.puzzle.train[2].input)
         *_, output_grid = playground
         self.assertTrue(np.array_equal(output_grid, self.puzzle.train[2].output))
+
+    def test_generate_aa4ec2a5_prompt(self):
+        playground = puzzle_eightysix(self.puzzle.test[0].input)
+        *_, output_grid = playground
+        self.assertTrue(np.array_equal(output_grid, self.puzzle.test[0].output))
+
