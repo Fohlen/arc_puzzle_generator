@@ -16,6 +16,8 @@ class PuzzleSeventyFourTestCase(TestCase):
         self.puzzle = load_puzzle(puzzle_path)
 
     def test_generate_8f3a5a89(self):
-        playground = puzzle_seventyfour(self.puzzle.train[0].input)
+        input_grid = self.puzzle.train[0].input.copy()
+        input_grid[:, 7:] = 8
+        playground = puzzle_seventyfour(input_grid)
         *_, output_grid = playground
         self.assertTrue(np.array_equal(output_grid, self.puzzle.train[0].output))
