@@ -1,3 +1,5 @@
+from itertools import cycle
+
 import numpy as np
 
 from arc_puzzle_generator.agent import Agent
@@ -22,37 +24,64 @@ def puzzle_ninetytwo(input_grid: np.ndarray, orientation: Direction = "right") -
     for row_idx, row in enumerate(input_grid):
         if np.any(row != background_color):
             header = row[:4]
-            pattern = [p for p in np.argwhere(header != background_color).squeeze().tolist()]
-            color = row[pattern[0]]
+            color: int
+            end: int
             start = 0
-            end = len(row)
-            irregular_patterns = []
 
-            for i in range(4, end):
-                for idx in pattern[1:]:
-                    if row[i] != background_color:
-                        if i % (idx + 1) == 0:
-                            color = row[i]
-                            end = i
-                            break
-                        else:
-                            irregular_patterns.append((i, row[i]))
+            # special cases
+            if (header[0] != background_color and np.all(header[1:] == background_color)) or (
+                    header[0] != background_color and header[1] != background_color and np.all(
+                header[2:] == background_color)):
+                end_idx = np.argwhere(row[4:] != background_color)
+                # terminate at agent
+                if len(end_idx) > 0:
+                    color = row[4 + end_idx].item()
+                    end = 4 + end_idx[-1].item() + 1
+                else:
+                    color = header[0]
+                    end = len(row)
 
-            agents.append(Agent(
-                position=PointSet([(row_idx, 0)]),
-                direction=orientation,
-                charge=end - start,
-                label=f"agent_{row_idx}",
-                colors=ColorSequenceIterator(
-                    [
-                        (color, p) for p in pattern[1:]
-                    ] + irregular_patterns,
-                    background_color=background_color,
-                ),
-                node=RuleNode(
-                    DirectionRule(direction_rule=identity_direction)
-                )
-            ))
+                agents.append(Agent(
+                    position=PointSet([(row_idx, 0)]),
+                    direction=orientation,
+                    charge=end - start,
+                    label=f"agent_{row_idx}",
+                    colors=cycle([color]),
+                    node=RuleNode(
+                        DirectionRule(direction_rule=identity_direction)
+                    )
+                ))
+            else:
+                pattern = [p for p in np.argwhere(header != background_color).squeeze().tolist()]
+                color = row[pattern[0]]
+                end = len(row)
+                irregular_patterns = []
+
+                for i in range(4, end):
+                    for idx in pattern[1:]:
+                        if row[i] != background_color:
+                            if i % (idx + 1) == 0:
+                                color = row[i]
+                                end = i
+                                break
+                            else:
+                                irregular_patterns.append((i, row[i]))
+
+                agents.append(Agent(
+                    position=PointSet([(row_idx, 0)]),
+                    direction=orientation,
+                    charge=end - start,
+                    label=f"agent_{row_idx}",
+                    colors=ColorSequenceIterator(
+                        [
+                            (color, p) for p in pattern[1:]
+                        ] + irregular_patterns,
+                        background_color=background_color,
+                    ),
+                    node=RuleNode(
+                        DirectionRule(direction_rule=identity_direction)
+                    )
+                ))
 
     return Playground(
         output_grid=input_grid,
