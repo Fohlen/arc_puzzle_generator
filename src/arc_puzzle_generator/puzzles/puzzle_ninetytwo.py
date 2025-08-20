@@ -10,11 +10,12 @@ from arc_puzzle_generator.rule import RuleNode, DirectionRule
 from arc_puzzle_generator.utils.color_sequence_iterator import ColorSequenceIterator
 
 
-def puzzle_ninetytwo(input_grid: np.ndarray, orientation: Direction = "right") -> Playground:
+def puzzle_ninetytwo(input_grid: np.ndarray, orientation: Direction = "right", cutoff: int = 5) -> Playground:
     """
     In puzzle 92 one needs to figure out a repeat pattern problem by row / column.
     :param input_grid: The input grid.
     :param orientation: The direction that the input grid is facing.
+    :param cutoff: The cutoff for the repeat pattern.
     :return: A Playground instance.
     """
 
@@ -34,7 +35,7 @@ def puzzle_ninetytwo(input_grid: np.ndarray, orientation: Direction = "right") -
 
     for row_idx, row in enumerate(pattern_grid):
         if np.any(row != background_color):
-            header = row[:4]
+            header = row[:cutoff]
             color: int
             end: int
             start = 0
@@ -44,11 +45,11 @@ def puzzle_ninetytwo(input_grid: np.ndarray, orientation: Direction = "right") -
             if (header[0] != background_color and np.all(header[1:] == background_color)) or (
                     header[0] != background_color and header[1] != background_color and np.all(
                 header[2:] == background_color)):
-                end_idx = np.argwhere(row[4:] != background_color)
+                end_idx = np.argwhere(row[cutoff:] != background_color)
                 # terminate at agent
                 if len(end_idx) > 0:
-                    color = row[4 + end_idx].item()
-                    end = 4 + end_idx[-1].item() + 1
+                    color = row[cutoff + end_idx].item()
+                    end = cutoff + end_idx[-1].item() + 1
                 else:
                     color = header[0]
                     end = len(row)
@@ -60,7 +61,7 @@ def puzzle_ninetytwo(input_grid: np.ndarray, orientation: Direction = "right") -
                 end = len(row)
                 irregular_patterns = []
 
-                for i in range(4, end):
+                for i in range(cutoff, end):
                     for idx in pattern[1:]:
                         if row[i] != background_color:
                             if i % idx == 0:
