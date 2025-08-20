@@ -1,3 +1,4 @@
+from functools import lru_cache
 from typing import Protocol
 
 from arc_puzzle_generator.geometry import Axis, Direction
@@ -144,6 +145,7 @@ def counterclockwise_direction_90(direction: Direction, *args, **kwargs) -> Dire
     return counterclockwise_direction_45(counterclockwise_direction_45(direction))
 
 
+@lru_cache
 def absolute_direction(origin: Direction, relative_direction: Direction, *args, **kwargs) -> Direction:
     """
     Returns the absolute direction based on an origin and a relative direction.
