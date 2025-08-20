@@ -668,3 +668,59 @@ class TerminateAtPoint(Rule):
             ), colors, []
 
         return None
+
+
+class CollisionConditionDirectionRule(Rule):
+    """
+    The CollisionConditionDirectionRule applies a direction rule based on a set of conditions.
+    Each condition is a tuple of boolean and Direction, where the boolean indicates whether the condition must be met,
+    and the Direction specifies which direction to select to check for a collision.
+    If all conditions are met, the direction rule is applied to the agent's current direction.
+    """
+
+    def __init__(self, direction_rule: DirectionTransformer, conditions: Sequence[tuple[bool, Direction]]):
+        self.direction_rule = direction_rule
+        self.conditions = conditions
+
+    def __call__(
+            self,
+            states: Sequence[AgentState],
+            colors: ColorIterator,
+            collision: PointSet,
+            collision_mapping: AgentStateMapping
+    ) -> RuleResult:
+        """
+        Apply the direction rule based on the conditions.
+        :param states: The current states of the agent.
+        :param colors: The iterator over the agent's colors.
+        :param collision: The set of points that are in collision with the agent.
+        :param collision_mapping: The mapping between collision points and the agent's colors.
+        :return: A new state with the updated direction if all conditions are met, otherwise None.
+        """
+
+        conditions_met = []
+        for condition, direction in self.conditions:
+            sub_collision = resolve_point_set_selectors_with_direction(
+                states[-1].position, collision, direction
+            )
+
+            if condition and len(sub_collision) > 0:
+                conditions_met.append(True)
+            elif not condition and len(sub_collision) == 0:
+                conditions_met.append(True)
+            else:
+                conditions_met.append(False)
+
+        if all(conditions_met):
+            new_direction = self.direction_rule(states[-1].direction)
+            new_position = states[-1].position.shift(direction_to_unit_vector(new_direction))
+
+            return AgentState(
+                position=new_position,
+                direction=new_direction,
+                color=next(colors),
+                charge=states[-1].charge - 1 if states[-1].charge > 0 else states[-1].charge,
+                commit=states[-1].commit
+            ), colors, []
+
+        return None

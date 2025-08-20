@@ -21,3 +21,8 @@ class PuzzleSeventyFourTestCase(TestCase):
         playground = puzzle_seventyfour(input_grid)
         *_, output_grid = playground
         self.assertTrue(np.array_equal(output_grid, self.puzzle.train[0].output))
+
+    def test_generate_8f3a5a89_second(self):
+        playground = puzzle_seventyfour(self.puzzle.train[1].input)
+        *_, output_grid = playground
+        self.assertTrue(np.array_equal(output_grid, self.puzzle.train[1].output))
