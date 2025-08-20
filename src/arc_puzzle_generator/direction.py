@@ -105,3 +105,40 @@ def clockwise_direction_90(direction: Direction, *args, **kwargs) -> Direction:
     """
     return clockwise_direction_45(clockwise_direction_45(direction))
 
+
+def counterclockwise_direction_45(direction: Direction, *args, **kwargs) -> Direction:
+    """
+    Returns the counterclockwise direction of the given direction rotated by 45 degrees.
+    :param direction: The input direction.
+    :return: The rotated direction.
+    """
+
+    match direction:
+        case "left":
+            return "bottom_left"
+        case "bottom_left":
+            return "down"
+        case "down":
+            return "bottom_right"
+        case "bottom_right":
+            return "right"
+        case "right":
+            return "top_right"
+        case "top_right":
+            return "up"
+        case "up":
+            return "top_left"
+        case "top_left":
+            return "left"
+
+    raise ValueError("Unknown direction {}".format(direction))
+
+
+def counterclockwise_direction_90(direction: Direction, *args, **kwargs) -> Direction:
+    """
+    Returns the counterclockwise direction of the given direction rotated by 90 degrees.
+    :param direction: The input direction.
+    :return: The rotated direction of the given direction.
+    """
+
+    return counterclockwise_direction_45(counterclockwise_direction_45(direction))
