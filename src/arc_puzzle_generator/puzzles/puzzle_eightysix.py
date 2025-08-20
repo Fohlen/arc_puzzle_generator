@@ -48,7 +48,7 @@ def puzzle_eightysix(input_grid: np.ndarray) -> Playground:
         # this one is a bit odd, one wants to shift the start point one to the right (or left), otherwise you will not get a full frame
         start_point = shift(
             extreme_point(labels == i, "up"),
-            direction_to_unit_vector("top_right")
+            direction_to_unit_vector("up")
         )
 
         agents.append(Agent(
@@ -60,29 +60,32 @@ def puzzle_eightysix(input_grid: np.ndarray) -> Playground:
             node=RuleNode(
                 TerminateAtPoint(PointSet([start_point]), direction_rule=identity_direction),
                 alternative_node=RuleNode(
-                    CollisionConditionDirectionRule(
-                        direction_rule=counterclockwise_direction_90,
-                        conditions=[
-                            (True, "up"),
-                            (True, "bottom_right"),
-                            (True, "right"),
-                        ]
-                    ),
+                    TerminateAtPoint(PointSet([start_point]), direction_rule=clockwise_direction_90),
                     alternative_node=RuleNode(
                         CollisionConditionDirectionRule(
-                            direction_rule=clockwise_direction_90,
+                            direction_rule=counterclockwise_direction_90,
                             conditions=[
-                                (False, "right"),
+                                (True, "up"),
                                 (True, "bottom_right"),
-                                (True, "down")
+                                (True, "right"),
                             ]
                         ),
                         alternative_node=RuleNode(
-                            DirectionRule(direction_rule=identity_direction, select_direction=True)
+                            CollisionConditionDirectionRule(
+                                direction_rule=clockwise_direction_90,
+                                conditions=[
+                                    (False, "right"),
+                                    (True, "bottom_right"),
+                                    (True, "down")
+                                ]
+                            ),
+                            alternative_node=RuleNode(
+                                DirectionRule(direction_rule=identity_direction, select_direction=True)
+                            )
                         )
-                    )
 
-                )
+                    )
+                ),
             )
         ))
 

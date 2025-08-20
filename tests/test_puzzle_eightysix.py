@@ -19,3 +19,13 @@ class PuzzleEightySixTestCase(TestCase):
         playground = puzzle_eightysix(self.puzzle.train[0].input)
         *_, output_grid = playground
         self.assertTrue(np.array_equal(output_grid, self.puzzle.train[0].output))
+
+    def test_generate_aa4ec2a5_second(self):
+        playground = puzzle_eightysix(self.puzzle.train[1].input)
+        *_, output_grid = playground
+        self.assertTrue(np.array_equal(output_grid, self.puzzle.train[1].output))
+
+    def test_generate_aa4ec2a5_third(self):
+        playground = puzzle_eightysix(self.puzzle.train[2].input)
+        *_, output_grid = playground
+        self.assertTrue(np.array_equal(output_grid, self.puzzle.train[2].output))
