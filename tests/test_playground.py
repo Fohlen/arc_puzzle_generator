@@ -1,5 +1,4 @@
 from itertools import cycle
-from typing import Sequence, cast
 from unittest import TestCase
 from unittest.mock import MagicMock
 
@@ -9,23 +8,7 @@ from arc_puzzle_generator.agent import Agent
 from arc_puzzle_generator.direction import identity_direction
 from arc_puzzle_generator.geometry import PointSet
 from arc_puzzle_generator.playground import Playground
-from arc_puzzle_generator.rule import RuleNode, DirectionRule, Rule, RuleResult
-from arc_puzzle_generator.state import AgentState, ColorIterator
-
-
-def toggle_commit_rule(
-        states: Sequence[AgentState],
-        colors: ColorIterator,
-        *args,
-        **kwargs
-) -> RuleResult:
-    return AgentState(
-        position=states[-1].position,
-        direction=states[-1].direction,
-        color=states[-1].color,
-        charge=states[-1].charge,
-        commit=not states[-1].commit
-    ), colors, []
+from arc_puzzle_generator.rule import RuleNode, DirectionRule
 
 
 class PlaygroundTestCase(TestCase):
@@ -131,32 +114,3 @@ class PlaygroundTestCase(TestCase):
         self.assertEqual(backfill_color, model.output_grid[0, 0].item())
         self.assertEqual(backfill_color, model.output_grid[0, 1].item())
         self.assertEqual(1, model.output_grid[0, 2].item())
-
-    def test_agent_state_commit(self):
-        agent = Agent(
-            position=PointSet([(0, 0)]),
-            direction="right",
-            label='A',
-            node=RuleNode(
-                cast(Rule, toggle_commit_rule),
-                next_node=RuleNode(
-                    DirectionRule(direction_rule=identity_direction),
-                )
-            ),
-            colors=cycle([1]),
-            charge=4
-        )
-
-        grid = np.full((1, 4), 9, dtype=int)
-        model = Playground(grid, [agent])
-
-        self.assertEqual(1, model.output_grid[0, 0].item())
-
-        model.step()
-        self.assertEqual(9, model.output_grid[0, 1].item())
-
-        model.step()
-        self.assertEqual(1, model.output_grid[0, 2].item())
-
-        model.step()
-        self.assertEqual(9, model.output_grid[0, 3].item())

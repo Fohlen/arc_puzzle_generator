@@ -18,7 +18,6 @@ class Agent:
             colors: Iterator[int],
             node: Optional[RuleNode] = None,
             charge: int = 0,
-            commit: bool = True,
     ):
         """
         An agent that can move through a grid and interact with rules defined in the `RuleNode`.
@@ -28,7 +27,6 @@ class Agent:
         :param colors: The colors that the agent can use during its lifetime, provided as an iterator.
         :param node: A `RuleNode` that defines the rules the agent will follow.
         :param charge: A charge that the agent has, which can be positive (running), 0 (terminated), or -1 (indefinite).
-        :param commit: Whether the resulting state will be committed to the output grid or not.
         """
 
         self.position = position
@@ -37,7 +35,6 @@ class Agent:
         self.node = node
         self.colors = colors
         self.charge = charge
-        self.commit = commit
         self.color = next(colors)
         self.history: list[AgentState] = [self.state]
 
@@ -52,7 +49,6 @@ class Agent:
             direction=self.direction,
             color=self.color,
             charge=self.charge,
-            commit=self.commit,
         )
 
     def steps(
@@ -80,7 +76,6 @@ class Agent:
                 self.direction = state.direction
                 self.color = state.color
                 self.charge = state.charge
-                self.commit = state.commit
                 self.colors = colors
                 self.history.append(state)
                 states.append(state)
@@ -94,7 +89,6 @@ class Agent:
                         node=self.node,
                         colors=colors,
                         charge=child.charge,
-                        commit=child.commit,
                     ))
 
                 if current.next_node is not None:

@@ -12,7 +12,7 @@ def dummy_rule(states, colors, collision, collision_mapping):
     last = states[-1]
     new_pos = PointSet([(p[0], p[1] + 1) for p in last.position])
     new_color = next(colors)
-    return AgentState(new_pos, "right", new_color, last.charge - 1, True), colors, []
+    return AgentState(new_pos, "right", new_color, last.charge - 1), colors, []
 
 
 def collision_rule(states, colors, collision, collision_mapping):
@@ -23,7 +23,7 @@ def collision_rule(states, colors, collision, collision_mapping):
     last = states[-1]
     if collision:
         new_color = next(colors)
-        return AgentState(last.position, last.direction, new_color, last.charge - 1, True), colors, []
+        return AgentState(last.position, last.direction, new_color, last.charge - 1), colors, []
     return None
 
 
@@ -95,7 +95,7 @@ class AgentTestCase(unittest.TestCase):
             charge=1
         )
 
-        steps, children = agent.steps(PointSet([(2, 2)]), {(2, 2): AgentState(PointSet([(2, 2)]), "none", 0, 1, True)})
+        steps, children = agent.steps(PointSet([(2, 2)]), {(2, 2): AgentState(PointSet([(2, 2)]), "none", 0, 1)})
         states = list(steps)
         self.assertEqual(1, len(states))
         self.assertEqual(8, agent.color)

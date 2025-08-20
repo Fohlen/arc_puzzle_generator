@@ -111,7 +111,6 @@ class Playground(Iterator[np.ndarray], Iterable[np.ndarray]):
                 direction=agent_position_mapping[point].direction,
                 color=self.output_grid[point[0], point[1]].item(),
                 charge=agent_position_mapping[point].charge,
-                commit=agent_position_mapping[point].commit,
             )
             for point in position_intersect
         }
@@ -121,13 +120,12 @@ class Playground(Iterator[np.ndarray], Iterable[np.ndarray]):
         steps, children = agent.steps(position_intersect, position_intersect_mapping)
 
         for step in steps:
-            pos, direction, color, charge, commit = step
+            pos, direction, color, charge = step
             if charge > 0 or charge == -1:
                 position = np.array(list(pos))
                 logger.debug("Position: %s, Color: %s", pos, color)
 
-                if commit:
-                    self.output_grid[position[:, 0], position[:, 1]] = color
+                self.output_grid[position[:, 0], position[:, 1]] = color
 
                 diff = previous_position - pos
 
