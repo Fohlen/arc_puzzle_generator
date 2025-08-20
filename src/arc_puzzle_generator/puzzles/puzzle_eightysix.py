@@ -10,7 +10,7 @@ from arc_puzzle_generator.physics import direction_to_unit_vector, shift
 from arc_puzzle_generator.playground import Playground
 from arc_puzzle_generator.rule import RuleNode, TerminateAtPoint, CollisionConditionDirectionRule, DirectionRule
 from arc_puzzle_generator.topology import all_topology
-from arc_puzzle_generator.utils.entities import find_connected_objects, extreme_point
+from arc_puzzle_generator.utils.entities import find_connected_objects, extreme_point, find_holes
 from arc_puzzle_generator.utils.grid import unmask
 
 
@@ -27,16 +27,18 @@ def puzzle_eightysix(input_grid: np.ndarray) -> Playground:
     agents: list[Agent] = []
     labels, bbox, num_objects = find_connected_objects(input_grid == 1)
     for i in range(1, num_objects + 1):
-        unfilled_area = (labels == i) & background
+        mask = (labels == i)
+        holes = find_holes(mask)
+        unfilled_area = ((labels == i) & background) | holes
 
         # this is just the logic of the filling algorithm
         if np.any(unfilled_area):
             output_grid[unfilled_area] = 6
-            fill_area = (labels == i) & ~background
+            fill_area = (labels == i) & ~background & ~holes
             output_grid[fill_area] = 8
 
         agents.append(Agent(
-            position=unmask(labels == i),
+            position=unmask(mask),
             direction="none",
             label=f"block_{i}",
             colors=iter([1]),
