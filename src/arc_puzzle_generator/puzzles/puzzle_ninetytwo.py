@@ -21,7 +21,18 @@ def puzzle_ninetytwo(input_grid: np.ndarray, orientation: Direction = "right") -
     background_color = 0
     agents: list[Agent] = []
 
-    for row_idx, row in enumerate(input_grid):
+    if orientation == "right":
+        rotation = 0
+    elif orientation == "up":
+        rotation = 3
+    elif orientation == "left":
+        rotation = 2
+    else:
+        rotation = 1
+
+    pattern_grid = np.rot90(input_grid, k=rotation)
+
+    for row_idx, row in enumerate(pattern_grid):
         if np.any(row != background_color):
             header = row[:4]
             color: int
@@ -52,7 +63,7 @@ def puzzle_ninetytwo(input_grid: np.ndarray, orientation: Direction = "right") -
                 for i in range(4, end):
                     for idx in pattern[1:]:
                         if row[i] != background_color:
-                            if i % (idx + 1) == 0:
+                            if i % idx == 0:
                                 color = row[i]
                                 end = i
                                 break
@@ -62,8 +73,17 @@ def puzzle_ninetytwo(input_grid: np.ndarray, orientation: Direction = "right") -
                 patterns.extend([(color, p) for p in pattern[1:]])
                 patterns.extend(irregular_patterns)
 
+            if orientation == "right":
+                position = PointSet([(row_idx, 0)])
+            elif orientation == "up":
+                position = PointSet([(input_grid.shape[0] - 1, row_idx)])
+            elif orientation == "left":
+                position = PointSet([(input_grid.shape[1] - 1, row_idx)])
+            else:
+                position = PointSet([(0, row_idx)])
+
             agents.append(Agent(
-                position=PointSet([(row_idx, 0)]),
+                position=position,
                 direction=orientation,
                 charge=end - start,
                 label=f"agent_{row_idx}",
