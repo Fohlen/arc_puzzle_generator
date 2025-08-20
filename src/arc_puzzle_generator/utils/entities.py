@@ -355,3 +355,38 @@ def get_bounding_box(points: np.ndarray) -> np.ndarray:
 
     # Return the corners as a numpy array
     return np.array([left_bottom, top_left, top_right, right_bottom])
+
+
+def find_holes(mask: np.ndarray) -> np.ndarray:
+    """
+    Uses DFS flood filling algorithm to find holes in a binary mask.
+    A hole is defined as a region of the mask that is not part of the object and
+    is surrounded by the object.
+    :param mask: The binary mask to search for holes.
+    :return: A binary mask where True represents the holes found in the input mask.
+    """
+    inverted = ~mask
+    visited = np.zeros_like(mask, dtype=bool)
+    stack = []
+
+    for x in range(mask.shape[0]):
+        for y in [0, mask.shape[1] - 1]:
+            if inverted[x, y] and not visited[x, y]:
+                stack.append((x, y))
+    for y in range(mask.shape[1]):
+        for x in [0, mask.shape[0] - 1]:
+            if inverted[x, y] and not visited[x, y]:
+                stack.append((x, y))
+    while stack:
+        cx, cy = stack.pop()
+        if not (0 <= cx < mask.shape[0] and 0 <= cy < mask.shape[1]):
+            continue
+        if not inverted[cx, cy] or visited[cx, cy]:
+            continue
+        visited[cx, cy] = True
+        for dx, dy in [(-1,0),(1,0),(0,-1),(0,1)]:
+            nx, ny = cx + dx, cy + dy
+            if 0 <= nx < mask.shape[0] and 0 <= ny < mask.shape[1]:
+                if inverted[nx, ny] and not visited[nx, ny]:
+                    stack.append((nx, ny))
+    return inverted & ~visited

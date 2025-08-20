@@ -636,8 +636,9 @@ class TerminateAtPoint(Rule):
     A rule that terminates the agent once it reaches a specific target point.
     """
 
-    def __init__(self, target: PointSet):
+    def __init__(self, target: PointSet, direction_rule: DirectionTransformer):
         self.target = target
+        self.direction_rule = direction_rule
 
     def __call__(
             self,
@@ -656,7 +657,9 @@ class TerminateAtPoint(Rule):
         :return: A new state with charge set to 0 if the target is reached, otherwise None.
         """
 
-        next_position = states[-1].position.shift(direction_to_unit_vector(states[-1].direction))
+        next_position = states[-1].position.shift(
+            direction_to_unit_vector(self.direction_rule(states[-1].direction))
+        )
 
         if next_position == self.target:
             return AgentState(
