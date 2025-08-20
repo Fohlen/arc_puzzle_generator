@@ -58,7 +58,7 @@ def puzzle_eightysix(input_grid: np.ndarray) -> Playground:
             colors=cycle([2]),
             charge=-1,
             node=RuleNode(
-                TerminateAtPoint(PointSet([start_point])),
+                TerminateAtPoint(PointSet([start_point]), direction_rule=identity_direction),
                 alternative_node=RuleNode(
                     CollisionConditionDirectionRule(
                         direction_rule=counterclockwise_direction_90,
