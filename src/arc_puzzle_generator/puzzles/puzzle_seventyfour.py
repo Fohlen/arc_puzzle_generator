@@ -33,7 +33,7 @@ def puzzle_seventyfour(input_grid: np.ndarray) -> Playground:
         direction="right",
         label="snake",
         node=RuleNode(
-            TerminateAtPoint(target=start_point),
+            TerminateAtPoint(target=start_point, direction_rule=identity_direction),
             alternative_node=RuleNode(
                 StayInGridRule(grid_size=input_grid.shape, direction_rule=counterclockwise_direction_90),
                 alternative_node=RuleNode(
