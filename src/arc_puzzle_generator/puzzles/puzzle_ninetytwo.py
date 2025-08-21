@@ -67,7 +67,7 @@ def puzzle_ninetytwo(input_grid: np.ndarray, orientation: Direction = "right", c
                                 end = i
                                 break
                             else:
-                                irregular_patterns.append((i, row[i]))
+                                irregular_patterns.append((row[i], i))
 
                 patterns.extend([(color, p) for p in pattern[1:]])
                 patterns.extend(irregular_patterns)
