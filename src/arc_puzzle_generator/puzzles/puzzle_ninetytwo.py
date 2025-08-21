@@ -10,12 +10,11 @@ from arc_puzzle_generator.rule import RuleNode, DirectionRule
 from arc_puzzle_generator.utils.color_sequence_iterator import ColorSequenceIterator
 
 
-def puzzle_ninetytwo(input_grid: np.ndarray, orientation: Direction = "right", cutoff: int = 5) -> Playground:
+def puzzle_ninetytwo(input_grid: np.ndarray, orientation: Direction = "right") -> Playground:
     """
     In puzzle 92 one needs to figure out a repeat pattern problem by row / column.
     :param input_grid: The input grid.
     :param orientation: The direction that the input grid is facing.
-    :param cutoff: The cutoff for the repeat pattern.
     :return: A Playground instance.
     """
 
@@ -29,10 +28,12 @@ def puzzle_ninetytwo(input_grid: np.ndarray, orientation: Direction = "right", c
     elif orientation == "left":
         pattern_grid = np.fliplr(input_grid)
     else:
-        pattern_grid = np.rot90(input_grid, k=1)
+        pattern_grid = np.rot90(np.flipud(input_grid), k=3)
 
     for row_idx, row in enumerate(pattern_grid):
         if np.any(row != background_color):
+            start_color = row[0]
+            cutoff = np.argwhere(row == start_color).max() + 1
             header = row[:cutoff]
             color: int
             end: int
