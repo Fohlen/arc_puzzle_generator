@@ -46,8 +46,8 @@ def puzzle_ninetytwo(input_grid: np.ndarray, orientation: Direction = "right", c
                 end_idx = np.argwhere(row[cutoff:] != background_color)
                 # terminate at agent
                 if len(end_idx) > 0:
-                    color = row[cutoff + end_idx].item()
-                    end = cutoff + end_idx[-1].item() + 1
+                    color = row[cutoff + end_idx.min()].item()
+                    end = cutoff + end_idx.min() + 1
                 else:
                     color = header[0]
                     end = len(row)
@@ -77,7 +77,7 @@ def puzzle_ninetytwo(input_grid: np.ndarray, orientation: Direction = "right", c
             elif orientation == "up":
                 position = PointSet([(input_grid.shape[0] - 1, row_idx)])
             elif orientation == "left":
-                position = PointSet([(input_grid.shape[1] - 1, row_idx)])
+                position = PointSet([(row_idx, input_grid.shape[1] - 1)])
             else:
                 position = PointSet([(0, row_idx)])
 
