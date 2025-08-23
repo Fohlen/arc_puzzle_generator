@@ -41,24 +41,45 @@ def puzzle_ninety(input_grid: np.ndarray) -> Playground:
             for y in range(bbox_red[i - 1, 1, 1], bbox_red[i - 1, 3, 1] + 1)
         ])
 
-        colors = input_grid[
-            bbox_red[i - 1, 1, 0]:bbox_red[i - 1, 3, 0] + 1,
-            bbox_red[i - 1, 1, 1]:bbox_red[i - 1, 3, 1] + 1,
-        ]
-        color_iterator = cycle([colors.flatten().tolist(), ])
+        if len(position) == 25:
+            colors = input_grid[
+                bbox_red[i - 1, 1, 0]:bbox_red[i - 1, 3, 0] + 1,
+                bbox_red[i - 1, 1, 1]:bbox_red[i - 1, 3, 1] + 1,
+            ]
+            color_iterator = cycle([colors.flatten().tolist(), ])
 
-        agents.append(Agent(
-            position=position,
-            direction="right",
-            label="red",
-            colors=color_iterator,
-            node=node,
-            charge=-1,
-        ))
+            agents.append(Agent(
+                position=position,
+                direction="right",
+                label="red",
+                colors=color_iterator,
+                node=node,
+                charge=-1,
+            ))
 
     labels_light_blue, bbox_light_blue, num_light_blue = find_connected_objects(input_grid == 8)
     for i in range(1, num_light_blue + 1):
-        pass
+        position = PointSet([
+            (x, y)
+            for x in range(bbox_light_blue[i - 1, 1, 0], bbox_light_blue[i - 1, 3, 0] + 1)
+            for y in range(bbox_light_blue[i - 1, 1, 1], bbox_light_blue[i - 1, 3, 1] + 1)
+        ])
+
+        if len(position) == 25:
+            colors = input_grid[
+                bbox_light_blue[i - 1, 1, 0]:bbox_light_blue[i - 1, 3, 0] + 1,
+                bbox_light_blue[i - 1, 1, 1]:bbox_light_blue[i - 1, 3, 1] + 1,
+            ]
+            color_iterator = cycle([colors.flatten().tolist(), ])
+
+            agents.append(Agent(
+                position=position,
+                direction="left",
+                label="light_blue",
+                colors=color_iterator,
+                node=node,
+                charge=-1,
+            ))
 
     return Playground(
         output_grid=input_grid,
