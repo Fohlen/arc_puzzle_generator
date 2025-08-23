@@ -42,7 +42,7 @@ class Playground(Iterator[np.ndarray], Iterable[np.ndarray]):
         :param collision_mode: Whether collisions are processed based on the current state of agents or their history.
         :param backfill_color: If supplied, this color will be used to fill the grid where agents previously used to be.
         """
-        self.output_grid = output_grid
+        self.output_grid = output_grid.copy()
         self.agents: list[Agent] = []
         self.neighbourhood = neighbourhood
         self.topology = topology
@@ -73,6 +73,7 @@ class Playground(Iterator[np.ndarray], Iterable[np.ndarray]):
         if agent.active:
             position = np.array(sorted(agent.position))
             self.output_grid[position[:, 0], position[:, 1]] = agent.color
+            self.steps.append(self.output_grid.copy())
 
     def __iter__(self) -> 'Playground':
         return self

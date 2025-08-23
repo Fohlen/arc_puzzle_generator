@@ -8,7 +8,7 @@ from arc_puzzle_generator.agent import Agent
 from arc_puzzle_generator.direction import identity_direction
 from arc_puzzle_generator.geometry import PointSet
 from arc_puzzle_generator.playground import Playground
-from arc_puzzle_generator.rule import RuleNode, DirectionRule
+from arc_puzzle_generator.rule import RuleNode, DirectionRule, OutOfGridRule
 
 
 class PlaygroundTestCase(TestCase):
@@ -114,3 +114,41 @@ class PlaygroundTestCase(TestCase):
         self.assertEqual(backfill_color, model.output_grid[0, 0].item())
         self.assertEqual(backfill_color, model.output_grid[0, 1].item())
         self.assertEqual(1, model.output_grid[0, 2].item())
+
+    def test_sequential_mode_does_not_terminate_early(self):
+        grid_size = (2, 2)
+
+        node = RuleNode(
+            OutOfGridRule(grid_size=grid_size),
+            alternative_node=RuleNode(
+                DirectionRule(direction_rule=identity_direction)
+            ),
+        )
+
+        agent1 = Agent(
+            position=PointSet([(0, 0)]),
+            direction="right",
+            label='A',
+            node=node,
+            colors=cycle([1]),
+            charge=-1
+        )
+        agent2 = Agent(
+            position=PointSet([(1, 0)]),
+            direction="right",
+            label='B',
+            node=node,
+            colors=cycle([2]),
+            charge=-1
+        )
+
+        # Create playground with sequential execution
+        grid = np.zeros((2, 2), dtype=int)
+        model = Playground(grid, [agent1, agent2], execution_mode='sequential')
+
+        steps = list(model)
+
+        # Ensure all agents are processed and the playground does not terminate early
+        self.assertEqual(5, len(steps))  # Two steps per agent and one final step
+        self.assertFalse(model.active)  # Ensure all agents are inactive
+
