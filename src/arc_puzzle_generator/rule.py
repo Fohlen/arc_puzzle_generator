@@ -542,19 +542,22 @@ class RewardRule(Rule):
 
     def __init__(
             self,
-            input_grid: np.ndarray,
-            background_color: int,
+            grid_size: Point,
             directions: Sequence[Direction],
             target: PointSet,
+            denylist: Optional[PointSet] = None,
             gamma: float = 0.1,
             positive_reward: float = 1.0,
             negative_reward: float = 0.00001,
     ):
-        self.grid_size = input_grid.shape
+        self.grid_size = grid_size
         self.directions = directions
         self.q_table: dict[Point, float] = {
             point: positive_reward for point in target
         }
+
+        if denylist is None:
+            denylist = PointSet()
 
         visited = PointSet(target)
         points = deque(target)
@@ -565,17 +568,17 @@ class RewardRule(Rule):
             for direction in directions:
                 next_point = shift(point, direction_to_unit_vector(direction))
 
-                if in_grid(next_point, input_grid.shape) and next_point not in visited:
+                if in_grid(next_point, grid_size) and next_point not in visited:
                     # mark as visited
                     visited.add(next_point)
                     # add as seed for further exploration
                     points.append(next_point)
 
                     # calculate the reward for the next point, if valid
-                    if input_grid[next_point[0], next_point[1]] == background_color:
-                        self.q_table[next_point] = self.q_table[point] * (1 - gamma)
-                    else:
+                    if next_point in denylist:
                         self.q_table[next_point] = negative_reward
+                    else:
+                        self.q_table[next_point] = self.q_table[point] * (1 - gamma)
 
     def __call__(
             self,
