@@ -6,7 +6,7 @@ import numpy as np
 from arc_puzzle_generator.agent import Agent
 from arc_puzzle_generator.direction import identity_direction
 from arc_puzzle_generator.geometry import Direction
-from arc_puzzle_generator.neighbourhood import MooreNeighbourhood
+from arc_puzzle_generator.neighbourhood import moore_neighbours
 from arc_puzzle_generator.playground import Playground
 from arc_puzzle_generator.rule import RuleNode, TrappedCollisionRule, DirectionRule
 from arc_puzzle_generator.topology import all_topology
@@ -32,7 +32,10 @@ def puzzle_sixtyseven(
 
     agents: list[Agent] = []
     for box_color in box_colors:
-        box_labels, box_bboxes, num_boxes = find_connected_objects(input_grid == box_color, neighbourhood=MooreNeighbourhood())
+        box_labels, box_bboxes, num_boxes = find_connected_objects(
+            input_grid == box_color,
+            neighbourhood=moore_neighbours
+        )
 
         for i in range(1, num_boxes + 1):
             row_min, row_max = box_bboxes[i - 1, 1, 0], box_bboxes[i - 1, 3, 0]
@@ -71,7 +74,7 @@ def puzzle_sixtyseven(
     return Playground(
         output_grid=input_grid.copy(),
         agents=agents,
-        neighbourhood=MooreNeighbourhood(),
+        neighbourhood=moore_neighbours,
         topology=all_topology,
         backfill_color=0,
     )

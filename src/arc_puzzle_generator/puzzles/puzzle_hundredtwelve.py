@@ -5,7 +5,7 @@ import numpy as np
 from arc_puzzle_generator.agent import Agent
 from arc_puzzle_generator.direction import identity_direction
 from arc_puzzle_generator.geometry import Direction, PointSet
-from arc_puzzle_generator.neighbourhood import MooreNeighbourhood
+from arc_puzzle_generator.neighbourhood import moore_neighbours
 from arc_puzzle_generator.playground import Playground
 from arc_puzzle_generator.rule import RuleNode, DirectionRule
 from arc_puzzle_generator.utils.entities import find_connected_objects
@@ -28,7 +28,7 @@ def puzzle_hundredtwelve(
     agents: list[Agent] = []
     labels, bbox, num_objects = find_connected_objects(
         input_grid != background_color,
-        neighbourhood=MooreNeighbourhood()
+        neighbourhood=moore_neighbours
     )
 
 

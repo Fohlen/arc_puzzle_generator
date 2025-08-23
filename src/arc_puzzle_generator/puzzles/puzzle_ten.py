@@ -7,7 +7,7 @@ import numpy as np
 from arc_puzzle_generator.agent import Agent
 from arc_puzzle_generator.direction import identity_direction, snake_direction
 from arc_puzzle_generator.geometry import PointSet
-from arc_puzzle_generator.neighbourhood import VonNeumannNeighbourhood
+from arc_puzzle_generator.neighbourhood import von_neumann_neighbours
 from arc_puzzle_generator.playground import Playground
 from arc_puzzle_generator.rule import OutOfGridRule, TrappedCollisionRule, CollisionDirectionRule, \
     DirectionRule, \
@@ -98,6 +98,6 @@ def puzzle_ten(input_grid: np.ndarray) -> Playground:
     return Playground(
         input_grid.copy(),
         agents=agents,
-        neighbourhood=VonNeumannNeighbourhood(),
+        neighbourhood=von_neumann_neighbours,
         topology=topology,
     )

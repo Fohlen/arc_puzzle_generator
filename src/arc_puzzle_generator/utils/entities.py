@@ -7,7 +7,7 @@ from typing import Optional
 import numpy as np
 
 from arc_puzzle_generator.geometry import Direction, Point
-from arc_puzzle_generator.neighbourhood import Neighbourhood, VonNeumannNeighbourhood
+from arc_puzzle_generator.neighbourhood import Neighbourhood, VonNeumannNeighbourhood, von_neumann_neighbours
 from arc_puzzle_generator.physics import combine_directions
 
 
@@ -39,7 +39,7 @@ def colour_count(grid: np.ndarray) -> list[tuple[int, int]]:
 
 def find_connected_objects(
         mask: np.ndarray,
-        neighbourhood: Neighbourhood = VonNeumannNeighbourhood(),
+        neighbourhood: Neighbourhood = von_neumann_neighbours,
 ) -> tuple[np.ndarray, np.ndarray, int]:
     """
     Find connected objects in a binary mask.

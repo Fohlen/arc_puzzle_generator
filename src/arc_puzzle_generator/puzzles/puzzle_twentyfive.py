@@ -4,7 +4,7 @@ import numpy as np
 
 from arc_puzzle_generator.agent import Agent
 from arc_puzzle_generator.direction import clockwise_direction_90, identity_direction
-from arc_puzzle_generator.neighbourhood import MooreNeighbourhood
+from arc_puzzle_generator.neighbourhood import moore_neighbours
 from arc_puzzle_generator.playground import Playground
 from arc_puzzle_generator.rule import RuleNode, TrappedCollisionRule, ProximityRule, \
     DirectionRule
@@ -69,7 +69,7 @@ def puzzle_twentyfive(input_grid: np.ndarray) -> Playground:
     return Playground(
         output_grid=input_grid.copy(),
         agents=agents,
-        neighbourhood=MooreNeighbourhood(),
+        neighbourhood=moore_neighbours,
         topology=all_topology,
         backfill_color=foreground_color,
         collision_mode="history",

@@ -6,7 +6,7 @@ import numpy as np
 from arc_puzzle_generator.agent import Agent
 from arc_puzzle_generator.direction import identity_direction, orthogonal_direction
 from arc_puzzle_generator.geometry import PointSet, Direction
-from arc_puzzle_generator.neighbourhood import MooreNeighbourhood
+from arc_puzzle_generator.neighbourhood import moore_neighbours
 from arc_puzzle_generator.playground import Playground
 from arc_puzzle_generator.rule import OutOfGridRule, CollisionDirectionRule, DirectionRule, \
     collision_color_mapping_rule, Rule, \
@@ -80,6 +80,6 @@ def puzzle_four(input_grid: np.ndarray) -> Playground:
     return Playground(
         output_grid=input_grid.copy(),
         agents=agents,
-        neighbourhood=MooreNeighbourhood(),
+        neighbourhood=moore_neighbours,
         topology=FixedGroupTopology(group={"bbox"})
     )

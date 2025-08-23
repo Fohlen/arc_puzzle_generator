@@ -5,7 +5,7 @@ import numpy as np
 from arc_puzzle_generator.agent import Agent
 from arc_puzzle_generator.direction import clockwise_direction_90, identity_direction
 from arc_puzzle_generator.geometry import PointSet, in_grid, Direction
-from arc_puzzle_generator.neighbourhood import MooreNeighbourhood
+from arc_puzzle_generator.neighbourhood import MooreNeighbourhood, moore_neighbours
 from arc_puzzle_generator.physics import direction_to_unit_vector
 from arc_puzzle_generator.playground import Playground
 from arc_puzzle_generator.rule import RuleNode, OutOfGridRule, DirectionRule
@@ -31,7 +31,7 @@ def puzzle_sixtyfour(input_grid: np.ndarray) -> Playground:
 
     for color, count in sorted_colors:
         if color not in background_colors:
-            labels, bbox, num_objects = find_connected_objects(input_grid == color, neighbourhood=MooreNeighbourhood())
+            labels, bbox, num_objects = find_connected_objects(input_grid == color, neighbourhood=moore_neighbours)
             for i in range(1, num_objects + 1):
                 if np.sum(labels == i) == 8:
                     boxes.append((labels == i))

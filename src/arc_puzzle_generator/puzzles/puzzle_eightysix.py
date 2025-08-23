@@ -5,7 +5,7 @@ import numpy as np
 from arc_puzzle_generator.agent import Agent
 from arc_puzzle_generator.direction import clockwise_direction_90, identity_direction, counterclockwise_direction_90
 from arc_puzzle_generator.geometry import PointSet
-from arc_puzzle_generator.neighbourhood import MooreNeighbourhood
+from arc_puzzle_generator.neighbourhood import moore_neighbours
 from arc_puzzle_generator.physics import direction_to_unit_vector, shift
 from arc_puzzle_generator.playground import Playground
 from arc_puzzle_generator.rule import RuleNode, TerminateAtPointRule, CollisionConditionDirectionRule, DirectionRule
@@ -92,7 +92,7 @@ def puzzle_eightysix(input_grid: np.ndarray) -> Playground:
     return Playground(
         output_grid=output_grid,
         agents=agents,
-        neighbourhood=MooreNeighbourhood(),
+        neighbourhood=moore_neighbours,
         topology=all_topology,
         collision_mode="history",
     )

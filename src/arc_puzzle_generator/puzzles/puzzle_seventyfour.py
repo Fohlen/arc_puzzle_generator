@@ -4,7 +4,7 @@ import numpy as np
 
 from arc_puzzle_generator.agent import Agent
 from arc_puzzle_generator.direction import identity_direction, counterclockwise_direction_90, clockwise_direction_90
-from arc_puzzle_generator.neighbourhood import MooreNeighbourhood
+from arc_puzzle_generator.neighbourhood import moore_neighbours
 from arc_puzzle_generator.physics import direction_to_unit_vector
 from arc_puzzle_generator.playground import Playground
 from arc_puzzle_generator.rule import RuleNode, DirectionRule, StayInGridRule, TerminateAtPointRule, \
@@ -67,7 +67,7 @@ def puzzle_seventyfour(input_grid: np.ndarray) -> Playground:
     return Playground(
         output_grid=input_grid,
         agents=agents,
-        neighbourhood=MooreNeighbourhood(),
+        neighbourhood=moore_neighbours,
         topology=all_topology,
         collision_mode="history",
     )

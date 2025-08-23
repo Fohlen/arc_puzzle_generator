@@ -6,7 +6,7 @@ import numpy as np
 
 from arc_puzzle_generator.agent import Agent
 from arc_puzzle_generator.geometry import PointSet
-from arc_puzzle_generator.neighbourhood import MooreNeighbourhood
+from arc_puzzle_generator.neighbourhood import moore_neighbours
 from arc_puzzle_generator.playground import Playground
 from arc_puzzle_generator.rule import RuleNode, OutOfGridRule, uncharge_rule, Rule, \
     GravityRule
@@ -55,7 +55,7 @@ def puzzle_eighteen(input_grid: np.ndarray) -> Playground:
     return Playground(
         input_grid.copy(),
         agents,
-        neighbourhood=MooreNeighbourhood(),
+        neighbourhood=moore_neighbours,
         topology=all_topology,
         execution_mode="parallel",
         backfill_color=0
