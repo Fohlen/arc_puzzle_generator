@@ -172,6 +172,41 @@ def is_l_shape(arr: np.ndarray) -> Optional[Direction]:
     return None
 
 
+def find_5x5_grids_with_border(grid, border_color) -> list[np.ndarray]:
+    """
+    Searches the given input matrix for objects of size 5x5 with a given border color.
+    :param grid: The input grid.
+    :param border_color: The border color.
+    :return: an array of bounding boxes (N, 4, 2)
+    """
+    rows, cols = grid.shape
+    results = []
+
+    for i in range(rows - 4):
+        for j in range(cols - 4):
+            subgrid = grid[i:i+5, j:j+5]
+
+            border = np.concatenate([
+                subgrid[0, :],  # top row
+                subgrid[-1, :],  # bottom row
+                subgrid[1:-1, 0],  # left column (excluding corners)
+                subgrid[1:-1, -1]  # right column (excluding corners)
+            ])
+            inner = subgrid[1:-1, 1:-1]
+
+            if np.all(border == border_color) and np.any(inner != border_color):
+                # Calculate the bounding box
+                bounding_box = np.array([
+                    [i+4, j],      # bottom-left
+                    [i, j],        # top-left
+                    [i, j+4],      # top-right
+                    [i+4, j+4]     # bottom-right
+                ])
+                results.append(bounding_box)
+
+    return results
+
+
 def starting_point(
         bounding_box: np.ndarray,
         direction: Direction,

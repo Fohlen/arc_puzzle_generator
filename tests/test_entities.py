@@ -4,7 +4,7 @@ import numpy as np
 
 from arc_puzzle_generator.utils.data_loader import load_puzzle
 from arc_puzzle_generator.utils.entities import find_connected_objects, is_l_shape, find_colors, extreme_point, \
-    box_contained, starting_point, relative_box_direction, box_distance, get_bounding_box
+    box_contained, starting_point, relative_box_direction, box_distance, get_bounding_box, find_5x5_grids_with_border
 from tests.utils import test_dir
 
 
@@ -216,3 +216,34 @@ class EntityTestCase(unittest.TestCase):
         expected_bbox = np.array([[1, 2], [1, 2], [3, 2], [3, 2]])
         result = get_bounding_box(points)
         self.assertTrue(np.array_equal(result, expected_bbox))
+
+    def test_find_5x5_grids_with_border(self):
+        # Create a 10x10 grid with a 5x5 grid having a border of color 1
+        grid = np.zeros((10, 10), dtype=int)
+        grid[2:7, 2:7] = 1  # Fill a 5x5 area with border color
+        grid[3:6, 3:6] = 0  # Inner area with a different color
+
+        # Call the function
+        result = find_5x5_grids_with_border(grid, border_color=1)
+
+        # Expected bounding box for the 5x5 grid
+        expected_bbox = np.array([
+            [6, 2],  # bottom-left
+            [2, 2],  # top-left
+            [2, 6],  # top-right
+            [6, 6]   # bottom-right
+        ])
+
+        # Assert the result contains the expected bounding box
+        self.assertEqual(len(result), 1)
+        self.assertTrue(np.array_equal(result[0], expected_bbox))
+
+    def test_no_5x5_grids_with_border(self):
+        # Create a grid with no valid 5x5 grids
+        grid = np.zeros((10, 10), dtype=int)
+
+        # Call the function
+        result = find_5x5_grids_with_border(grid, border_color=1)
+
+        # Assert no grids are found
+        self.assertEqual(len(result), 0)
