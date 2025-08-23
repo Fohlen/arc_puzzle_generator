@@ -4,8 +4,6 @@ from collections import deque
 from itertools import chain, cycle
 from typing import Protocol, Optional, Sequence
 
-import numpy as np
-
 from arc_puzzle_generator.direction import DirectionTransformer
 from arc_puzzle_generator.direction import absolute_direction
 from arc_puzzle_generator.geometry import PointSet, Point, Direction, in_grid
