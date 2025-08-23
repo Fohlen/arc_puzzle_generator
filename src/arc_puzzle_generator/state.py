@@ -1,8 +1,8 @@
-from typing import NamedTuple, Iterator, Mapping
+from typing import NamedTuple, Iterator, Mapping, Sequence, Union
 
 from arc_puzzle_generator.geometry import PointSet, Point, Direction
 
-ColorIterator = Iterator[int]
+ColorIterator = Iterator[Union[int, Sequence[int]]]
 
 
 class AgentState(NamedTuple):
@@ -16,7 +16,7 @@ class AgentState(NamedTuple):
     """
     position: PointSet
     direction: Direction
-    color: int
+    color: Union[int, Sequence[int]]
     charge: int
 
 

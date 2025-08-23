@@ -1,5 +1,5 @@
 import logging
-from typing import Iterator, Iterable, Optional
+from typing import Iterator, Iterable, Optional, Sequence, Union
 
 from arc_puzzle_generator.geometry import PointSet, Direction
 from arc_puzzle_generator.rule import RuleNode
@@ -15,7 +15,7 @@ class Agent:
             position: PointSet,
             direction: Direction,
             label: str,
-            colors: Iterator[int],
+            colors: Iterator[Union[int, Sequence[int]]],
             node: Optional[RuleNode] = None,
             charge: int = 0,
     ):
@@ -32,10 +32,10 @@ class Agent:
         self.position = position
         self.direction = direction
         self.label = label
-        self.node = node
         self.colors = colors
         self.charge = charge
-        self.color = next(colors)
+        self.color: Union[int, Sequence[int]] = next(colors)
+        self.node = node
         self.history: list[AgentState] = [self.state]
 
     @property
