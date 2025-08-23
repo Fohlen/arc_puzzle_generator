@@ -547,11 +547,13 @@ class RewardRule(Rule):
             directions: Sequence[Direction],
             target: PointSet,
             gamma: float = 0.1,
+            positive_reward: float = 1.0,
+            negative_reward: float = 0.00001,
     ):
         self.grid_size = input_grid.shape
         self.directions = directions
         self.q_table: dict[Point, float] = {
-            point: 1.0 for point in target
+            point: positive_reward for point in target
         }
 
         visited = PointSet(target)
@@ -573,7 +575,7 @@ class RewardRule(Rule):
                     if input_grid[next_point[0], next_point[1]] == background_color:
                         self.q_table[next_point] = self.q_table[point] * (1 - gamma)
                     else:
-                        self.q_table[next_point] = 0
+                        self.q_table[next_point] = negative_reward
 
     def __call__(
             self,
