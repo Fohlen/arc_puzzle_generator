@@ -53,3 +53,22 @@ def unmask(input_mask: np.ndarray) -> PointSet:
     indices = np.where(input_mask)
 
     return PointSet(list(zip(indices[0].tolist(), indices[1].tolist())))
+
+
+def point_dict_to_numpy(point_dict: dict[tuple[int, int],  float]) -> np.ndarray:
+    """
+    Convert a dictionary of points to a numpy array.
+
+    :param point_dict: A dictionary where keys are tuples (x, y) and values are numbers.
+    :return: A numpy array with the same shape as the maximum x and y in the dictionary.
+    """
+
+    max_x = max(x for x, _ in point_dict.keys())
+    max_y = max(y for _, y in point_dict.keys())
+
+    output_array = np.zeros((max_x + 1, max_y + 1), dtype=float)
+
+    for (x, y), value in point_dict.items():
+        output_array[x, y] = value
+
+    return output_array

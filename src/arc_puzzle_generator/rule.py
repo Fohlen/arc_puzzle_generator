@@ -1,12 +1,15 @@
+import math
 import random
+from collections import deque
 from itertools import chain, cycle
 from typing import Protocol, Optional, Sequence
 
-import math
+import numpy as np
 
-from arc_puzzle_generator.direction import DirectionTransformer, absolute_direction
+from arc_puzzle_generator.direction import DirectionTransformer
+from arc_puzzle_generator.direction import absolute_direction
 from arc_puzzle_generator.geometry import PointSet, Point, Direction, in_grid
-from arc_puzzle_generator.physics import direction_to_unit_vector, collision_axis, relative_point_direction
+from arc_puzzle_generator.physics import direction_to_unit_vector, collision_axis, relative_point_direction, shift
 from arc_puzzle_generator.selection import resolve_point_set_selectors_with_direction
 from arc_puzzle_generator.state import AgentState, AgentStateMapping, ColorIterator
 
@@ -528,6 +531,91 @@ class ProximityRule(Rule):
                         color=next(colors),
                         charge=states[-1].charge - 1 if states[-1].charge > 0 else states[-1].charge,
                     ), colors, []
+
+        return None
+
+
+class RewardRule(Rule):
+    """
+    Implements a reward learning based rule using a Q-Learning table
+    """
+
+    def __init__(
+            self,
+            grid_size: Point,
+            directions: Sequence[Direction],
+            target: PointSet,
+            denylist: Optional[PointSet] = None,
+            gamma: float = 0.1,
+            positive_reward: float = 1.0,
+            negative_reward: float = 0.00001,
+    ):
+        self.grid_size = grid_size
+        self.directions = directions
+        self.q_table: dict[Point, float] = {
+            point: positive_reward for point in target
+        }
+
+        if denylist is None:
+            denylist = PointSet()
+
+        visited = PointSet(target)
+        points = deque(target)
+
+        while len(points) > 0:
+            point = points.popleft()
+
+            for direction in directions:
+                next_point = shift(point, direction_to_unit_vector(direction))
+
+                if in_grid(next_point, grid_size) and next_point not in visited:
+                    # mark as visited
+                    visited.add(next_point)
+                    # add as seed for further exploration
+                    points.append(next_point)
+
+                    # calculate the reward for the next point, if valid
+                    if next_point in denylist:
+                        self.q_table[next_point] = negative_reward
+                    else:
+                        self.q_table[next_point] = self.q_table[point] * (1 - gamma)
+
+    def __call__(
+            self,
+            states: Sequence[AgentState],
+            colors: ColorIterator,
+            collision: PointSet,
+            collision_mapping: AgentStateMapping
+    ) -> RuleResult:
+        """
+        Apply the reward rule to the agent's state.
+
+        :param states: The current states of the agent.
+        :param colors: An iterator over the agent's colors.
+        :param collision: The set of points that are in collision with the agent.
+        :param collision_mapping: The mapping between collision points and the agent's colors.
+        :return: A new state based on the reward logic.
+        """
+
+        current_position = states[-1].position
+        valid_positions: list[tuple[PointSet, Direction, float]] = []
+
+        for direction in self.directions:
+            next_position = current_position.shift(direction_to_unit_vector(direction))
+
+            if all(in_grid(point, self.grid_size) for point in next_position) and len(next_position & collision) == 0:
+                reward = sum(self.q_table[point] for point in next_position)
+                valid_positions.append((next_position, direction, reward))
+
+        # Select the position with the maximum Q-value
+        if len(valid_positions) > 0:
+            next_position, next_direction, _ = max(valid_positions, key=lambda x: x[2])
+            return AgentState(
+                position=next_position,
+                direction=next_direction,
+                color=next(colors),
+                charge=states[-1].charge - 1 if states[-1].charge > 0 else states[-1].charge,
+            ), colors, []
 
         return None
 
