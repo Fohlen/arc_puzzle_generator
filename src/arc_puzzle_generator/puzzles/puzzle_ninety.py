@@ -33,7 +33,9 @@ def puzzle_ninety(input_grid: np.ndarray) -> Playground:
     )
 
     agents: list[Agent] = []
-    for bbox in find_5x5_grids_with_border(input_grid, border_color=2):
+    bboxes_red = find_5x5_grids_with_border(input_grid, border_color=2)
+    # sort red to the right by the bottom_right's Y coordinate in descending order
+    for bbox in sorted(bboxes_red, key=lambda b: b[3][1], reverse=True):
         position = PointSet([
             (x, y)
             for x in range(bbox[1, 0], bbox[3, 0] + 1)
@@ -55,7 +57,9 @@ def puzzle_ninety(input_grid: np.ndarray) -> Playground:
             charge=-1,
         ))
 
-    for bbox in find_5x5_grids_with_border(input_grid, border_color=8):
+    bboxes_light_blue = find_5x5_grids_with_border(input_grid, border_color=8)
+    # sort the light blue bboxes in ascending order of the bottom left's Y coordinate
+    for bbox in sorted(bboxes_light_blue, key=lambda b: b[0][1], reverse=False):
         position = PointSet([
             (x, y)
             for x in range(bbox[1, 0], bbox[3, 0] + 1)
