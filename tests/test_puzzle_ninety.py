@@ -17,20 +17,20 @@ class PuzzleNinetyTestCase(TestCase):
 
     def test_generate_b5ca7ac4(self):
         playground = puzzle_ninety(self.puzzle.train[0].input)
-        output_grid, *_ = playground
+        *_, output_grid = playground
         self.assertTrue(np.array_equal(output_grid, self.puzzle.train[0].output))
 
     def test_generate_b5ca7ac4_second(self):
         playground = puzzle_ninety(self.puzzle.train[1].input)
-        output_grid, *_ = playground
+        *_, output_grid = playground
         self.assertTrue(np.array_equal(output_grid, self.puzzle.train[1].output))
 
     def test_generate_b5ca7ac4_third(self):
         playground = puzzle_ninety(self.puzzle.train[2].input)
-        output_grid, *_ = playground
+        *_, output_grid = playground
         self.assertTrue(np.array_equal(output_grid, self.puzzle.train[2].output))
 
     def test_generate_b5ca7ac4_prompt(self):
         playground = puzzle_ninety(self.puzzle.test[0].input)
-        output_grid, *_ = playground
+        *_, output_grid = playground
         self.assertTrue(np.array_equal(output_grid, self.puzzle.test[0].output))
