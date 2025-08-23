@@ -87,4 +87,5 @@ def puzzle_ninety(input_grid: np.ndarray) -> Playground:
         backfill_color=background_color,
         topology=identity_topology,
         neighbourhood=von_neumann_neighbours,
+        execution_mode="sequential",
     )
