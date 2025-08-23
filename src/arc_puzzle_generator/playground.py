@@ -71,7 +71,7 @@ class Playground(Iterator[np.ndarray], Iterable[np.ndarray]):
         self.agents_by_label[agent.label].append(agent)
 
         if agent.active:
-            position = np.array(list(agent.position))
+            position = np.array(sorted(agent.position))
             self.output_grid[position[:, 0], position[:, 1]] = agent.color
 
     def __iter__(self) -> 'Playground':
@@ -122,7 +122,7 @@ class Playground(Iterator[np.ndarray], Iterable[np.ndarray]):
         for step in steps:
             pos, direction, color, charge = step
             if charge > 0 or charge == -1:
-                position = np.array(list(pos))
+                position = np.array(sorted(pos))
                 logger.debug("Position: %s, Color: %s", pos, color)
 
                 self.output_grid[position[:, 0], position[:, 1]] = color
