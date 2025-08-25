@@ -1,9 +1,11 @@
+from typing import cast
 from unittest import TestCase
 
-from arc_puzzle_generator.direction import orthogonal_direction, snake_direction
+from arc_puzzle_generator.direction import orthogonal_direction, snake_direction, DirectionTransformer
 from arc_puzzle_generator.geometry import PointSet, Direction
-from arc_puzzle_generator.rule import identity_rule, DirectionRule, CollisionDirectionRule, OutOfGridRule, \
-    collision_color_mapping_rule, TrappedCollisionRule, CollisionBorderRule, CollisionFillRule, backtrack_rule
+from arc_puzzle_generator.rule import identity_rule, CollisionDirectionRule, OutOfGridRule, \
+    collision_color_mapping_rule, TrappedCollisionRule, CollisionBorderRule, CollisionFillRule, backtrack_rule, \
+    CollisionConditionDirectionRule
 from arc_puzzle_generator.state import AgentState
 
 
@@ -34,8 +36,11 @@ class RuleTest(TestCase):
         colors = iter([1, 2])
         collision = PointSet()  # No collision
 
-        rule = DirectionRule(dummy_direction_rule)
-        result = rule(states, colors, collision)
+        rule = CollisionConditionDirectionRule(
+            direction_rule=cast(DirectionTransformer, dummy_direction_rule),
+            conditions=[(False, "none")]
+        )
+        result = rule(states, colors, collision, {})
         self.assertIsNotNone(result)
         new_state, new_colors, new_agents = result
         self.assertIn((-1, 0), new_state.position)
@@ -48,8 +53,11 @@ class RuleTest(TestCase):
         colors = iter([1, 2])
         collision = PointSet([(1, 0)])  # Collision present
 
-        rule = DirectionRule(dummy_direction_rule)
-        result = rule(states, colors, collision)
+        rule = CollisionConditionDirectionRule(
+            direction_rule=cast(DirectionTransformer, dummy_direction_rule),
+            conditions=[(True, "none")]
+        )
+        result = rule(states, colors, collision, {})
         self.assertIsNone(result)
 
     def test_collision_direction_rule_no_collision(self):
