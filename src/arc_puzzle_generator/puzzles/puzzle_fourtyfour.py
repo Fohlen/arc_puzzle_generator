@@ -78,7 +78,7 @@ def puzzle_fourtyfour(input_grid: np.ndarray) -> Playground:
     return Playground(
         output_grid=output_grid,
         agents=agents,
-        neighbourhood=MooreNeighbourhood(),
+        neighbourhood=moore_neighbours,
         topology=all_topology,
         collision_mode="current",
     )
