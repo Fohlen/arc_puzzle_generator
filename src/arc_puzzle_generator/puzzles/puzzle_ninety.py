@@ -7,7 +7,7 @@ from arc_puzzle_generator.direction import identity_direction
 from arc_puzzle_generator.geometry import PointSet
 from arc_puzzle_generator.neighbourhood import von_neumann_neighbours
 from arc_puzzle_generator.playground import Playground
-from arc_puzzle_generator.rule import RuleNode, OutOfGridRule, TrappedCollisionRule, CollisionConditionDirectionRule
+from arc_puzzle_generator.rule import RuleNode, OutOfGridRule, CollisionConditionDirectionRule
 from arc_puzzle_generator.topology import identity_topology
 from arc_puzzle_generator.utils.entities import colour_count, find_5x5_grids_with_border
 
@@ -25,7 +25,11 @@ def puzzle_ninety(input_grid: np.ndarray) -> Playground:
     node = RuleNode(
         OutOfGridRule(grid_size=input_grid.shape),
         alternative_node=RuleNode(
-            TrappedCollisionRule(direction_rule=identity_direction, select_direction=True),
+            CollisionConditionDirectionRule(
+                direction_rule=identity_direction,
+                conditions=[(True, "none")],
+                terminate_on_collision=True,
+            ),
             alternative_node=RuleNode(
                 CollisionConditionDirectionRule(
                     direction_rule=identity_direction,
