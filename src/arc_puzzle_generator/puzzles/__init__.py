@@ -8,6 +8,7 @@ from .puzzle_twentyfive import puzzle_twentyfive
 from .puzzle_twentyseven import puzzle_twentyseven
 from .puzzle_thirty import puzzle_thirty
 from .puzzle_thirtynine import puzzle_thirtynine
+from .puzzle_fourtyfour import puzzle_fourtyfour
 from .puzzle_fiftyfive import puzzle_fiftyfive
 from .puzzle_sixtyfour import puzzle_sixtyfour
 from .puzzle_sixtyseven import puzzle_sixtyseven

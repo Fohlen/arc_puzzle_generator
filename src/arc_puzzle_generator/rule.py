@@ -8,7 +8,7 @@ from arc_puzzle_generator.direction import DirectionTransformer
 from arc_puzzle_generator.direction import absolute_direction
 from arc_puzzle_generator.geometry import PointSet, Point, Direction, in_grid
 from arc_puzzle_generator.physics import direction_to_unit_vector, collision_axis, relative_point_direction, shift
-from arc_puzzle_generator.selection import resolve_point_set_selectors_with_direction
+from arc_puzzle_generator.selection import resolve_point_set_selectors_with_direction, resolve_cell_selection
 from arc_puzzle_generator.state import AgentState, AgentStateMapping, ColorIterator
 
 RuleResult = Optional[tuple[AgentState, ColorIterator, list[AgentState]]]
@@ -799,3 +799,63 @@ class CollisionConditionDirectionRule(Rule):
             ), colors, []
 
         return None
+
+
+def collision_entity_redirect_rule(
+        states: Sequence[AgentState],
+        colors: ColorIterator,
+        collision: PointSet,
+        collision_mapping: AgentStateMapping
+):
+    """
+    When hitting a collision entity, the agent will take the entity's shape and current direction, and recolor it.
+    :param states: The current states of the agent.
+    :param colors: The iterator over the agent's colors.
+    :param collision: The set of points that are in collision with the agent.
+    :param collision_mapping: The mapping between collision points and the agent's colors.
+    :return:
+    """
+    sub_collision = resolve_point_set_selectors_with_direction(
+        states[-1].position, collision, states[-1].direction
+    )
+
+    if len(sub_collision) > 0:
+        positions = PointSet(
+            [entity_point for point in sub_collision for entity_point in collision_mapping[point].position]
+        )
+        directions = set([
+            collision_mapping[col].direction for col in sub_collision
+        ])
+
+        return AgentState(
+            position=positions,
+            direction=next(iter(directions)),
+            color=next(colors),
+            charge=states[-1].charge if states[-1].charge > 0 else states[-1].charge,
+        ), colors, []
+
+    return None
+
+
+def resize_entity_to_exit(
+        states: Sequence[AgentState],
+        colors: ColorIterator,
+        collision: PointSet,
+        collision_mapping: AgentStateMapping
+):
+    """
+    Shrinks back an entity to fit the exit direction (only select the points leaving the entity)
+    :param states: The current states of the agent.
+    :param colors: The iterator over the agent's colors.
+    :param collision: The set of points that are in collision with the agent.
+    :param collision_mapping: A mapping between collision points and the agent's colors.
+    :return: A new state with the updated positions
+    """
+
+    return AgentState(
+        position=resolve_cell_selection(states[-1].position, states[-1].direction),
+        color=next(colors),
+        charge=states[-1].charge if states[-1].charge > 0 else states[-1].charge,
+        direction=states[-1].direction,
+    ), colors, []
+
