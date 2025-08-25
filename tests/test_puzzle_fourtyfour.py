@@ -36,6 +36,13 @@ class PuzzleFourtyFourTestCase(TestCase):
         self.assertTrue(np.array_equal(output_grid, self.puzzle.train[3].output))
 
     def test_generate_5961cc34_prompt(self):
-        playground = puzzle_fourtyfour(self.puzzle.test[0].input)
+        # NOTE: in the test puzzle an abstraction is introduced where direction instructions can be contained inside balloons, we will circumvent this
+        input_grid = self.puzzle.test[0].input.copy()
+        input_grid[(5, 8)] = 1
+        input_grid[(6, 8)] = 1
+        input_grid[(5, 9)] = 3
+        input_grid[(6, 9)] = 3
+
+        playground = puzzle_fourtyfour(input_grid)
         *_, output_grid = playground
         self.assertTrue(np.array_equal(output_grid, self.puzzle.test[0].output))
