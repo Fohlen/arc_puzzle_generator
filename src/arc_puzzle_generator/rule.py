@@ -745,15 +745,26 @@ class TerminateAtPointRule(Rule):
         return None
 
 
+Condition = tuple[bool, Direction]
+"""
+A condition is a tuple of a boolean and a Direction, indicating whether a collision is happening in the indicated direction or not.
+"""
+
+
 class CollisionConditionDirectionRule(Rule):
     """
     The CollisionConditionDirectionRule applies a direction rule based on a set of conditions.
-    Each condition is a tuple of boolean and Direction, where the boolean indicates whether the condition must be met,
-    and the Direction specifies which direction to select to check for a collision.
+    Each condition is a tuple of boolean and Direction, where the boolean indicates whether the condition must be met, and the Direction specifies which direction to select to check for a collision.
+    If a direction is none it means the current direction of the agent is used.
+
     If all conditions are met, the direction rule is applied to the agent's current direction.
     """
 
-    def __init__(self, direction_rule: DirectionTransformer, conditions: Sequence[tuple[bool, Direction]]):
+    def __init__(
+            self,
+            direction_rule: DirectionTransformer,
+            conditions: Sequence[Condition]
+    ):
         self.direction_rule = direction_rule
         self.conditions = conditions
 
@@ -775,7 +786,10 @@ class CollisionConditionDirectionRule(Rule):
 
         conditions_met = []
         for condition, condition_direction in self.conditions:
-            direction = absolute_direction(states[-1].direction, condition_direction)
+            if condition_direction == "none":
+                direction = states[-1].direction
+            else:
+                direction = absolute_direction(states[-1].direction, condition_direction)
             sub_collision = resolve_point_set_selectors_with_direction(
                 states[-1].position, collision, direction
             )
@@ -858,4 +872,3 @@ def resize_entity_to_exit_rule(
         charge=states[-1].charge if states[-1].charge > 0 else states[-1].charge,
         direction=states[-1].direction,
     ), colors, []
-
