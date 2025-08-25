@@ -45,8 +45,7 @@ def shift(point: Point, vector: Point) -> Point:
 
 def collision_axis(collision_position: PointSet) -> Axis:
     """
-    Determines the axis of collision between an agent and a collision point.
-    :param agent_position: The position of the agent.
+    Determines the axis of a collision.
     :param collision_position: The collision position.
     :return: A string representing the axis of collision.
     """

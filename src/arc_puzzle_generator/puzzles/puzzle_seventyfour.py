@@ -7,7 +7,7 @@ from arc_puzzle_generator.direction import identity_direction, counterclockwise_
 from arc_puzzle_generator.neighbourhood import moore_neighbours
 from arc_puzzle_generator.physics import direction_to_unit_vector
 from arc_puzzle_generator.playground import Playground
-from arc_puzzle_generator.rule import RuleNode, DirectionRule, StayInGridRule, TerminateAtPointRule, \
+from arc_puzzle_generator.rule import RuleNode, StayInGridRule, TerminateAtPointRule, \
     CollisionConditionDirectionRule
 from arc_puzzle_generator.topology import all_topology
 from arc_puzzle_generator.utils.grid import unmask
@@ -54,7 +54,10 @@ def puzzle_seventyfour(input_grid: np.ndarray) -> Playground:
                             ]
                         ),
                         alternative_node=RuleNode(
-                            DirectionRule(direction_rule=identity_direction, select_direction=True),
+                            CollisionConditionDirectionRule(
+                                direction_rule=identity_direction,
+                                conditions=[(False, "none")],
+                            )
                         )
                     ),
                 )

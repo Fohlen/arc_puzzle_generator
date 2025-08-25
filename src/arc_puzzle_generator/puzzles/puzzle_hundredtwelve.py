@@ -7,7 +7,7 @@ from arc_puzzle_generator.direction import identity_direction
 from arc_puzzle_generator.geometry import Direction, PointSet
 from arc_puzzle_generator.neighbourhood import moore_neighbours
 from arc_puzzle_generator.playground import Playground
-from arc_puzzle_generator.rule import RuleNode, DirectionRule
+from arc_puzzle_generator.rule import RuleNode, CollisionConditionDirectionRule
 from arc_puzzle_generator.utils.entities import find_connected_objects
 
 
@@ -55,7 +55,10 @@ def puzzle_hundredtwelve(
             charge=charge,
             colors=cycle([color]),
             node=RuleNode(
-                DirectionRule(direction_rule=identity_direction)
+                CollisionConditionDirectionRule(
+                    direction_rule=identity_direction,
+                    conditions=[(False, "none")]
+                ),
             )
         ))
         output_grid[labels == i] = background_color
