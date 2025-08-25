@@ -8,7 +8,7 @@ from arc_puzzle_generator.geometry import PointSet
 from arc_puzzle_generator.neighbourhood import moore_neighbours
 from arc_puzzle_generator.physics import direction_to_unit_vector, shift
 from arc_puzzle_generator.playground import Playground
-from arc_puzzle_generator.rule import RuleNode, TerminateAtPointRule, CollisionConditionDirectionRule, DirectionRule
+from arc_puzzle_generator.rule import RuleNode, TerminateAtPointRule, CollisionConditionDirectionRule
 from arc_puzzle_generator.topology import all_topology
 from arc_puzzle_generator.utils.entities import find_connected_objects, extreme_point, find_holes
 from arc_puzzle_generator.utils.grid import unmask
@@ -80,7 +80,10 @@ def puzzle_eightysix(input_grid: np.ndarray) -> Playground:
                                 ]
                             ),
                             alternative_node=RuleNode(
-                                DirectionRule(direction_rule=identity_direction, select_direction=True)
+                                CollisionConditionDirectionRule(
+                                    direction_rule=identity_direction,
+                                    conditions=[(False, "none")]
+                                )
                             )
                         )
 
