@@ -671,10 +671,12 @@ class CollisionConditionDirectionRule(Rule):
             direction_rule: DirectionTransformer,
             conditions: Sequence[Condition],
             condition_mode: ConditionMode = "AND",
+            terminate_on_collision: bool = False,
     ):
         self.direction_rule = direction_rule
         self.conditions = conditions
         self.condition_mode = condition_mode
+        self.terminate_on_collision = terminate_on_collision
 
     def __call__(
             self,
@@ -718,11 +720,17 @@ class CollisionConditionDirectionRule(Rule):
                 new_direction = self.direction_rule(states[-1].direction)
             new_position = states[-1].position.shift(direction_to_unit_vector(new_direction))
 
+            charge: int
+            if self.terminate_on_collision:
+                charge = 0
+            else:
+                charge = states[-1].charge - 1 if states[-1].charge > 0 else states[-1].charge
+
             return AgentState(
                 position=new_position,
                 direction=new_direction,
                 color=next(colors),
-                charge=states[-1].charge - 1 if states[-1].charge > 0 else states[-1].charge,
+                charge=charge,
             ), colors, []
 
         return None
