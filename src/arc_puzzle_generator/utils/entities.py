@@ -172,6 +172,27 @@ def is_l_shape(arr: np.ndarray) -> Optional[Direction]:
     return None
 
 
+def mask_to_bbox(mask: np.ndarray) -> np.ndarray:
+    """
+    Converts an input mask to a bounding box.
+    :param mask: The input mask (N, 2)
+    :return: The bounding box of the input mask specified as bottom-left, top-left, top-right, bottom-right
+    """
+
+    indices = np.argwhere(mask)
+    min_row = np.min(indices[:, 0]).item()
+    max_row = np.max(indices[:, 0]).item()
+    min_col = np.min(indices[:, 1]).item()
+    max_col = np.max(indices[:, 1]).item()
+
+    return np.array([
+        (max_row, min_col),  # bottom left
+        (min_row, min_col),  # top left
+        (min_row, max_col),  # top right
+        (max_row, max_col),  # bottom right
+    ])
+
+
 def find_5x5_grids_with_border(grid, border_color) -> list[np.ndarray]:
     """
     Searches the given input matrix for objects of size 5x5 with a given border color.
@@ -184,7 +205,7 @@ def find_5x5_grids_with_border(grid, border_color) -> list[np.ndarray]:
 
     for i in range(rows - 4):
         for j in range(cols - 4):
-            subgrid = grid[i:i+5, j:j+5]
+            subgrid = grid[i:i + 5, j:j + 5]
 
             border = np.concatenate([
                 subgrid[0, :],  # top row
@@ -197,10 +218,10 @@ def find_5x5_grids_with_border(grid, border_color) -> list[np.ndarray]:
             if np.all(border == border_color) and np.any(inner != border_color):
                 # Calculate the bounding box
                 bounding_box = np.array([
-                    [i+4, j],      # bottom-left
-                    [i, j],        # top-left
-                    [i, j+4],      # top-right
-                    [i+4, j+4]     # bottom-right
+                    [i + 4, j],  # bottom-left
+                    [i, j],  # top-left
+                    [i, j + 4],  # top-right
+                    [i + 4, j + 4]  # bottom-right
                 ])
                 results.append(bounding_box)
 
@@ -419,7 +440,7 @@ def find_holes(mask: np.ndarray) -> np.ndarray:
         if not inverted[cx, cy] or visited[cx, cy]:
             continue
         visited[cx, cy] = True
-        for dx, dy in [(-1,0),(1,0),(0,-1),(0,1)]:
+        for dx, dy in [(-1, 0), (1, 0), (0, -1), (0, 1)]:
             nx, ny = cx + dx, cy + dy
             if 0 <= nx < mask.shape[0] and 0 <= ny < mask.shape[1]:
                 if inverted[nx, ny] and not visited[nx, ny]:
