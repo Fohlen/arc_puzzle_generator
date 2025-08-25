@@ -760,7 +760,11 @@ class CollisionConditionDirectionRule(Rule):
 
         if (self.condition_mode == "AND" and all(conditions_met)) or (
                 self.condition_mode == "OR" and any(conditions_met)):
-            new_direction = self.direction_rule(states[-1].direction)
+            if self.condition_mode == "OR":
+                axis = collision_axis(collision)
+                new_direction = self.direction_rule(states[-1].direction, axis)
+            else:
+                new_direction = self.direction_rule(states[-1].direction)
             new_position = states[-1].position.shift(direction_to_unit_vector(new_direction))
 
             return AgentState(
