@@ -837,7 +837,7 @@ def collision_entity_redirect_rule(
     return None
 
 
-def resize_entity_to_exit(
+def resize_entity_to_exit_rule(
         states: Sequence[AgentState],
         colors: ColorIterator,
         collision: PointSet,

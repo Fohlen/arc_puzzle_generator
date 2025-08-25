@@ -8,7 +8,7 @@ from arc_puzzle_generator.direction import identity_direction
 from arc_puzzle_generator.neighbourhood import MooreNeighbourhood, moore_neighbours
 from arc_puzzle_generator.playground import Playground
 from arc_puzzle_generator.rule import RuleNode, OutOfGridRule, DirectionRule, Rule, collision_entity_redirect_rule, \
-    resize_entity_to_exit
+    resize_entity_to_exit_rule
 from arc_puzzle_generator.topology import all_topology
 from arc_puzzle_generator.utils.entities import find_connected_objects, relative_box_direction, mask_to_bbox
 from arc_puzzle_generator.utils.grid import unmask
@@ -65,7 +65,7 @@ def puzzle_fourtyfour(input_grid: np.ndarray) -> Playground:
             alternative_node=RuleNode(
                 cast(Rule, collision_entity_redirect_rule),
                 next_node=RuleNode(
-                    cast(Rule, resize_entity_to_exit)
+                    cast(Rule, resize_entity_to_exit_rule)
                 ),
                 alternative_node=RuleNode(
                     DirectionRule(direction_rule=identity_direction, select_direction=True)
