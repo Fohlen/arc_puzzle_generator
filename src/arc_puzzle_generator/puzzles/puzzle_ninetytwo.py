@@ -1,12 +1,10 @@
-from itertools import cycle
-
 import numpy as np
 
 from arc_puzzle_generator.agent import Agent
 from arc_puzzle_generator.direction import identity_direction
 from arc_puzzle_generator.geometry import Direction, PointSet
 from arc_puzzle_generator.playground import Playground
-from arc_puzzle_generator.rule import RuleNode, DirectionRule
+from arc_puzzle_generator.rule import RuleNode, CollisionConditionDirectionRule
 from arc_puzzle_generator.utils.color_sequence_iterator import ColorSequenceIterator
 
 
@@ -89,7 +87,10 @@ def puzzle_ninetytwo(input_grid: np.ndarray, orientation: Direction = "right") -
                 label=f"agent_{row_idx}",
                 colors=ColorSequenceIterator(patterns),
                 node=RuleNode(
-                    DirectionRule(direction_rule=identity_direction)
+                    CollisionConditionDirectionRule(
+                        direction_rule=identity_direction,
+                        conditions=[(False, "none")]
+                    ),
                 )
             ))
 
