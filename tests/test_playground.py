@@ -8,7 +8,7 @@ from arc_puzzle_generator.agent import Agent
 from arc_puzzle_generator.direction import identity_direction
 from arc_puzzle_generator.geometry import PointSet
 from arc_puzzle_generator.playground import Playground
-from arc_puzzle_generator.rule import RuleNode, DirectionRule, OutOfGridRule
+from arc_puzzle_generator.rule import RuleNode, OutOfGridRule, CollisionConditionDirectionRule
 
 
 class PlaygroundTestCase(TestCase):
@@ -18,7 +18,10 @@ class PlaygroundTestCase(TestCase):
             position=PointSet([(0, 0)]),
             direction="right",
             label='A',
-            node=RuleNode(DirectionRule(direction_rule=identity_direction)),
+            node=RuleNode(CollisionConditionDirectionRule(
+                direction_rule=identity_direction,
+                conditions=[(False, "none")]
+            )),
             colors=iter([1]),
             charge=1
         )
@@ -26,7 +29,10 @@ class PlaygroundTestCase(TestCase):
             position=PointSet([(1, 1)]),
             direction="right",
             label='B',
-            node=RuleNode(DirectionRule(direction_rule=identity_direction)),
+            node=RuleNode(CollisionConditionDirectionRule(
+                direction_rule=identity_direction,
+                conditions=[(False, "none")]
+            )),
             colors=iter([2]),
             charge=1
         )
@@ -56,7 +62,10 @@ class PlaygroundTestCase(TestCase):
             position=PointSet([(0, 0)]),
             direction="right",
             label='A',
-            node=RuleNode(DirectionRule(direction_rule=identity_direction)),
+            node=RuleNode(CollisionConditionDirectionRule(
+                direction_rule=identity_direction,
+                conditions=[(False, "none")]
+            )),
             colors=cycle([1]),
             charge=1
         )
@@ -64,7 +73,10 @@ class PlaygroundTestCase(TestCase):
             position=PointSet([(1, 1)]),
             direction="right",
             label='B',
-            node=RuleNode(DirectionRule(direction_rule=identity_direction)),
+            node=RuleNode(CollisionConditionDirectionRule(
+                direction_rule=identity_direction,
+                conditions=[(False, "none")]
+            )),
             colors=cycle([2]),
             charge=1
         )
@@ -93,7 +105,10 @@ class PlaygroundTestCase(TestCase):
             position=PointSet([(0, 0)]),
             direction="right",
             label='A',
-            node=RuleNode(DirectionRule(identity_direction)),
+            node=RuleNode(CollisionConditionDirectionRule(
+                direction_rule=identity_direction,
+                conditions=[(False, "none")]
+            )),
             colors=iter([1, 1, 1]),
             charge=3
         )
@@ -121,7 +136,10 @@ class PlaygroundTestCase(TestCase):
         node = RuleNode(
             OutOfGridRule(grid_size=grid_size),
             alternative_node=RuleNode(
-                DirectionRule(direction_rule=identity_direction)
+                CollisionConditionDirectionRule(
+                    direction_rule=identity_direction,
+                    conditions=[(False, "none")]
+                )
             ),
         )
 
@@ -151,4 +169,3 @@ class PlaygroundTestCase(TestCase):
         # Ensure all agents are processed and the playground does not terminate early
         self.assertEqual(5, len(steps))  # Two steps per agent and one final step
         self.assertFalse(model.active)  # Ensure all agents are inactive
-
