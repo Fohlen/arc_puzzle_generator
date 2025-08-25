@@ -64,53 +64,6 @@ def identity_rule(states: Sequence[AgentState], colors: ColorIterator, *args) ->
     return states[-1], colors, []
 
 
-class DirectionRule(Rule):
-    """
-    A rule that changes the direction of an agent based on the given direction rule.
-    """
-
-    def __init__(
-            self,
-            direction_rule: DirectionTransformer,
-            select_direction: bool = False,
-    ) -> None:
-        self.direction_rule = direction_rule
-        self.select_direction = select_direction
-
-    def __call__(
-            self,
-            states: Sequence[AgentState],
-            colors: ColorIterator,
-            collision: PointSet,
-            *args
-    ) -> RuleResult:
-        """
-        Change the direction of the agent based on the direction rule.
-
-        :param states: The current states of the agent.
-        :param colors: An iterator over the agent's colors.
-        :param collision: The set of points that are in collision with the agent.
-        :return: A new state with the updated direction.
-        """
-
-        sub_collision = resolve_point_set_selectors_with_direction(
-            states[-1].position, collision, states[-1].direction
-        ) if self.select_direction else collision
-
-        if len(sub_collision) == 0:
-            new_direction = self.direction_rule(states[-1].direction)
-            new_position = states[-1].position.shift(direction_to_unit_vector(new_direction))
-
-            return AgentState(
-                position=new_position,
-                direction=new_direction,
-                color=next(colors),
-                charge=states[-1].charge - 1 if states[-1].charge > 0 else states[-1].charge,
-            ), colors, []
-
-        return None
-
-
 class OutOfGridRule(Rule):
     """
     A rule that removes the agent if the next step is out of grid, by setting its charge to 0.
