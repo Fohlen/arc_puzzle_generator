@@ -2,7 +2,7 @@ import math
 import random
 from collections import deque
 from itertools import chain, cycle
-from typing import Protocol, Optional, Sequence
+from typing import Protocol, Optional, Sequence, Literal
 
 from arc_puzzle_generator.direction import DirectionTransformer
 from arc_puzzle_generator.direction import absolute_direction
@@ -703,6 +703,8 @@ Condition = tuple[bool, Direction]
 A condition is a tuple of a boolean and a Direction, indicating whether a collision is happening in the indicated direction or not.
 """
 
+ConditionMode = Literal["AND", "OR"]
+
 
 class CollisionConditionDirectionRule(Rule):
     """
@@ -716,10 +718,12 @@ class CollisionConditionDirectionRule(Rule):
     def __init__(
             self,
             direction_rule: DirectionTransformer,
-            conditions: Sequence[Condition]
+            conditions: Sequence[Condition],
+            condition_mode: ConditionMode = "AND",
     ):
         self.direction_rule = direction_rule
         self.conditions = conditions
+        self.condition_mode = condition_mode
 
     def __call__(
             self,
@@ -754,7 +758,8 @@ class CollisionConditionDirectionRule(Rule):
             else:
                 conditions_met.append(False)
 
-        if all(conditions_met):
+        if (self.condition_mode == "AND" and all(conditions_met)) or (
+                self.condition_mode == "OR" and any(conditions_met)):
             new_direction = self.direction_rule(states[-1].direction)
             new_position = states[-1].position.shift(direction_to_unit_vector(new_direction))
 
