@@ -101,55 +101,6 @@ class OutOfGridRule(Rule):
         return None
 
 
-class CollisionDirectionRule(Rule):
-    """
-    A rule that handles collisions by applying a direction rule on collision.
-    """
-
-    def __init__(
-            self,
-            direction_rule: DirectionTransformer,
-            select_direction: bool = False,
-    ) -> None:
-        self.direction_rule = direction_rule
-        self.select_direction = select_direction
-
-    def __call__(
-            self,
-            states: Sequence[AgentState],
-            colors: ColorIterator,
-            collision: PointSet,
-            collision_mapping: AgentStateMapping
-    ) -> RuleResult:
-        """
-        Handle the collision by returning the current state unchanged.
-
-        :param states: The current states of the agent.
-        :param colors: An iterator over the agent's colors.
-        :param collision: The set of points that are in collision with the agent.
-        :param collision_mapping: The mapping between collision points and the agent's colors.
-        :return: The same state as the input.
-        """
-
-        sub_collision = resolve_point_set_selectors_with_direction(
-            states[-1].position, collision, states[-1].direction
-        ) if self.select_direction else collision
-
-        if len(sub_collision) > 0:
-            axis = collision_axis(sub_collision)
-            new_direction = self.direction_rule(states[-1].direction, axis)
-            new_position = states[-1].position.shift(direction_to_unit_vector(new_direction))
-
-            return AgentState(
-                position=new_position,
-                direction=new_direction,
-                color=next(colors),
-                charge=states[-1].charge - 1 if states[-1].charge > 0 else states[-1].charge,
-            ), colors, []
-
-        return None
-
-
 def collision_color_mapping_rule(
         states: Sequence[AgentState],
         colors: ColorIterator,
