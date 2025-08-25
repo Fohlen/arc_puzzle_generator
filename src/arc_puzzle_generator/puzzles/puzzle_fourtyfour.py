@@ -5,12 +5,11 @@ import numpy as np
 
 from arc_puzzle_generator.agent import Agent
 from arc_puzzle_generator.direction import identity_direction
-from arc_puzzle_generator.neighbourhood import MooreNeighbourhood
+from arc_puzzle_generator.neighbourhood import MooreNeighbourhood, moore_neighbours
 from arc_puzzle_generator.playground import Playground
-from arc_puzzle_generator.rule import RuleNode, OutOfGridRule, DirectionRule, CollisionFillRule, \
-    collision_entity_color_rule, Rule, collision_direction_change
+from arc_puzzle_generator.rule import RuleNode, OutOfGridRule, DirectionRule, Rule, collision_entity_redirect_rule
 from arc_puzzle_generator.topology import all_topology
-from arc_puzzle_generator.utils.entities import find_connected_objects, relative_box_direction, box_distance
+from arc_puzzle_generator.utils.entities import find_connected_objects, relative_box_direction, mask_to_bbox
 from arc_puzzle_generator.utils.grid import unmask
 
 
@@ -28,48 +27,32 @@ def puzzle_fourtyfour(input_grid: np.ndarray) -> Playground:
     background_color = 8
 
     agents: list[Agent] = []
-    labels_blue, bbox_blue, num_blocks_blue = find_connected_objects(input_grid == 1)
-    blocks: list[np.ndarray] = []
+    blue_grid = (input_grid == 1)
+    green_grid = (input_grid == 3)
 
-    for i in range(1, num_blocks_blue + 1):
+    labels, bbox, num_objects = find_connected_objects(blue_grid | green_grid, neighbourhood=moore_neighbours)
+    for i in range(1, num_objects + 1):
+        labels_green = (labels == i) & green_grid
+        labels_blue = (labels == i) & blue_grid
+        bbox_green = mask_to_bbox(labels_green)
+        bbox_blue = mask_to_bbox(labels_blue)
+
+        direction = relative_box_direction(
+            bbox_blue, bbox_green,
+        )
+
+        colors = input_grid[labels == i]
+
+        color_iterator = iter([colors.flatten().tolist(), ])
+
         agents.append(Agent(
-            position=unmask(labels_blue == i),
-            direction="none",
-            colors=iter([agent_color]),
-            charge=0,
-            label=f"ball_{i}",
-        ))
-        blocks.append(bbox_blue[i - 1])
-        output_grid[labels_blue == i] = background_color
-
-    labels_green, bbox_green, num_blocks_green = find_connected_objects(input_grid == 3)
-    for i in range(1, num_blocks_green + 1):
-        block_directions = [
-            relative_box_direction(
-                block,
-                bbox_green[i - 1]
-            )
-            for block in blocks
-        ]
-
-        block_distances = [
-            box_distance(
-                bbox_green[i - 1],
-                block,
-                direction,
-            )
-            for block, direction in zip(blocks, block_directions)
-        ]
-
-        _, direction = min(zip(block_distances, block_directions), key=lambda x: x[0])
-        agents.append(Agent(
-            position=unmask(labels_green == i),
+            position=unmask(labels == i),
             direction=direction,
-            colors=iter([agent_color]),
+            colors=color_iterator,
             charge=0,
-            label=f"ball_top_{i}",
+            label=f"balloon_{i}",
         ))
-        output_grid[labels_green == i] = background_color
+        output_grid[labels == i] = background_color
 
     agents.append(Agent(
         position=unmask(input_grid == agent_tip_color),
@@ -79,10 +62,7 @@ def puzzle_fourtyfour(input_grid: np.ndarray) -> Playground:
         node=RuleNode(
             OutOfGridRule(grid_size=input_grid.shape),
             alternative_node=RuleNode(
-                cast(Rule, collision_entity_color_rule),
-                next_node=RuleNode(
-                    cast(Rule, collision_direction_change),
-                ),
+                cast(Rule, collision_entity_redirect_rule),
                 alternative_node=RuleNode(
                     DirectionRule(direction_rule=identity_direction, select_direction=True)
                 )

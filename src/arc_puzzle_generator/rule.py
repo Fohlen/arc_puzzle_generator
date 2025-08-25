@@ -800,17 +800,21 @@ class CollisionConditionDirectionRule(Rule):
 
         return None
 
-def collision_entity_color_rule(
+
+def collision_entity_redirect_rule(
         states: Sequence[AgentState],
         colors: ColorIterator,
         collision: PointSet,
         collision_mapping: AgentStateMapping
-) -> RuleResult:
+):
     """
-    Colors the entity in the agents color on collision.
-    :return: A tuple containing the current state, colors, and an empty list of children.
+    When hitting a collision entity, the agent will take the entity's shape and current direction, and recolor it.
+    :param states: The current states of the agent.
+    :param colors: The iterator over the agent's colors.
+    :param collision: The set of points that are in collision with the agent.
+    :param collision_mapping: The mapping between collision points and the agent's colors.
+    :return:
     """
-
     sub_collision = resolve_point_set_selectors_with_direction(
         states[-1].position, collision, states[-1].direction
     )
@@ -819,47 +823,16 @@ def collision_entity_color_rule(
         positions = PointSet(
             [entity_point for point in sub_collision for entity_point in collision_mapping[point].position]
         )
+        directions = set([
+            collision_mapping[col].direction for col in sub_collision
+        ])
 
         return AgentState(
             position=positions,
-            direction=states[-1].direction,
+            direction=next(iter(directions)),
             color=next(colors),
-            charge=states[-1].charge,
+            charge=states[-1].charge if states[-1].charge > 0 else states[-1].charge,
         ), colors, []
 
-    return None
-
-
-def collision_direction_change(
-        states: Sequence[AgentState],
-        colors: ColorIterator,
-        collision: PointSet,
-        collision_mapping: AgentStateMapping
-) -> RuleResult:
-    """
-    Changes the direction of the agent on collision.
-    :return: A tuple containing the current state, colors, and an empty list of children.
-    """
-
-    sub_collision = resolve_point_set_selectors_with_direction(
-        states[-1].position, collision, states[-1].direction
-    )
-
-    if len(sub_collision) > 0:
-        directions = set(collision_mapping[point].direction for point in sub_collision)
-
-        if len(directions) == 1:
-            direction = next(iter(directions))
-            if direction != "none":
-                positions = PointSet(
-                    [entity_point for point in sub_collision for entity_point in collision_mapping[point].position]
-                )
-
-                return AgentState(
-                    position=positions,
-                    direction=direction,
-                    color=next(colors),
-                    charge=states[-1].charge,
-                ), colors, []
 
     return None
