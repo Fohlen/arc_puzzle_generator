@@ -233,43 +233,6 @@ def resize_entity_to_exit_rule(
     ), colors, []
 
 
-class OutOfGridRule(Rule):
-    """
-    A rule that removes the agent if the next step is out of grid, by setting its charge to 0.
-    """
-
-    def __init__(self, grid_size: Point) -> None:
-        self.grid_size = grid_size
-
-    def __call__(
-            self,
-            states: Sequence[AgentState],
-            colors: ColorIterator,
-            collision: PointSet,
-            *args
-    ) -> RuleResult:
-        """
-        Remove the agent from the grid.
-
-        :param states: The current states of the agent.
-        :param colors: An iterator over the agent's colors.
-        :param collision: The set of points that are in collision with the agent.
-        :return: None, indicating that the agent is removed from the grid.
-        """
-
-        next_position = states[-1].position.shift(direction_to_unit_vector(states[-1].direction))
-
-        if not all(in_grid(point, self.grid_size) for point in next_position):
-            return AgentState(
-                position=states[-1].position,
-                direction=states[-1].direction,
-                color=next(colors),
-                charge=0,  # Set charge to 0 to indicate removal
-            ), colors, []
-
-        return None
-
-
 def collision_color_mapping_rule(
         states: Sequence[AgentState],
         colors: ColorIterator,
@@ -376,6 +339,43 @@ class CollisionFillRule(Rule):
                     color=next(new_colors),
                     charge=states[-1].charge,
                 ), new_colors, []
+
+        return None
+
+
+class OutOfGridRule(Rule):
+    """
+    A rule that removes the agent if the next step is out of grid, by setting its charge to 0.
+    """
+
+    def __init__(self, grid_size: Point) -> None:
+        self.grid_size = grid_size
+
+    def __call__(
+            self,
+            states: Sequence[AgentState],
+            colors: ColorIterator,
+            collision: PointSet,
+            *args
+    ) -> RuleResult:
+        """
+        Remove the agent from the grid.
+
+        :param states: The current states of the agent.
+        :param colors: An iterator over the agent's colors.
+        :param collision: The set of points that are in collision with the agent.
+        :return: None, indicating that the agent is removed from the grid.
+        """
+
+        next_position = states[-1].position.shift(direction_to_unit_vector(states[-1].direction))
+
+        if not all(in_grid(point, self.grid_size) for point in next_position):
+            return AgentState(
+                position=states[-1].position,
+                direction=states[-1].direction,
+                color=next(colors),
+                charge=0,  # Set charge to 0 to indicate removal
+            ), colors, []
 
         return None
 
