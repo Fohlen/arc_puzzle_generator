@@ -3,7 +3,7 @@ from unittest import TestCase
 
 from arc_puzzle_generator.direction import orthogonal_direction, snake_direction, DirectionTransformer
 from arc_puzzle_generator.geometry import PointSet, Direction
-from arc_puzzle_generator.rule import identity_rule, OutOfGridRule, \
+from arc_puzzle_generator.rule import OutOfGridRule, \
     collision_color_mapping_rule, TrappedCollisionRule, CollisionBorderRule, CollisionFillRule, backtrack_rule, \
     CollisionConditionDirectionRule
 from arc_puzzle_generator.state import AgentState
@@ -15,22 +15,6 @@ def dummy_direction_rule(direction: Direction) -> Direction:
 
 
 class RuleTest(TestCase):
-    def test_identity_rule(self):
-        states = [AgentState(
-            PointSet([(0, 0)]),
-            "none",
-            0,
-            0,
-        )]
-
-        original_colors = [1, 2, 3]
-        colors = iter(original_colors)
-
-        output_state, output_colors, output_agents = identity_rule(states, colors)
-
-        self.assertEqual(output_state, states[0])
-        self.assertEqual(original_colors, list(output_colors))
-
     def test_direction_rule_no_collision(self):
         states = [AgentState(PointSet([(0, 0)]), "none", 1, 1)]
         colors = iter([1, 2])

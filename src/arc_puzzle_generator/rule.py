@@ -76,18 +76,6 @@ def uncharge_rule(
     ), colors, []
 
 
-def identity_rule(states: Sequence[AgentState], colors: ColorIterator, *args) -> RuleResult:
-    """
-    An identity rule that returns the state unchanged.
-
-    :param states: The current states of the agent.
-    :param colors: An iterator over the agent's colors.
-    :return: The same state as the input.
-    """
-
-    return states[-1], colors, []
-
-
 class OutOfGridRule(Rule):
     """
     A rule that removes the agent if the next step is out of grid, by setting its charge to 0.
