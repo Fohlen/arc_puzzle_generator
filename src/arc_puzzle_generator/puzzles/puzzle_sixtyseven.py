@@ -8,7 +8,7 @@ from arc_puzzle_generator.direction import identity_direction
 from arc_puzzle_generator.geometry import Direction
 from arc_puzzle_generator.neighbourhood import moore_neighbours
 from arc_puzzle_generator.playground import Playground
-from arc_puzzle_generator.rule import RuleNode, TrappedCollisionRule, CollisionConditionDirectionRule
+from arc_puzzle_generator.rule import RuleNode, TrappedCollisionRule, CollisionConditionRule
 from arc_puzzle_generator.topology import all_topology
 from arc_puzzle_generator.utils.entities import colour_count, find_connected_objects
 from arc_puzzle_generator.utils.grid import unmask
@@ -64,7 +64,7 @@ def puzzle_sixtyseven(
             node=RuleNode(
                 TrappedCollisionRule(direction_rule=identity_direction, select_direction=True),
                 alternative_node=RuleNode(
-                    CollisionConditionDirectionRule(
+                    CollisionConditionRule(
                         direction_rule=identity_direction,
                         conditions=[(False, "none")]
                     ),

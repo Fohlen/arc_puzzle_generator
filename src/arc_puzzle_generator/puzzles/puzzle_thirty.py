@@ -8,7 +8,7 @@ from arc_puzzle_generator.direction import identity_direction
 from arc_puzzle_generator.geometry import PointSet, Direction
 from arc_puzzle_generator.neighbourhood import moore_neighbours
 from arc_puzzle_generator.playground import Playground
-from arc_puzzle_generator.rule import RuleNode, OutOfGridRule, CollisionConditionDirectionRule
+from arc_puzzle_generator.rule import RuleNode, OutOfGridRule, CollisionConditionRule
 from arc_puzzle_generator.utils.entities import colour_count, find_connected_objects, box_contained, extreme_point
 
 
@@ -68,7 +68,7 @@ def puzzle_thirty(
             node=RuleNode(
                 OutOfGridRule(grid_size=input_grid.shape),
                 alternative_node=RuleNode(
-                    CollisionConditionDirectionRule(
+                    CollisionConditionRule(
                         direction_rule=identity_direction,
                         conditions=[(False, "none")]
                     ),

@@ -5,7 +5,7 @@ from arc_puzzle_generator.direction import orthogonal_direction, snake_direction
 from arc_puzzle_generator.geometry import PointSet, Direction
 from arc_puzzle_generator.rule import OutOfGridRule, \
     TrappedCollisionRule, CollisionFillRule, backtrack_rule, \
-    CollisionConditionDirectionRule, COLLIDE_ALL
+    CollisionConditionRule, COLLIDE_ALL
 from arc_puzzle_generator.state import AgentState
 
 
@@ -20,7 +20,7 @@ class RuleTest(TestCase):
         colors = iter([1, 2])
         collision = PointSet()  # No collision
 
-        rule = CollisionConditionDirectionRule(
+        rule = CollisionConditionRule(
             direction_rule=cast(DirectionTransformer, dummy_direction_rule),
             conditions=[(False, "none")]
         )
@@ -37,7 +37,7 @@ class RuleTest(TestCase):
         colors = iter([1, 2])
         collision = PointSet([(1, 0)])  # Collision present
 
-        rule = CollisionConditionDirectionRule(
+        rule = CollisionConditionRule(
             direction_rule=cast(DirectionTransformer, dummy_direction_rule),
             conditions=[(True, "none")]
         )
@@ -49,7 +49,7 @@ class RuleTest(TestCase):
         colors = iter([1, 2])
         collision = PointSet()  # No collision
 
-        rule = CollisionConditionDirectionRule(
+        rule = CollisionConditionRule(
             direction_rule=orthogonal_direction,
             conditions=[(True, "none")],
             condition_mode="OR",
@@ -62,7 +62,7 @@ class RuleTest(TestCase):
         colors = iter([1, 2])
         collision = PointSet([(1, 1)])  # Collision present
 
-        rule = CollisionConditionDirectionRule(
+        rule = CollisionConditionRule(
             direction_rule=orthogonal_direction,
             conditions=[(True, "none")],
             condition_mode="OR",
@@ -109,7 +109,7 @@ class RuleTest(TestCase):
             (1, 0): AgentState(PointSet([(1, 0)]), "down", 2, 1)
         }
 
-        rule = CollisionConditionDirectionRule(
+        rule = CollisionConditionRule(
             conditions=COLLIDE_ALL,
             condition_mode="OR",
             update_position=False,
@@ -150,7 +150,7 @@ class RuleTest(TestCase):
             (0, 1): AgentState(PointSet([(0, 1)]), "none", 2, 1)  # Not border color
         }
 
-        rule = CollisionConditionDirectionRule(
+        rule = CollisionConditionRule(
             conditions=COLLIDE_ALL,
             condition_mode="OR",
             update_position=False,

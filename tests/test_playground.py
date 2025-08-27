@@ -8,7 +8,7 @@ from arc_puzzle_generator.agent import Agent
 from arc_puzzle_generator.direction import identity_direction
 from arc_puzzle_generator.geometry import PointSet
 from arc_puzzle_generator.playground import Playground
-from arc_puzzle_generator.rule import RuleNode, OutOfGridRule, CollisionConditionDirectionRule
+from arc_puzzle_generator.rule import RuleNode, OutOfGridRule, CollisionConditionRule
 
 
 class PlaygroundTestCase(TestCase):
@@ -18,7 +18,7 @@ class PlaygroundTestCase(TestCase):
             position=PointSet([(0, 0)]),
             direction="right",
             label='A',
-            node=RuleNode(CollisionConditionDirectionRule(
+            node=RuleNode(CollisionConditionRule(
                 direction_rule=identity_direction,
                 conditions=[(False, "none")]
             )),
@@ -29,7 +29,7 @@ class PlaygroundTestCase(TestCase):
             position=PointSet([(1, 1)]),
             direction="right",
             label='B',
-            node=RuleNode(CollisionConditionDirectionRule(
+            node=RuleNode(CollisionConditionRule(
                 direction_rule=identity_direction,
                 conditions=[(False, "none")]
             )),
@@ -62,7 +62,7 @@ class PlaygroundTestCase(TestCase):
             position=PointSet([(0, 0)]),
             direction="right",
             label='A',
-            node=RuleNode(CollisionConditionDirectionRule(
+            node=RuleNode(CollisionConditionRule(
                 direction_rule=identity_direction,
                 conditions=[(False, "none")]
             )),
@@ -73,7 +73,7 @@ class PlaygroundTestCase(TestCase):
             position=PointSet([(1, 1)]),
             direction="right",
             label='B',
-            node=RuleNode(CollisionConditionDirectionRule(
+            node=RuleNode(CollisionConditionRule(
                 direction_rule=identity_direction,
                 conditions=[(False, "none")]
             )),
@@ -105,7 +105,7 @@ class PlaygroundTestCase(TestCase):
             position=PointSet([(0, 0)]),
             direction="right",
             label='A',
-            node=RuleNode(CollisionConditionDirectionRule(
+            node=RuleNode(CollisionConditionRule(
                 direction_rule=identity_direction,
                 conditions=[(False, "none")]
             )),
@@ -136,7 +136,7 @@ class PlaygroundTestCase(TestCase):
         node = RuleNode(
             OutOfGridRule(grid_size=grid_size),
             alternative_node=RuleNode(
-                CollisionConditionDirectionRule(
+                CollisionConditionRule(
                     direction_rule=identity_direction,
                     conditions=[(False, "none")]
                 )

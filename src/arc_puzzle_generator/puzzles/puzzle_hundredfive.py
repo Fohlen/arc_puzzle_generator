@@ -7,7 +7,7 @@ from arc_puzzle_generator.direction import identity_direction
 from arc_puzzle_generator.geometry import Point, PointSet, Direction
 from arc_puzzle_generator.physics import shift, direction_to_unit_vector
 from arc_puzzle_generator.playground import Playground
-from arc_puzzle_generator.rule import RuleNode, OutOfGridRule, CollisionConditionDirectionRule
+from arc_puzzle_generator.rule import RuleNode, OutOfGridRule, CollisionConditionRule
 from arc_puzzle_generator.utils.grid import unmask
 
 
@@ -62,7 +62,7 @@ def puzzle_hundredfive(input_grid: np.ndarray) -> Playground:
                 label="blue",
                 colors=iter(colors),
                 node=RuleNode(
-                    CollisionConditionDirectionRule(
+                    CollisionConditionRule(
                         direction_rule=identity_direction,
                         conditions=[(False, "none")]
                     ),
@@ -79,7 +79,7 @@ def puzzle_hundredfive(input_grid: np.ndarray) -> Playground:
                     node=RuleNode(
                         OutOfGridRule(grid_size=input_grid.shape),
                         alternative_node=RuleNode(
-                            CollisionConditionDirectionRule(
+                            CollisionConditionRule(
                                 direction_rule=identity_direction,
                                 conditions=[(False, "none")]
                             ),
@@ -97,7 +97,7 @@ def puzzle_hundredfive(input_grid: np.ndarray) -> Playground:
                     node=RuleNode(
                         OutOfGridRule(grid_size=input_grid.shape),
                         alternative_node=RuleNode(
-                            CollisionConditionDirectionRule(
+                            CollisionConditionRule(
                                 direction_rule=identity_direction,
                                 conditions=[(False, "none")]
                             ),

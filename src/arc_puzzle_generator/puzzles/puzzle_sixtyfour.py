@@ -8,7 +8,7 @@ from arc_puzzle_generator.geometry import PointSet, in_grid, Direction
 from arc_puzzle_generator.neighbourhood import moore_neighbours
 from arc_puzzle_generator.physics import direction_to_unit_vector
 from arc_puzzle_generator.playground import Playground
-from arc_puzzle_generator.rule import RuleNode, OutOfGridRule, CollisionConditionDirectionRule
+from arc_puzzle_generator.rule import RuleNode, OutOfGridRule, CollisionConditionRule
 from arc_puzzle_generator.utils.entities import colour_count, find_connected_objects
 from arc_puzzle_generator.utils.grid import unmask
 
@@ -59,7 +59,7 @@ def puzzle_sixtyfour(input_grid: np.ndarray) -> Playground:
                             node=RuleNode(
                                 OutOfGridRule(grid_size=input_grid.shape),
                                 alternative_node=RuleNode(
-                                    CollisionConditionDirectionRule(
+                                    CollisionConditionRule(
                                         direction_rule=identity_direction,
                                         conditions=[(False, "none")]
                                     ),
@@ -75,7 +75,7 @@ def puzzle_sixtyfour(input_grid: np.ndarray) -> Playground:
                             node=RuleNode(
                                 OutOfGridRule(grid_size=input_grid.shape),
                                 alternative_node=RuleNode(
-                                    CollisionConditionDirectionRule(
+                                    CollisionConditionRule(
                                         direction_rule=identity_direction,
                                         conditions=[(False, "none")]
                                     ),

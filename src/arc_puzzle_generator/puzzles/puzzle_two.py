@@ -8,7 +8,7 @@ from arc_puzzle_generator.direction import identity_direction
 from arc_puzzle_generator.geometry import PointSet, Direction
 from arc_puzzle_generator.neighbourhood import zero_neighbours
 from arc_puzzle_generator.playground import Playground
-from arc_puzzle_generator.rule import RuleNode, CollisionConditionDirectionRule
+from arc_puzzle_generator.rule import RuleNode, CollisionConditionRule
 from arc_puzzle_generator.topology import identity_topology
 from arc_puzzle_generator.utils.color_sequence_iterator import ColorSequenceIterator
 from arc_puzzle_generator.utils.entities import colour_count, find_connected_objects, starting_point, \
@@ -104,7 +104,7 @@ def puzzle_two(input_grid: np.ndarray) -> Playground:
                 ),
                 direction=direction,
                 label="puzzle_two_agent",
-                node=RuleNode(CollisionConditionDirectionRule(
+                node=RuleNode(CollisionConditionRule(
                     direction_rule=identity_direction,
                     conditions=[(False, "none")]
                 )),

@@ -90,13 +90,13 @@ COLLIDE_ALL: Sequence[tuple[bool, Direction]] = [
 ]
 
 
-class CollisionConditionDirectionRule(Rule):
+class CollisionConditionRule(Rule):
     """
-    The CollisionConditionDirectionRule applies a direction rule based on a set of conditions.
+    The `CollisionConditionRule` applies logic based on a set of condition and the agents current direction.
     Each condition is a tuple of boolean and Direction, where the boolean indicates whether the condition must be met, and the Direction specifies which direction to select to check for a collision.
     If a direction is none it means the current direction of the agent is used.
 
-    If all conditions are met, the direction rule is applied to the agent's current direction.
+    If all conditions are met, the logic of the rule is applied.
     """
 
     def __init__(
@@ -110,6 +110,17 @@ class CollisionConditionDirectionRule(Rule):
             entity_redirect: bool = False,
             resize_entity_to_exit: bool = False,
     ):
+        """
+        Initialize a CollisionConditionRule.
+        :param conditions: All conditions.
+        :param condition_mode: The condition mode.
+        :param direction_rule: A direction rule, which is applied to the current direction of the agent.
+        :param border_color: A border color to be applied to collisions based on the conditions.
+        :param update_position: Whether to update the current position of the agent.
+        :param update_agent_color_on_collision: Whether to update the agent color on collisions.
+        :param entity_redirect: Whether to update the agents position and direction to the entity, on collisions.
+        :param resize_entity_to_exit: Whether to resize the entity to exit.
+        """
         self.direction_rule = direction_rule
         self.conditions = conditions
         self.condition_mode = condition_mode

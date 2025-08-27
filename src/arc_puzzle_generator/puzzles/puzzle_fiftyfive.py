@@ -8,7 +8,7 @@ from arc_puzzle_generator.geometry import PointSet, in_grid
 from arc_puzzle_generator.neighbourhood import moore_neighbours
 from arc_puzzle_generator.physics import direction_to_unit_vector, shift
 from arc_puzzle_generator.playground import Playground
-from arc_puzzle_generator.rule import RuleNode, CollisionConditionDirectionRule
+from arc_puzzle_generator.rule import RuleNode, CollisionConditionRule
 from arc_puzzle_generator.utils.entities import colour_count, find_connected_objects
 
 
@@ -68,7 +68,7 @@ def puzzle_fiftyfive(
                         label="agent",
                         colors=cycle([foreground_color]),
                         node=RuleNode(
-                            CollisionConditionDirectionRule(
+                            CollisionConditionRule(
                                 direction_rule=identity_direction,
                                 conditions=[(False, "none")]
                             ),
@@ -86,7 +86,7 @@ def puzzle_fiftyfive(
                             label="agent",
                             colors=cycle([foreground_color]),
                             node=RuleNode(
-                                CollisionConditionDirectionRule(
+                                CollisionConditionRule(
                                     direction_rule=identity_direction,
                                     conditions=[(False, "none")]
                                 ),

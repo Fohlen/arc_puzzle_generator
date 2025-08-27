@@ -8,7 +8,7 @@ from arc_puzzle_generator.neighbourhood import moore_neighbours
 from arc_puzzle_generator.physics import direction_to_unit_vector
 from arc_puzzle_generator.playground import Playground
 from arc_puzzle_generator.rule import RuleNode, StayInGridRule, TerminateAtPointRule, \
-    CollisionConditionDirectionRule
+    CollisionConditionRule
 from arc_puzzle_generator.topology import all_topology
 from arc_puzzle_generator.utils.grid import unmask
 
@@ -37,7 +37,7 @@ def puzzle_seventyfour(input_grid: np.ndarray) -> Playground:
             alternative_node=RuleNode(
                 StayInGridRule(grid_size=input_grid.shape, direction_rule=counterclockwise_direction_90),
                 alternative_node=RuleNode(
-                    CollisionConditionDirectionRule(
+                    CollisionConditionRule(
                         direction_rule=counterclockwise_direction_90,
                         conditions=[
                             (True, "up"),
@@ -45,7 +45,7 @@ def puzzle_seventyfour(input_grid: np.ndarray) -> Playground:
                         ]
                     ),
                     alternative_node=RuleNode(
-                        CollisionConditionDirectionRule(
+                        CollisionConditionRule(
                             direction_rule=clockwise_direction_90,
                             conditions=[
                                 (True, "down"),
@@ -54,7 +54,7 @@ def puzzle_seventyfour(input_grid: np.ndarray) -> Playground:
                             ]
                         ),
                         alternative_node=RuleNode(
-                            CollisionConditionDirectionRule(
+                            CollisionConditionRule(
                                 direction_rule=identity_direction,
                                 conditions=[(False, "none")],
                             )

@@ -7,7 +7,7 @@ from arc_puzzle_generator.direction import clockwise_direction_90, identity_dire
 from arc_puzzle_generator.neighbourhood import moore_neighbours
 from arc_puzzle_generator.playground import Playground
 from arc_puzzle_generator.rule import RuleNode, TrappedCollisionRule, ProximityRule, \
-    CollisionConditionDirectionRule
+    CollisionConditionRule
 from arc_puzzle_generator.topology import all_topology
 from arc_puzzle_generator.utils.grid import unmask
 
@@ -54,7 +54,7 @@ def puzzle_twentyfive(input_grid: np.ndarray) -> Playground:
                         points=foreground_points,
                     ),
                     alternative_node=RuleNode(
-                        CollisionConditionDirectionRule(
+                        CollisionConditionRule(
                             direction_rule=identity_direction,
                             conditions=[(False, "none")]
                         ),

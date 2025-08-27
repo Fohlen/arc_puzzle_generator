@@ -6,7 +6,7 @@ from arc_puzzle_generator.agent import Agent
 from arc_puzzle_generator.direction import identity_direction
 from arc_puzzle_generator.neighbourhood import moore_neighbours
 from arc_puzzle_generator.playground import Playground
-from arc_puzzle_generator.rule import RuleNode, OutOfGridRule, CollisionConditionDirectionRule
+from arc_puzzle_generator.rule import RuleNode, OutOfGridRule, CollisionConditionRule
 from arc_puzzle_generator.topology import all_topology
 from arc_puzzle_generator.utils.entities import find_connected_objects, relative_box_direction, mask_to_bbox
 from arc_puzzle_generator.utils.grid import unmask
@@ -61,12 +61,12 @@ def puzzle_fourtyfour(input_grid: np.ndarray) -> Playground:
         node=RuleNode(
             OutOfGridRule(grid_size=input_grid.shape),
             alternative_node=RuleNode(
-                CollisionConditionDirectionRule(
+                CollisionConditionRule(
                     conditions=[(True, "none")],
                     entity_redirect=True,
                 ),
                 next_node=RuleNode(
-                    CollisionConditionDirectionRule(
+                    CollisionConditionRule(
                         conditions=[(True, "none"), (False, "none")],
                         condition_mode="OR",
                         update_position=False,
@@ -74,7 +74,7 @@ def puzzle_fourtyfour(input_grid: np.ndarray) -> Playground:
                     )
                 ),
                 alternative_node=RuleNode(
-                    CollisionConditionDirectionRule(
+                    CollisionConditionRule(
                         direction_rule=identity_direction,
                         conditions=[(False, "none")]
                     ),

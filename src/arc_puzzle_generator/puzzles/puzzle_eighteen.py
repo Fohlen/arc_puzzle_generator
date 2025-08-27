@@ -7,7 +7,7 @@ from arc_puzzle_generator.agent import Agent
 from arc_puzzle_generator.geometry import PointSet
 from arc_puzzle_generator.neighbourhood import moore_neighbours
 from arc_puzzle_generator.playground import Playground
-from arc_puzzle_generator.rule import RuleNode, OutOfGridRule, GravityRule, CollisionConditionDirectionRule
+from arc_puzzle_generator.rule import RuleNode, OutOfGridRule, GravityRule, CollisionConditionRule
 from arc_puzzle_generator.topology import all_topology
 from arc_puzzle_generator.utils.grid import unmask
 
@@ -42,7 +42,7 @@ def puzzle_eighteen(input_grid: np.ndarray) -> Playground:
             alternative_node=RuleNode(
                 GravityRule(grid_size=input_grid.shape),
                 alternative_node=RuleNode(
-                    CollisionConditionDirectionRule(
+                    CollisionConditionRule(
                         conditions=[(True, "none"), (False, "none")],
                         condition_mode="OR",
                         update_position=False,
