@@ -65,10 +65,11 @@ def puzzle_ten(input_grid: np.ndarray) -> Playground:
     node = RuleNode(
         OutOfGridRule(grid_size=(input_grid.shape[0], input_grid.shape[1])),
         alternative_node=RuleNode(
-            CollisionBorderRule(
-                border_color=border_color,
+            CollisionConditionDirectionRule(
+                conditions=[(True, "none")],
                 direction_rule=snake_direction,
-                select_direction=True
+                update_position=False,
+                border_color=border_color,
             ),
             next_node=RuleNode(
                 cast(Rule, backtrack_rule),

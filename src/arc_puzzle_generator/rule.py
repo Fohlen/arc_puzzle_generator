@@ -2,7 +2,7 @@ import math
 import random
 from collections import deque
 from itertools import chain, cycle
-from typing import Protocol, Optional, Sequence, Literal
+from typing import Protocol, Optional, Sequence, Literal, Iterator
 
 from arc_puzzle_generator.direction import DirectionTransformer
 from arc_puzzle_generator.direction import absolute_direction
@@ -128,12 +128,14 @@ class CollisionConditionDirectionRule(Rule):
             conditions: Sequence[Condition],
             condition_mode: ConditionMode = "AND",
             direction_rule: Optional[DirectionTransformer] = None,
+            border_color: Optional[int] = None,
             update_position: bool = True,
             update_agent_color_on_collision: bool = False,
     ):
         self.direction_rule = direction_rule
         self.conditions = conditions
         self.condition_mode = condition_mode
+        self.border_color = border_color
         self.update_position = update_position
         self.update_agent_color_on_collision = update_agent_color_on_collision
 
@@ -186,6 +188,7 @@ class CollisionConditionDirectionRule(Rule):
             new_position = states[-1].position.shift(direction_to_unit_vector(new_direction)) if \
                 self.update_position else states[-1].position
             new_charge = states[-1].charge - 1 if states[-1].charge > 0 else states[-1].charge
+            new_colors: Iterator[int | Sequence[int]]
 
             if self.update_agent_color_on_collision:
                 new_colors = cycle([collision_mapping[col].color for col in collision_met])
@@ -196,6 +199,19 @@ class CollisionConditionDirectionRule(Rule):
                     color=next(new_colors),
                     charge=new_charge,
                 ), new_colors, []
+            elif self.border_color is not None and len(collision_met) == 1:
+                point = next(iter(collision_met))
+
+                if not collision_mapping[point].color == self.border_color:
+                    # If the agent collides with the border, change its color to the border color
+                    new_colors = chain([self.border_color], colors)
+
+                    return AgentState(
+                        position=collision_met,
+                        direction=new_direction,
+                        color=next(new_colors),
+                        charge=new_charge,
+                    ), new_colors, []
             else:
                 return AgentState(
                     position=new_position,
