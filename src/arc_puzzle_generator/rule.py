@@ -107,6 +107,7 @@ class CollisionConditionDirectionRule(Rule):
             border_color: Optional[int] = None,
             update_position: bool = True,
             update_agent_color_on_collision: bool = False,
+            entity_redirect: bool = False,
     ):
         self.direction_rule = direction_rule
         self.conditions = conditions
@@ -114,6 +115,7 @@ class CollisionConditionDirectionRule(Rule):
         self.border_color = border_color
         self.update_position = update_position
         self.update_agent_color_on_collision = update_agent_color_on_collision
+        self.entity_redirect = entity_redirect
 
     def __call__(
             self,
@@ -138,6 +140,7 @@ class CollisionConditionDirectionRule(Rule):
                 direction = states[-1].direction
             else:
                 direction = absolute_direction(states[-1].direction, condition_direction)
+
             sub_collision = resolve_point_set_selectors_with_direction(
                 states[-1].position, collision, direction
             )
@@ -175,6 +178,21 @@ class CollisionConditionDirectionRule(Rule):
                     color=next(new_colors),
                     charge=new_charge,
                 ), new_colors, []
+            elif self.entity_redirect:
+                positions = PointSet(
+                    [entity_point for point in collision for entity_point in collision_mapping[point].position]
+                )
+                directions = set([
+                    collision_mapping[col].direction for col in collision
+                ])
+
+                if len(positions) > 0:
+                    return AgentState(
+                        position=positions,
+                        direction=next(iter(directions)),
+                        color=next(colors),
+                        charge=states[-1].charge if states[-1].charge > 0 else states[-1].charge,
+                    ), colors, []
             elif self.border_color is not None and len(collision_met) == 1:
                 point = next(iter(collision_met))
 
