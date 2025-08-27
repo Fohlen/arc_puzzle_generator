@@ -1,5 +1,4 @@
 from itertools import cycle
-from typing import cast
 
 import numpy as np
 
@@ -7,8 +6,7 @@ from arc_puzzle_generator.agent import Agent
 from arc_puzzle_generator.direction import identity_direction
 from arc_puzzle_generator.neighbourhood import moore_neighbours
 from arc_puzzle_generator.playground import Playground
-from arc_puzzle_generator.rule import RuleNode, OutOfGridRule, Rule, resize_entity_to_exit_rule, \
-    CollisionConditionDirectionRule
+from arc_puzzle_generator.rule import RuleNode, OutOfGridRule, CollisionConditionDirectionRule
 from arc_puzzle_generator.topology import all_topology
 from arc_puzzle_generator.utils.entities import find_connected_objects, relative_box_direction, mask_to_bbox
 from arc_puzzle_generator.utils.grid import unmask
@@ -68,7 +66,12 @@ def puzzle_fourtyfour(input_grid: np.ndarray) -> Playground:
                     entity_redirect=True,
                 ),
                 next_node=RuleNode(
-                    cast(Rule, resize_entity_to_exit_rule)
+                    CollisionConditionDirectionRule(
+                        conditions=[(True, "none"), (False, "none")],
+                        condition_mode="OR",
+                        update_position=False,
+                        resize_entity_to_exit=True,
+                    )
                 ),
                 alternative_node=RuleNode(
                     CollisionConditionDirectionRule(

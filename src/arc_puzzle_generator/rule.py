@@ -108,6 +108,7 @@ class CollisionConditionDirectionRule(Rule):
             update_position: bool = True,
             update_agent_color_on_collision: bool = False,
             entity_redirect: bool = False,
+            resize_entity_to_exit: bool = False,
     ):
         self.direction_rule = direction_rule
         self.conditions = conditions
@@ -116,6 +117,7 @@ class CollisionConditionDirectionRule(Rule):
         self.update_position = update_position
         self.update_agent_color_on_collision = update_agent_color_on_collision
         self.entity_redirect = entity_redirect
+        self.resize_entity_to_exit = resize_entity_to_exit
 
     def __call__(
             self,
@@ -193,6 +195,14 @@ class CollisionConditionDirectionRule(Rule):
                         color=next(colors),
                         charge=states[-1].charge if states[-1].charge > 0 else states[-1].charge,
                     ), colors, []
+            elif self.resize_entity_to_exit:
+                # NOTE: Introduce a switch to use collision_met or full collision
+                return AgentState(
+                    position=resolve_cell_selection(new_position, new_direction),
+                    color=next(colors),
+                    charge=new_charge,
+                    direction=new_direction,
+                ), colors, []
             elif self.border_color is not None and len(collision_met) == 1:
                 point = next(iter(collision_met))
 
