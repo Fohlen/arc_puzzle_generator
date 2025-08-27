@@ -266,35 +266,6 @@ def resize_entity_to_exit_rule(
     ), colors, []
 
 
-def collision_color_mapping_rule(
-        states: Sequence[AgentState],
-        colors: ColorIterator,
-        collision: PointSet,
-        collision_mapping: AgentStateMapping
-) -> RuleResult:
-    """
-    Handle the collision by updating the agent's colors based on the collision points.
-
-    :param states: The current states of the agent.
-    :param colors: An iterator over the agent's colors.
-    :param collision: The set of points that are in collision with the agent.
-    :param collision_mapping: The mapping between collision points and the agent's colors.
-    :return: A new state with updated colors.
-    """
-
-    if len(collision) > 0:
-        new_colors = cycle([collision_mapping[collision].color for collision in collision])
-
-        return AgentState(
-            position=states[-1].position,
-            direction=states[-1].direction,
-            color=next(new_colors),
-            charge=states[-1].charge,
-        ), new_colors, []
-
-    return None
-
-
 class CollisionBorderRule(Rule):
     """
     A rule that changes the collision border's color to the given border color, if applicable.
