@@ -114,9 +114,9 @@ class CollisionConditionDirectionRule(Rule):
 
     def __init__(
             self,
-            direction_rule: DirectionTransformer,
             conditions: Sequence[Condition],
             condition_mode: ConditionMode = "AND",
+            direction_rule: Optional[DirectionTransformer] = None,
     ):
         self.direction_rule = direction_rule
         self.conditions = conditions
@@ -157,11 +157,15 @@ class CollisionConditionDirectionRule(Rule):
 
         if (self.condition_mode == "AND" and all(conditions_met)) or (
                 self.condition_mode == "OR" and any(conditions_met)):
-            if self.condition_mode == "OR":
-                axis = collision_axis(collision)
-                new_direction = self.direction_rule(states[-1].direction, axis)
-            else:
-                new_direction = self.direction_rule(states[-1].direction)
+            new_direction = states[-1].direction
+
+            if self.direction_rule is not None:
+                if self.condition_mode == "OR":
+                    axis = collision_axis(collision)
+                    new_direction = self.direction_rule(states[-1].direction, axis)
+                else:
+                    new_direction = self.direction_rule(states[-1].direction)
+
             new_position = states[-1].position.shift(direction_to_unit_vector(new_direction))
 
             return AgentState(
