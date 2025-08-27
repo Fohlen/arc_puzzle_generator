@@ -7,7 +7,7 @@ from arc_puzzle_generator.geometry import Direction, PointSet
 from arc_puzzle_generator.neighbourhood import resolve_point_set_neighbourhood, MooreNeighbourhood, \
     von_neumann_neighbours
 from arc_puzzle_generator.playground import Playground
-from arc_puzzle_generator.rule import RuleNode, OutOfGridRule, ProximityRule, RewardRule
+from arc_puzzle_generator.rule import RuleNode, OutOfGridRule, ProximityRule
 from arc_puzzle_generator.topology import all_topology
 from arc_puzzle_generator.utils.entities import find_connected_objects
 from arc_puzzle_generator.utils.grid import unmask
