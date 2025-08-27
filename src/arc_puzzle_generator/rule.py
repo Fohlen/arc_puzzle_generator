@@ -227,29 +227,6 @@ class CollisionConditionDirectionRule(Rule):
         return None
 
 
-def resize_entity_to_exit_rule(
-        states: Sequence[AgentState],
-        colors: ColorIterator,
-        collision: PointSet,
-        collision_mapping: AgentStateMapping
-):
-    """
-    Shrinks back an entity to fit the exit direction (only select the points leaving the entity)
-    :param states: The current states of the agent.
-    :param colors: The iterator over the agent's colors.
-    :param collision: The set of points that are in collision with the agent.
-    :param collision_mapping: A mapping between collision points and the agent's colors.
-    :return: A new state with the updated positions
-    """
-
-    return AgentState(
-        position=resolve_cell_selection(states[-1].position, states[-1].direction),
-        color=next(colors),
-        charge=states[-1].charge if states[-1].charge > 0 else states[-1].charge,
-        direction=states[-1].direction,
-    ), colors, []
-
-
 class CollisionFillRule(Rule):
     def __init__(
             self,
