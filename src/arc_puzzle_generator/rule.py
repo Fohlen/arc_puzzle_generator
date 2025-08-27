@@ -2,7 +2,7 @@ import math
 import random
 from collections import deque
 from itertools import chain, cycle
-from typing import Protocol, Optional, Sequence
+from typing import Protocol, Optional, Sequence, Literal, Iterator
 
 from arc_puzzle_generator.direction import DirectionTransformer
 from arc_puzzle_generator.direction import absolute_direction
@@ -52,61 +52,227 @@ class RuleNode:
         self.alternative_node = alternative_node
 
 
-def identity_rule(states: Sequence[AgentState], colors: ColorIterator, *args) -> RuleResult:
+def backtrack_rule(
+        states: Sequence[AgentState],
+        colors: ColorIterator,
+        collision: PointSet,
+        collision_mapping: AgentStateMapping
+) -> RuleResult:
     """
-    An identity rule that returns the state unchanged.
+    Backtrack the agent to its previous position
 
     :param states: The current states of the agent.
     :param colors: An iterator over the agent's colors.
-    :return: The same state as the input.
+    :param collision: The set of points that are in collision with the agent.
+    :param collision_mapping: The mapping between collision points and the agent's colors.
+    :return: A new state with the position set to the previous position.
     """
 
-    return states[-1], colors, []
+    return states[-2], colors, []
 
 
-class DirectionRule(Rule):
+Condition = tuple[bool, Direction]
+"""
+A condition is a tuple of a boolean and a Direction, indicating whether a collision is happening in the indicated direction or not.
+"""
+
+ConditionMode = Literal["AND", "OR"]
+
+COLLIDE_ALL: Sequence[tuple[bool, Direction]] = [
+    (True, "left"),
+    (True, "top_left"),
+    (True, "up"),
+    (True, "top_right"),
+    (True, "right"),
+    (True, "bottom_right"),
+    (True, "down"),
+    (True, "bottom_left"),
+]
+
+
+class CollisionConditionRule(Rule):
     """
-    A rule that changes the direction of an agent based on the given direction rule.
+    The `CollisionConditionRule` applies logic based on a set of condition and the agents current direction.
+    Each condition is a tuple of boolean and Direction, where the boolean indicates whether the condition must be met, and the Direction specifies which direction to select to check for a collision.
+    If a direction is none it means the current direction of the agent is used.
+
+    If all conditions are met, the logic of the rule is applied.
     """
 
     def __init__(
             self,
-            direction_rule: DirectionTransformer,
-            select_direction: bool = False,
-    ) -> None:
+            conditions: Sequence[Condition],
+            condition_mode: ConditionMode = "AND",
+            direction_rule: Optional[DirectionTransformer] = None,
+            border_color: Optional[int] = None,
+            update_position: bool = True,
+            update_agent_color_on_collision: bool = False,
+            entity_redirect: bool = False,
+            resize_entity_to_exit: bool = False,
+    ):
+        """
+        Initialize a CollisionConditionRule.
+        :param conditions: All conditions.
+        :param condition_mode: The condition mode.
+        :param direction_rule: A direction rule, which is applied to the current direction of the agent.
+        :param border_color: A border color to be applied to collisions based on the conditions.
+        :param update_position: Whether to update the current position of the agent.
+        :param update_agent_color_on_collision: Whether to update the agent color on collisions.
+        :param entity_redirect: Whether to update the agents position and direction to the entity, on collisions.
+        :param resize_entity_to_exit: Whether to resize the entity to exit.
+        """
         self.direction_rule = direction_rule
-        self.select_direction = select_direction
+        self.conditions = conditions
+        self.condition_mode = condition_mode
+        self.border_color = border_color
+        self.update_position = update_position
+        self.update_agent_color_on_collision = update_agent_color_on_collision
+        self.entity_redirect = entity_redirect
+        self.resize_entity_to_exit = resize_entity_to_exit
 
     def __call__(
             self,
             states: Sequence[AgentState],
             colors: ColorIterator,
             collision: PointSet,
-            *args
+            collision_mapping: AgentStateMapping
     ) -> RuleResult:
         """
-        Change the direction of the agent based on the direction rule.
+        Apply the direction rule based on the conditions.
+        :param states: The current states of the agent.
+        :param colors: The iterator over the agent's colors.
+        :param collision: The set of points that are in collision with the agent.
+        :param collision_mapping: The mapping between collision points and the agent's colors.
+        :return: A new state with the updated direction if all conditions are met, otherwise None.
+        """
+
+        conditions_met = []
+        collision_met = PointSet()
+        for condition, condition_direction in self.conditions:
+            if condition_direction == "none":
+                direction = states[-1].direction
+            else:
+                direction = absolute_direction(states[-1].direction, condition_direction)
+
+            sub_collision = resolve_point_set_selectors_with_direction(
+                states[-1].position, collision, direction
+            )
+
+            if condition and len(sub_collision) > 0:
+                conditions_met.append(True)
+                collision_met.update(sub_collision)
+            elif not condition and len(sub_collision) == 0:
+                conditions_met.append(True)
+            else:
+                conditions_met.append(False)
+
+        if (self.condition_mode == "AND" and all(conditions_met)) or (
+                self.condition_mode == "OR" and any(conditions_met)):
+            next_direction = states[-1].direction
+
+            if self.direction_rule is not None:
+                if self.condition_mode == "OR":
+                    axis = collision_axis(collision)
+                    next_direction = self.direction_rule(states[-1].direction, axis)
+                else:
+                    next_direction = self.direction_rule(states[-1].direction)
+
+            next_position = states[-1].position.shift(direction_to_unit_vector(next_direction)) if \
+                self.update_position else states[-1].position
+            next_charge = states[-1].charge - 1 if states[-1].charge > 0 else states[-1].charge
+            next_colors: Iterator[int | Sequence[int]]
+
+            if self.update_agent_color_on_collision:
+                next_colors = cycle([collision_mapping[col].color for col in collision_met])
+
+                return AgentState(
+                    position=next_position,
+                    direction=next_direction,
+                    color=next(next_colors),
+                    charge=next_charge,
+                ), next_colors, []
+            elif self.entity_redirect:
+                positions = PointSet(
+                    [entity_point for point in collision for entity_point in collision_mapping[point].position]
+                )
+                directions = set([
+                    collision_mapping[col].direction for col in collision
+                ])
+
+                if len(positions) > 0:
+                    return AgentState(
+                        position=positions,
+                        direction=next(iter(directions)),
+                        color=next(colors),
+                        charge=states[-1].charge if states[-1].charge > 0 else states[-1].charge,
+                    ), colors, []
+            elif self.resize_entity_to_exit:
+                # NOTE: Introduce a switch to use collision_met or full collision
+                return AgentState(
+                    position=resolve_cell_selection(next_position, next_direction),
+                    color=next(colors),
+                    charge=next_charge,
+                    direction=next_direction,
+                ), colors, []
+            elif self.border_color is not None and len(collision_met) == 1:
+                point = next(iter(collision_met))
+
+                if not collision_mapping[point].color == self.border_color:
+                    # If the agent collides with the border, change its color to the border color
+                    next_colors = chain([self.border_color], colors)
+
+                    return AgentState(
+                        position=collision_met,
+                        direction=next_direction,
+                        color=next(next_colors),
+                        charge=next_charge,
+                    ), next_colors, []
+            else:
+                return AgentState(
+                    position=next_position,
+                    direction=next_direction,
+                    color=next(colors),
+                    charge=next_charge,
+                ), colors, []
+
+        return None
+
+
+class CollisionFillRule(Rule):
+    def __init__(
+            self,
+            fill_color: int,
+    ):
+        self.fill_color = fill_color
+
+    def __call__(
+            self,
+            states: Sequence[AgentState],
+            colors: ColorIterator,
+            collision: PointSet,
+            collision_mapping: AgentStateMapping
+    ) -> RuleResult:
+        """
+        Fill the collision area with the fill color.
 
         :param states: The current states of the agent.
         :param colors: An iterator over the agent's colors.
         :param collision: The set of points that are in collision with the agent.
-        :return: A new state with the updated direction.
+        :param collision_mapping: The mapping between collision points and the agent's colors.
+        :return: A new state with the fill color applied to the collision area.
         """
 
-        sub_collision = resolve_point_set_selectors_with_direction(
-            states[-1].position, collision, states[-1].direction
-        ) if self.select_direction else collision
+        if len(collision) > 0 and states[-1].color == self.fill_color:
+            collision_colors = [collision_mapping[point].color for point in collision]
+            if any(color != self.fill_color for color in collision_colors):
+                new_colors = chain([self.fill_color], colors)
 
-        if len(sub_collision) == 0:
-            new_direction = self.direction_rule(states[-1].direction)
-            new_position = states[-1].position.shift(direction_to_unit_vector(new_direction))
-
-            return AgentState(
-                position=new_position,
-                direction=new_direction,
-                color=next(colors),
-                charge=states[-1].charge - 1 if states[-1].charge > 0 else states[-1].charge,
-            ), colors, []
+                return AgentState(
+                    position=PointSet(states[-1].position | collision),
+                    direction=states[-1].direction,
+                    color=next(new_colors),
+                    charge=states[-1].charge,
+                ), new_colors, []
 
         return None
 
@@ -146,84 +312,6 @@ class OutOfGridRule(Rule):
             ), colors, []
 
         return None
-
-
-class CollisionDirectionRule(Rule):
-    """
-    A rule that handles collisions by applying a direction rule on collision.
-    """
-
-    def __init__(
-            self,
-            direction_rule: DirectionTransformer,
-            select_direction: bool = False,
-    ) -> None:
-        self.direction_rule = direction_rule
-        self.select_direction = select_direction
-
-    def __call__(
-            self,
-            states: Sequence[AgentState],
-            colors: ColorIterator,
-            collision: PointSet,
-            collision_mapping: AgentStateMapping
-    ) -> RuleResult:
-        """
-        Handle the collision by returning the current state unchanged.
-
-        :param states: The current states of the agent.
-        :param colors: An iterator over the agent's colors.
-        :param collision: The set of points that are in collision with the agent.
-        :param collision_mapping: The mapping between collision points and the agent's colors.
-        :return: The same state as the input.
-        """
-
-        sub_collision = resolve_point_set_selectors_with_direction(
-            states[-1].position, collision, states[-1].direction
-        ) if self.select_direction else collision
-
-        if len(sub_collision) > 0:
-            axis = collision_axis(sub_collision)
-            new_direction = self.direction_rule(states[-1].direction, axis)
-            new_position = states[-1].position.shift(direction_to_unit_vector(new_direction))
-
-            return AgentState(
-                position=new_position,
-                direction=new_direction,
-                color=next(colors),
-                charge=states[-1].charge - 1 if states[-1].charge > 0 else states[-1].charge,
-            ), colors, []
-
-        return None
-
-
-def collision_color_mapping_rule(
-        states: Sequence[AgentState],
-        colors: ColorIterator,
-        collision: PointSet,
-        collision_mapping: AgentStateMapping
-) -> RuleResult:
-    """
-    Handle the collision by updating the agent's colors based on the collision points.
-
-    :param states: The current states of the agent.
-    :param colors: An iterator over the agent's colors.
-    :param collision: The set of points that are in collision with the agent.
-    :param collision_mapping: The mapping between collision points and the agent's colors.
-    :return: A new state with updated colors.
-    """
-
-    if len(collision) > 0:
-        new_colors = cycle([collision_mapping[collision].color for collision in collision])
-
-        return AgentState(
-            position=states[-1].position,
-            direction=states[-1].direction,
-            color=next(new_colors),
-            charge=states[-1].charge,
-        ), new_colors, []
-
-    return None
 
 
 class TrappedCollisionRule(Rule):
@@ -284,130 +372,6 @@ class TrappedCollisionRule(Rule):
                 charge=0,  # Set charge to 0 to indicate termination
             ), colors, []
         return None
-
-
-class CollisionBorderRule(Rule):
-    """
-    A rule that changes the collision border's color to the given border color, if applicable.
-    """
-
-    def __init__(
-            self,
-            border_color: int,
-            direction_rule: Optional[DirectionTransformer] = None,
-            select_direction: bool = False,
-    ) -> None:
-        self.border_color = border_color
-        self.direction_rule = direction_rule
-        self.select_direction = select_direction
-
-    def __call__(
-            self,
-            states: Sequence[AgentState],
-            colors: ColorIterator,
-            collision: PointSet,
-            collision_mapping: AgentStateMapping,
-    ) -> RuleResult:
-        sub_collision = resolve_point_set_selectors_with_direction(
-            states[-1].position, collision, states[-1].direction
-        ) if self.direction_rule is not None and self.select_direction else collision
-
-        if len(sub_collision) == 1:
-            point = next(iter(sub_collision))
-            if not collision_mapping[point].color == self.border_color:
-                # If the agent collides with the border, change its color to the border color
-                new_colors = chain([self.border_color], colors)
-
-                return AgentState(
-                    position=PointSet(sub_collision),
-                    direction=states[-1].direction,
-                    color=next(new_colors),
-                    charge=states[-1].charge,
-                ), new_colors, []
-
-        return None
-
-
-class CollisionFillRule(Rule):
-    def __init__(
-            self,
-            fill_color: int,
-    ):
-        self.fill_color = fill_color
-
-    def __call__(
-            self,
-            states: Sequence[AgentState],
-            colors: ColorIterator,
-            collision: PointSet,
-            collision_mapping: AgentStateMapping
-    ) -> RuleResult:
-        """
-        Fill the collision area with the fill color.
-
-        :param states: The current states of the agent.
-        :param colors: An iterator over the agent's colors.
-        :param collision: The set of points that are in collision with the agent.
-        :param collision_mapping: The mapping between collision points and the agent's colors.
-        :return: A new state with the fill color applied to the collision area.
-        """
-
-        if len(collision) > 0 and states[-1].color == self.fill_color:
-            collision_colors = [collision_mapping[point].color for point in collision]
-            if any(color != self.fill_color for color in collision_colors):
-                new_colors = chain([self.fill_color], colors)
-
-                return AgentState(
-                    position=PointSet(states[-1].position | collision),
-                    direction=states[-1].direction,
-                    color=next(new_colors),
-                    charge=states[-1].charge,
-                ), new_colors, []
-
-        return None
-
-
-def backtrack_rule(
-        states: Sequence[AgentState],
-        colors: ColorIterator,
-        collision: PointSet,
-        collision_mapping: AgentStateMapping
-) -> RuleResult:
-    """
-    Backtrack the agent to its previous position
-
-    :param states: The current states of the agent.
-    :param colors: An iterator over the agent's colors.
-    :param collision: The set of points that are in collision with the agent.
-    :param collision_mapping: The mapping between collision points and the agent's colors.
-    :return: A new state with the position set to the previous position.
-    """
-
-    return states[-2], colors, []
-
-
-def uncharge_rule(
-        states: Sequence[AgentState],
-        colors: ColorIterator,
-        collision: PointSet,
-        collision_mapping: AgentStateMapping
-) -> RuleResult:
-    """
-    Reduce the agent's charge by 1.
-
-    :param states: The current states of the agent.
-    :param colors: An iterator over the agent's colors.
-    :param collision: The set of points that are in collision with the agent.
-    :param collision_mapping: The mapping between collision points and the agent's colors.
-    :return: A new state with the charge set to 0.
-    """
-
-    return AgentState(
-        position=states[-1].position,
-        direction=states[-1].direction,
-        color=next(colors),
-        charge=max(0, states[-1].charge - 1),
-    ), colors, []
 
 
 class GravityRule(Rule):
@@ -743,132 +707,3 @@ class TerminateAtPointRule(Rule):
             ), colors, []
 
         return None
-
-
-Condition = tuple[bool, Direction]
-"""
-A condition is a tuple of a boolean and a Direction, indicating whether a collision is happening in the indicated direction or not.
-"""
-
-
-class CollisionConditionDirectionRule(Rule):
-    """
-    The CollisionConditionDirectionRule applies a direction rule based on a set of conditions.
-    Each condition is a tuple of boolean and Direction, where the boolean indicates whether the condition must be met, and the Direction specifies which direction to select to check for a collision.
-    If a direction is none it means the current direction of the agent is used.
-
-    If all conditions are met, the direction rule is applied to the agent's current direction.
-    """
-
-    def __init__(
-            self,
-            direction_rule: DirectionTransformer,
-            conditions: Sequence[Condition]
-    ):
-        self.direction_rule = direction_rule
-        self.conditions = conditions
-
-    def __call__(
-            self,
-            states: Sequence[AgentState],
-            colors: ColorIterator,
-            collision: PointSet,
-            collision_mapping: AgentStateMapping
-    ) -> RuleResult:
-        """
-        Apply the direction rule based on the conditions.
-        :param states: The current states of the agent.
-        :param colors: The iterator over the agent's colors.
-        :param collision: The set of points that are in collision with the agent.
-        :param collision_mapping: The mapping between collision points and the agent's colors.
-        :return: A new state with the updated direction if all conditions are met, otherwise None.
-        """
-
-        conditions_met = []
-        for condition, condition_direction in self.conditions:
-            if condition_direction == "none":
-                direction = states[-1].direction
-            else:
-                direction = absolute_direction(states[-1].direction, condition_direction)
-            sub_collision = resolve_point_set_selectors_with_direction(
-                states[-1].position, collision, direction
-            )
-
-            if condition and len(sub_collision) > 0:
-                conditions_met.append(True)
-            elif not condition and len(sub_collision) == 0:
-                conditions_met.append(True)
-            else:
-                conditions_met.append(False)
-
-        if all(conditions_met):
-            new_direction = self.direction_rule(states[-1].direction)
-            new_position = states[-1].position.shift(direction_to_unit_vector(new_direction))
-
-            return AgentState(
-                position=new_position,
-                direction=new_direction,
-                color=next(colors),
-                charge=states[-1].charge - 1 if states[-1].charge > 0 else states[-1].charge,
-            ), colors, []
-
-        return None
-
-
-def collision_entity_redirect_rule(
-        states: Sequence[AgentState],
-        colors: ColorIterator,
-        collision: PointSet,
-        collision_mapping: AgentStateMapping
-):
-    """
-    When hitting a collision entity, the agent will take the entity's shape and current direction, and recolor it.
-    :param states: The current states of the agent.
-    :param colors: The iterator over the agent's colors.
-    :param collision: The set of points that are in collision with the agent.
-    :param collision_mapping: The mapping between collision points and the agent's colors.
-    :return:
-    """
-    sub_collision = resolve_point_set_selectors_with_direction(
-        states[-1].position, collision, states[-1].direction
-    )
-
-    if len(sub_collision) > 0:
-        positions = PointSet(
-            [entity_point for point in sub_collision for entity_point in collision_mapping[point].position]
-        )
-        directions = set([
-            collision_mapping[col].direction for col in sub_collision
-        ])
-
-        return AgentState(
-            position=positions,
-            direction=next(iter(directions)),
-            color=next(colors),
-            charge=states[-1].charge if states[-1].charge > 0 else states[-1].charge,
-        ), colors, []
-
-    return None
-
-
-def resize_entity_to_exit_rule(
-        states: Sequence[AgentState],
-        colors: ColorIterator,
-        collision: PointSet,
-        collision_mapping: AgentStateMapping
-):
-    """
-    Shrinks back an entity to fit the exit direction (only select the points leaving the entity)
-    :param states: The current states of the agent.
-    :param colors: The iterator over the agent's colors.
-    :param collision: The set of points that are in collision with the agent.
-    :param collision_mapping: A mapping between collision points and the agent's colors.
-    :return: A new state with the updated positions
-    """
-
-    return AgentState(
-        position=resolve_cell_selection(states[-1].position, states[-1].direction),
-        color=next(colors),
-        charge=states[-1].charge if states[-1].charge > 0 else states[-1].charge,
-        direction=states[-1].direction,
-    ), colors, []

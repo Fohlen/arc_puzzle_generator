@@ -1,9 +1,11 @@
+from typing import cast
 from unittest import TestCase
 
-from arc_puzzle_generator.direction import orthogonal_direction, snake_direction
+from arc_puzzle_generator.direction import orthogonal_direction, snake_direction, DirectionTransformer
 from arc_puzzle_generator.geometry import PointSet, Direction
-from arc_puzzle_generator.rule import identity_rule, DirectionRule, CollisionDirectionRule, OutOfGridRule, \
-    collision_color_mapping_rule, TrappedCollisionRule, CollisionBorderRule, CollisionFillRule, backtrack_rule
+from arc_puzzle_generator.rule import OutOfGridRule, \
+    TrappedCollisionRule, CollisionFillRule, backtrack_rule, \
+    CollisionConditionRule, COLLIDE_ALL
 from arc_puzzle_generator.state import AgentState
 
 
@@ -13,29 +15,16 @@ def dummy_direction_rule(direction: Direction) -> Direction:
 
 
 class RuleTest(TestCase):
-    def test_identity_rule(self):
-        states = [AgentState(
-            PointSet([(0, 0)]),
-            "none",
-            0,
-            0,
-        )]
-
-        original_colors = [1, 2, 3]
-        colors = iter(original_colors)
-
-        output_state, output_colors, output_agents = identity_rule(states, colors)
-
-        self.assertEqual(output_state, states[0])
-        self.assertEqual(original_colors, list(output_colors))
-
     def test_direction_rule_no_collision(self):
         states = [AgentState(PointSet([(0, 0)]), "none", 1, 1)]
         colors = iter([1, 2])
         collision = PointSet()  # No collision
 
-        rule = DirectionRule(dummy_direction_rule)
-        result = rule(states, colors, collision)
+        rule = CollisionConditionRule(
+            direction_rule=cast(DirectionTransformer, dummy_direction_rule),
+            conditions=[(False, "none")]
+        )
+        result = rule(states, colors, collision, {})
         self.assertIsNotNone(result)
         new_state, new_colors, new_agents = result
         self.assertIn((-1, 0), new_state.position)
@@ -48,8 +37,11 @@ class RuleTest(TestCase):
         colors = iter([1, 2])
         collision = PointSet([(1, 0)])  # Collision present
 
-        rule = DirectionRule(dummy_direction_rule)
-        result = rule(states, colors, collision)
+        rule = CollisionConditionRule(
+            direction_rule=cast(DirectionTransformer, dummy_direction_rule),
+            conditions=[(True, "none")]
+        )
+        result = rule(states, colors, collision, {})
         self.assertIsNone(result)
 
     def test_collision_direction_rule_no_collision(self):
@@ -57,7 +49,11 @@ class RuleTest(TestCase):
         colors = iter([1, 2])
         collision = PointSet()  # No collision
 
-        rule = CollisionDirectionRule(direction_rule=orthogonal_direction)
+        rule = CollisionConditionRule(
+            direction_rule=orthogonal_direction,
+            conditions=[(True, "none")],
+            condition_mode="OR",
+        )
         result = rule(states, colors, collision, {})
         self.assertIsNone(result)
 
@@ -66,7 +62,11 @@ class RuleTest(TestCase):
         colors = iter([1, 2])
         collision = PointSet([(1, 1)])  # Collision present
 
-        rule = CollisionDirectionRule(orthogonal_direction)
+        rule = CollisionConditionRule(
+            direction_rule=orthogonal_direction,
+            conditions=[(True, "none")],
+            condition_mode="OR",
+        )
         result = rule(states, colors, collision, {
             (1, 1): AgentState(PointSet([(1, 1)]), "none", 2, 0)
         })
@@ -109,7 +109,13 @@ class RuleTest(TestCase):
             (1, 0): AgentState(PointSet([(1, 0)]), "down", 2, 1)
         }
 
-        result = collision_color_mapping_rule(states, colors, collision, collision_mapping)
+        rule = CollisionConditionRule(
+            conditions=COLLIDE_ALL,
+            condition_mode="OR",
+            update_position=False,
+            update_agent_color_on_collision=True,
+        )
+        result = rule(states, colors, collision, collision_mapping)
 
         self.assertIsNotNone(result)
         new_state, new_colors, new_agents = result
@@ -117,7 +123,7 @@ class RuleTest(TestCase):
         self.assertEqual(2, new_state.color)
         self.assertEqual(PointSet([(0, 0)]), new_state.position)
         self.assertEqual("down", new_state.direction)
-        self.assertEqual(1, new_state.charge)
+        self.assertEqual(0, new_state.charge)
 
     def test_trapped_collision_rule_with_directionality(self):
         states = [AgentState(PointSet([(1, 1)]), "right", 1, 1)]
@@ -144,12 +150,17 @@ class RuleTest(TestCase):
             (0, 1): AgentState(PointSet([(0, 1)]), "none", 2, 1)  # Not border color
         }
 
-        rule = CollisionBorderRule(border_color)
+        rule = CollisionConditionRule(
+            conditions=COLLIDE_ALL,
+            condition_mode="OR",
+            update_position=False,
+            border_color=border_color,
+        )
         result = rule(states, colors, collision, collision_mapping)
         self.assertIsNotNone(result)
         new_state, new_colors, new_agents = result
 
-        self.assertEqual(1, new_state.charge)
+        self.assertEqual(0, new_state.charge)
         self.assertEqual(PointSet([(0, 1)]), new_state.position)
         self.assertEqual("right", new_state.direction)
         self.assertEqual(9, new_state.color)

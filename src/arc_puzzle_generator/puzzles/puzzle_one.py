@@ -2,14 +2,14 @@ from collections import OrderedDict
 
 import numpy as np
 
-from arc_puzzle_generator.rule import DirectionRule, RuleNode
 from arc_puzzle_generator.agent import Agent
-from arc_puzzle_generator.utils.color_sequence_iterator import ColorSequenceIterator
-from arc_puzzle_generator.geometry import PointSet, Direction
-from arc_puzzle_generator.playground import Playground
-from arc_puzzle_generator.neighbourhood import zero_neighbours
 from arc_puzzle_generator.direction import identity_direction
+from arc_puzzle_generator.geometry import PointSet, Direction
+from arc_puzzle_generator.neighbourhood import zero_neighbours
+from arc_puzzle_generator.playground import Playground
+from arc_puzzle_generator.rule import RuleNode, CollisionConditionRule
 from arc_puzzle_generator.topology import identity_topology
+from arc_puzzle_generator.utils.color_sequence_iterator import ColorSequenceIterator
 from arc_puzzle_generator.utils.entities import colour_count, find_connected_objects
 
 
@@ -65,7 +65,12 @@ def puzzle_one(input_grid: np.ndarray) -> Playground:
             position=PointSet([(row, start_col)]),
             direction=direction,
             label="puzzle_one_agent",
-            node=RuleNode(DirectionRule(identity_direction)),
+            node=RuleNode(
+                CollisionConditionRule(
+                    direction_rule=identity_direction,
+                    conditions=[(False, "none")]
+                ),
+            ),
             charge=charge,
             colors=ColorSequenceIterator(color_sequence, background_color),
         ) for row, color_sequence in color_sequences],

@@ -9,9 +9,8 @@ from arc_puzzle_generator.direction import identity_direction, snake_direction
 from arc_puzzle_generator.geometry import PointSet
 from arc_puzzle_generator.neighbourhood import von_neumann_neighbours
 from arc_puzzle_generator.playground import Playground
-from arc_puzzle_generator.rule import OutOfGridRule, TrappedCollisionRule, CollisionDirectionRule, \
-    DirectionRule, \
-    CollisionBorderRule, backtrack_rule, Rule, RuleNode
+from arc_puzzle_generator.rule import OutOfGridRule, TrappedCollisionRule, backtrack_rule, Rule, \
+    RuleNode, CollisionConditionRule
 from arc_puzzle_generator.topology import FixedGroupTopology
 from arc_puzzle_generator.utils.entities import colour_count, find_colors, find_connected_objects
 from arc_puzzle_generator.utils.grid import unmask
@@ -66,10 +65,11 @@ def puzzle_ten(input_grid: np.ndarray) -> Playground:
     node = RuleNode(
         OutOfGridRule(grid_size=(input_grid.shape[0], input_grid.shape[1])),
         alternative_node=RuleNode(
-            CollisionBorderRule(
-                border_color=border_color,
+            CollisionConditionRule(
+                conditions=[(True, "none")],
                 direction_rule=snake_direction,
-                select_direction=True
+                update_position=False,
+                border_color=border_color,
             ),
             next_node=RuleNode(
                 cast(Rule, backtrack_rule),
@@ -77,9 +77,15 @@ def puzzle_ten(input_grid: np.ndarray) -> Playground:
             alternative_node=RuleNode(
                 TrappedCollisionRule(direction_rule=snake_direction, select_direction=True),
                 alternative_node=RuleNode(
-                    CollisionDirectionRule(direction_rule=snake_direction, select_direction=True),
+                    CollisionConditionRule(
+                        direction_rule=snake_direction,
+                        conditions=[(True, "none")]
+                    ),
                     alternative_node=RuleNode(
-                        DirectionRule(direction_rule=identity_direction, select_direction=True)
+                        CollisionConditionRule(
+                            direction_rule=identity_direction,
+                            conditions=[(False, "none")]
+                        ),
                     )
                 )
             )

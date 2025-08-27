@@ -7,7 +7,7 @@ from arc_puzzle_generator.direction import identity_direction
 from arc_puzzle_generator.geometry import PointSet
 from arc_puzzle_generator.neighbourhood import moore_neighbours, resolve_point_set_neighbourhood
 from arc_puzzle_generator.playground import Playground
-from arc_puzzle_generator.rule import OutOfGridRule, RuleNode, DirectionRule
+from arc_puzzle_generator.rule import OutOfGridRule, RuleNode, CollisionConditionRule
 from arc_puzzle_generator.utils.entities import find_connected_objects, relative_box_direction, get_bounding_box, \
     direction_to_numpy_unit_vector
 from arc_puzzle_generator.utils.grid import unmask
@@ -72,7 +72,10 @@ def puzzle_thirtynine(
                         node=RuleNode(
                             OutOfGridRule(grid_size=input_grid.shape),
                             alternative_node=RuleNode(
-                                DirectionRule(direction_rule=identity_direction),
+                                CollisionConditionRule(
+                                    direction_rule=identity_direction,
+                                    conditions=[(False, "none")]
+                                ),
                             ),
                         ),
                         colors=cycle(color_sequence),
