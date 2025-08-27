@@ -157,29 +157,29 @@ class CollisionConditionDirectionRule(Rule):
 
         if (self.condition_mode == "AND" and all(conditions_met)) or (
                 self.condition_mode == "OR" and any(conditions_met)):
-            new_direction = states[-1].direction
+            next_direction = states[-1].direction
 
             if self.direction_rule is not None:
                 if self.condition_mode == "OR":
                     axis = collision_axis(collision)
-                    new_direction = self.direction_rule(states[-1].direction, axis)
+                    next_direction = self.direction_rule(states[-1].direction, axis)
                 else:
-                    new_direction = self.direction_rule(states[-1].direction)
+                    next_direction = self.direction_rule(states[-1].direction)
 
-            new_position = states[-1].position.shift(direction_to_unit_vector(new_direction)) if \
+            next_position = states[-1].position.shift(direction_to_unit_vector(next_direction)) if \
                 self.update_position else states[-1].position
-            new_charge = states[-1].charge - 1 if states[-1].charge > 0 else states[-1].charge
-            new_colors: Iterator[int | Sequence[int]]
+            next_charge = states[-1].charge - 1 if states[-1].charge > 0 else states[-1].charge
+            next_colors: Iterator[int | Sequence[int]]
 
             if self.update_agent_color_on_collision:
-                new_colors = cycle([collision_mapping[col].color for col in collision_met])
+                next_colors = cycle([collision_mapping[col].color for col in collision_met])
 
                 return AgentState(
-                    position=new_position,
-                    direction=new_direction,
-                    color=next(new_colors),
-                    charge=new_charge,
-                ), new_colors, []
+                    position=next_position,
+                    direction=next_direction,
+                    color=next(next_colors),
+                    charge=next_charge,
+                ), next_colors, []
             elif self.entity_redirect:
                 positions = PointSet(
                     [entity_point for point in collision for entity_point in collision_mapping[point].position]
@@ -198,30 +198,30 @@ class CollisionConditionDirectionRule(Rule):
             elif self.resize_entity_to_exit:
                 # NOTE: Introduce a switch to use collision_met or full collision
                 return AgentState(
-                    position=resolve_cell_selection(new_position, new_direction),
+                    position=resolve_cell_selection(next_position, next_direction),
                     color=next(colors),
-                    charge=new_charge,
-                    direction=new_direction,
+                    charge=next_charge,
+                    direction=next_direction,
                 ), colors, []
             elif self.border_color is not None and len(collision_met) == 1:
                 point = next(iter(collision_met))
 
                 if not collision_mapping[point].color == self.border_color:
                     # If the agent collides with the border, change its color to the border color
-                    new_colors = chain([self.border_color], colors)
+                    next_colors = chain([self.border_color], colors)
 
                     return AgentState(
                         position=collision_met,
-                        direction=new_direction,
-                        color=next(new_colors),
-                        charge=new_charge,
-                    ), new_colors, []
+                        direction=next_direction,
+                        color=next(next_colors),
+                        charge=next_charge,
+                    ), next_colors, []
             else:
                 return AgentState(
-                    position=new_position,
-                    direction=new_direction,
+                    position=next_position,
+                    direction=next_direction,
                     color=next(colors),
-                    charge=new_charge,
+                    charge=next_charge,
                 ), colors, []
 
         return None
