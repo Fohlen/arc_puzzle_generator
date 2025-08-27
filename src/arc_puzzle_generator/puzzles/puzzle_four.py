@@ -1,5 +1,4 @@
 from itertools import cycle
-from typing import cast
 
 import numpy as np
 
@@ -8,8 +7,7 @@ from arc_puzzle_generator.direction import identity_direction, orthogonal_direct
 from arc_puzzle_generator.geometry import PointSet, Direction
 from arc_puzzle_generator.neighbourhood import moore_neighbours
 from arc_puzzle_generator.playground import Playground
-from arc_puzzle_generator.rule import OutOfGridRule, collision_color_mapping_rule, Rule, \
-    RuleNode, CollisionConditionDirectionRule
+from arc_puzzle_generator.rule import OutOfGridRule, RuleNode, CollisionConditionDirectionRule, COLLIDE_ALL
 from arc_puzzle_generator.topology import FixedGroupTopology
 from arc_puzzle_generator.utils.entities import find_colors, find_connected_objects, is_l_shape, starting_point
 from arc_puzzle_generator.utils.grid import make_smallest_square_from_mask
@@ -51,20 +49,16 @@ def puzzle_four(input_grid: np.ndarray) -> Playground:
     node = RuleNode(
         OutOfGridRule(grid_size=(input_grid.shape[0], input_grid.shape[1])),
         alternative_node=RuleNode(
-            cast(Rule, collision_color_mapping_rule),
+            CollisionConditionDirectionRule(
+                conditions=COLLIDE_ALL,
+                condition_mode="OR",
+                update_position=False,
+                update_agent_color_on_collision=True,
+            ),
             next_node=RuleNode(
                 CollisionConditionDirectionRule(
                     direction_rule=orthogonal_direction,
-                    conditions=[
-                        (True, "left"),
-                        (True, "top_left"),
-                        (True, "up"),
-                        (True, "top_right"),
-                        (True, "right"),
-                        (True, "bottom_right"),
-                        (True, "down"),
-                        (True, "bottom_left"),
-                    ],
+                    conditions=COLLIDE_ALL,
                     condition_mode="OR",
                 )
             ),

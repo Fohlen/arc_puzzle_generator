@@ -102,6 +102,17 @@ A condition is a tuple of a boolean and a Direction, indicating whether a collis
 
 ConditionMode = Literal["AND", "OR"]
 
+COLLIDE_ALL: Sequence[tuple[bool, Direction]] = [
+    (True, "left"),
+    (True, "top_left"),
+    (True, "up"),
+    (True, "top_right"),
+    (True, "right"),
+    (True, "bottom_right"),
+    (True, "down"),
+    (True, "bottom_left"),
+]
+
 
 class CollisionConditionDirectionRule(Rule):
     """
@@ -117,10 +128,14 @@ class CollisionConditionDirectionRule(Rule):
             conditions: Sequence[Condition],
             condition_mode: ConditionMode = "AND",
             direction_rule: Optional[DirectionTransformer] = None,
+            update_position: bool = True,
+            update_agent_color_on_collision: bool = False,
     ):
         self.direction_rule = direction_rule
         self.conditions = conditions
         self.condition_mode = condition_mode
+        self.update_position = update_position
+        self.update_agent_color_on_collision = update_agent_color_on_collision
 
     def __call__(
             self,
@@ -139,6 +154,7 @@ class CollisionConditionDirectionRule(Rule):
         """
 
         conditions_met = []
+        collision_met = PointSet()
         for condition, condition_direction in self.conditions:
             if condition_direction == "none":
                 direction = states[-1].direction
@@ -150,6 +166,7 @@ class CollisionConditionDirectionRule(Rule):
 
             if condition and len(sub_collision) > 0:
                 conditions_met.append(True)
+                collision_met.update(sub_collision)
             elif not condition and len(sub_collision) == 0:
                 conditions_met.append(True)
             else:
@@ -166,14 +183,26 @@ class CollisionConditionDirectionRule(Rule):
                 else:
                     new_direction = self.direction_rule(states[-1].direction)
 
-            new_position = states[-1].position.shift(direction_to_unit_vector(new_direction))
+            new_position = states[-1].position.shift(direction_to_unit_vector(new_direction)) if \
+                self.update_position else states[-1].position
+            new_charge = states[-1].charge - 1 if states[-1].charge > 0 else states[-1].charge
 
-            return AgentState(
-                position=new_position,
-                direction=new_direction,
-                color=next(colors),
-                charge=states[-1].charge - 1 if states[-1].charge > 0 else states[-1].charge,
-            ), colors, []
+            if self.update_agent_color_on_collision:
+                new_colors = cycle([collision_mapping[col].color for col in collision_met])
+
+                return AgentState(
+                    position=new_position,
+                    direction=new_direction,
+                    color=next(new_colors),
+                    charge=new_charge,
+                ), new_colors, []
+            else:
+                return AgentState(
+                    position=new_position,
+                    direction=new_direction,
+                    color=next(colors),
+                    charge=new_charge,
+                ), colors, []
 
         return None
 
