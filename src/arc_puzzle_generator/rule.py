@@ -71,30 +71,6 @@ def backtrack_rule(
     return states[-2], colors, []
 
 
-def uncharge_rule(
-        states: Sequence[AgentState],
-        colors: ColorIterator,
-        collision: PointSet,
-        collision_mapping: AgentStateMapping
-) -> RuleResult:
-    """
-    Reduce the agent's charge by 1.
-
-    :param states: The current states of the agent.
-    :param colors: An iterator over the agent's colors.
-    :param collision: The set of points that are in collision with the agent.
-    :param collision_mapping: The mapping between collision points and the agent's colors.
-    :return: A new state with the charge set to 0.
-    """
-
-    return AgentState(
-        position=states[-1].position,
-        direction=states[-1].direction,
-        color=next(colors),
-        charge=max(0, states[-1].charge - 1),
-    ), colors, []
-
-
 Condition = tuple[bool, Direction]
 """
 A condition is a tuple of a boolean and a Direction, indicating whether a collision is happening in the indicated direction or not.
