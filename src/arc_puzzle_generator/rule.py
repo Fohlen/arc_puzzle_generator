@@ -282,48 +282,6 @@ def resize_entity_to_exit_rule(
     ), colors, []
 
 
-class CollisionBorderRule(Rule):
-    """
-    A rule that changes the collision border's color to the given border color, if applicable.
-    """
-
-    def __init__(
-            self,
-            border_color: int,
-            direction_rule: Optional[DirectionTransformer] = None,
-            select_direction: bool = False,
-    ) -> None:
-        self.border_color = border_color
-        self.direction_rule = direction_rule
-        self.select_direction = select_direction
-
-    def __call__(
-            self,
-            states: Sequence[AgentState],
-            colors: ColorIterator,
-            collision: PointSet,
-            collision_mapping: AgentStateMapping,
-    ) -> RuleResult:
-        sub_collision = resolve_point_set_selectors_with_direction(
-            states[-1].position, collision, states[-1].direction
-        ) if self.direction_rule is not None and self.select_direction else collision
-
-        if len(sub_collision) == 1:
-            point = next(iter(sub_collision))
-            if not collision_mapping[point].color == self.border_color:
-                # If the agent collides with the border, change its color to the border color
-                new_colors = chain([self.border_color], colors)
-
-                return AgentState(
-                    position=PointSet(sub_collision),
-                    direction=states[-1].direction,
-                    color=next(new_colors),
-                    charge=states[-1].charge,
-                ), new_colors, []
-
-        return None
-
-
 class CollisionFillRule(Rule):
     def __init__(
             self,
