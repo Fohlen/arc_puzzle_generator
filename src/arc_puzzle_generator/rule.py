@@ -374,6 +374,47 @@ class TrappedCollisionRule(Rule):
         return None
 
 
+class TerminateAtPointRule(Rule):
+    """
+    A rule that terminates the agent once it reaches a specific target point.
+    """
+
+    def __init__(self, target: PointSet, direction_rule: DirectionTransformer):
+        self.target = target
+        self.direction_rule = direction_rule
+
+    def __call__(
+            self,
+            states: Sequence[AgentState],
+            colors: ColorIterator,
+            collision: PointSet,
+            collision_mapping: AgentStateMapping
+    ) -> RuleResult:
+        """
+        Terminate the agent if it reaches the target point.
+
+        :param states: The current states of the agent.
+        :param colors: An iterator over the agent's colors.
+        :param collision: The set of points that are in collision with the agent.
+        :param collision_mapping: The mapping between collision points and the agent's colors.
+        :return: A new state with charge set to 0 if the target is reached, otherwise None.
+        """
+
+        next_position = states[-1].position.shift(
+            direction_to_unit_vector(self.direction_rule(states[-1].direction))
+        )
+
+        if next_position == self.target:
+            return AgentState(
+                position=states[-1].position,
+                direction=states[-1].direction,
+                color=next(colors),
+                charge=0,  # Set charge to 0 to indicate termination
+            ), colors, []
+
+        return None
+
+
 class GravityRule(Rule):
     def __init__(
             self,
@@ -633,44 +674,3 @@ class AgentSpawnRule(Rule):
                     children.append(child)
 
         return states[-1], colors, children
-
-
-class TerminateAtPointRule(Rule):
-    """
-    A rule that terminates the agent once it reaches a specific target point.
-    """
-
-    def __init__(self, target: PointSet, direction_rule: DirectionTransformer):
-        self.target = target
-        self.direction_rule = direction_rule
-
-    def __call__(
-            self,
-            states: Sequence[AgentState],
-            colors: ColorIterator,
-            collision: PointSet,
-            collision_mapping: AgentStateMapping
-    ) -> RuleResult:
-        """
-        Terminate the agent if it reaches the target point.
-
-        :param states: The current states of the agent.
-        :param colors: An iterator over the agent's colors.
-        :param collision: The set of points that are in collision with the agent.
-        :param collision_mapping: The mapping between collision points and the agent's colors.
-        :return: A new state with charge set to 0 if the target is reached, otherwise None.
-        """
-
-        next_position = states[-1].position.shift(
-            direction_to_unit_vector(self.direction_rule(states[-1].direction))
-        )
-
-        if next_position == self.target:
-            return AgentState(
-                position=states[-1].position,
-                direction=states[-1].direction,
-                color=next(colors),
-                charge=0,  # Set charge to 0 to indicate termination
-            ), colors, []
-
-        return None
