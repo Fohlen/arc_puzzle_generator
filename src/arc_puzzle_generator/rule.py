@@ -635,39 +635,6 @@ class AgentSpawnRule(Rule):
         return states[-1], colors, children
 
 
-class StayInGridRule(Rule):
-    """
-    A rule that ensures the agent stays within the grid boundaries.
-    """
-
-    def __init__(self, grid_size: Point, direction_rule: DirectionTransformer):
-        self.grid_size = grid_size
-        self.direction_rule = direction_rule
-
-    def __call__(
-            self,
-            states: Sequence[AgentState],
-            colors: ColorIterator,
-            collision: PointSet,
-            collision_mapping: AgentStateMapping
-    ) -> RuleResult:
-        next_position = states[-1].position.shift(direction_to_unit_vector(states[-1].direction))
-
-        if not all(in_grid(point, self.grid_size) for point in next_position):
-            alternative_direction = self.direction_rule(states[-1].direction)
-            alternative_position = states[-1].position.shift(direction_to_unit_vector(alternative_direction))
-
-            if all(in_grid(point, self.grid_size) for point in alternative_position):
-                return AgentState(
-                    position=alternative_position,
-                    direction=alternative_direction,
-                    color=next(colors),
-                    charge=states[-1].charge - 1 if states[-1].charge > 0 else states[-1].charge,
-                ), colors, []
-
-        return None
-
-
 class TerminateAtPointRule(Rule):
     """
     A rule that terminates the agent once it reaches a specific target point.
