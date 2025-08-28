@@ -8,7 +8,7 @@ from arc_puzzle_generator.direction import identity_direction
 from arc_puzzle_generator.geometry import Direction
 from arc_puzzle_generator.neighbourhood import AxisNeighbourhood
 from arc_puzzle_generator.playground import Playground
-from arc_puzzle_generator.rule import RuleNode, OutOfGridRule, CollisionFillRule, backtrack_rule, Rule, \
+from arc_puzzle_generator.rule import RuleNode, OutOfGridRule, backtrack_rule, Rule, \
     CollisionConditionRule
 from arc_puzzle_generator.topology import FixedGroupTopology
 from arc_puzzle_generator.utils.entities import find_connected_objects
@@ -58,7 +58,7 @@ def puzzle_fourteen(input_grid: np.ndarray) -> Playground:
         node=RuleNode(
             OutOfGridRule(grid_size=input_grid.shape),
             alternative_node=RuleNode(
-                CollisionFillRule(fill_color=fill_color),
+                CollisionConditionRule(fill_color=fill_color),
                 next_node=RuleNode(cast(Rule, backtrack_rule)),
                 alternative_node=RuleNode(
                     CollisionConditionRule(

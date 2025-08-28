@@ -4,7 +4,7 @@ from unittest import TestCase
 from arc_puzzle_generator.direction import orthogonal_direction, snake_direction, DirectionTransformer
 from arc_puzzle_generator.geometry import PointSet, Direction
 from arc_puzzle_generator.rule import OutOfGridRule, \
-    TrappedCollisionRule, CollisionFillRule, backtrack_rule, \
+    TrappedCollisionRule, backtrack_rule, \
     CollisionConditionRule, COLLIDE_ALL
 from arc_puzzle_generator.state import AgentState
 
@@ -174,7 +174,7 @@ class RuleTest(TestCase):
             (0, 2): AgentState(PointSet([(0, 2)]), "none", 3, 1)
         }
 
-        rule = CollisionFillRule(fill_color=9)
+        rule = CollisionConditionRule(fill_color=9)
         result = rule(states, colors, collision, collision_mapping)
         self.assertIsNotNone(result)
         new_state, new_colors, new_agents = result
@@ -182,7 +182,7 @@ class RuleTest(TestCase):
         self.assertEqual(9, new_state.color)
         self.assertEqual(PointSet([(0, 0), (0, 1), (0, 2)]), new_state.position)
         self.assertEqual(states[0].direction, new_state.direction)
-        self.assertEqual(states[0].charge, new_state.charge)
+        self.assertEqual(states[0].charge - 1, new_state.charge)
 
     def test_backtrack_rule(self):
         states = [

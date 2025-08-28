@@ -101,10 +101,11 @@ class CollisionConditionRule(Rule):
 
     def __init__(
             self,
-            conditions: Sequence[Condition],
+            conditions: Optional[Sequence[Condition]] = None,
             condition_mode: ConditionMode = "AND",
             direction_rule: Optional[DirectionTransformer] = None,
             border_color: Optional[int] = None,
+            fill_color: Optional[int] = None,
             update_position: bool = True,
             update_agent_color_on_collision: bool = False,
             entity_redirect: bool = False,
@@ -121,10 +122,15 @@ class CollisionConditionRule(Rule):
         :param entity_redirect: Whether to update the agents position and direction to the entity, on collisions.
         :param resize_entity_to_exit: Whether to resize the entity to exit.
         """
+        if conditions is None:
+            self.conditions: Sequence[Condition] = []
+        else:
+            self.conditions = conditions
+
         self.direction_rule = direction_rule
-        self.conditions = conditions
         self.condition_mode = condition_mode
         self.border_color = border_color
+        self.fill_color = fill_color
         self.update_position = update_position
         self.update_agent_color_on_collision = update_agent_color_on_collision
         self.entity_redirect = entity_redirect
@@ -167,7 +173,8 @@ class CollisionConditionRule(Rule):
                 conditions_met.append(False)
 
         if (self.condition_mode == "AND" and all(conditions_met)) or (
-                self.condition_mode == "OR" and any(conditions_met)):
+                self.condition_mode == "OR" and any(conditions_met)) or (
+                len(self.conditions) == 0 and len(collision) > 0):
             next_direction = states[-1].direction
 
             if self.direction_rule is not None:
@@ -227,6 +234,18 @@ class CollisionConditionRule(Rule):
                         color=next(next_colors),
                         charge=next_charge,
                     ), next_colors, []
+            elif self.fill_color is not None:
+                if states[-1].color == self.fill_color:
+                    collision_colors = [collision_mapping[point].color for point in collision]
+                    if any(color != self.fill_color for color in collision_colors):
+                        new_colors = chain([self.fill_color], colors)
+
+                        return AgentState(
+                            position=PointSet(states[-1].position | collision),
+                            direction=next_direction,
+                            color=next(new_colors),
+                            charge=next_charge,
+                        ), new_colors, []
             else:
                 return AgentState(
                     position=next_position,
