@@ -51,6 +51,26 @@ class RuleNode:
         self.next_node = next_node
         self.alternative_node = alternative_node
 
+    @classmethod
+    def from_rules(cls, rules: list[Rule]) -> Optional['RuleNode']:
+        """
+        Build a chain of RuleNodes from a list of rules.
+
+        :param rules: A list of rules to build the chain.
+        :return: The root RuleNode of the chain.
+        """
+        if not rules:
+            return None
+
+        root = cls(rules[0])
+        current_node = root
+        for rule in rules[1:]:
+            alternative_node = cls(rule)
+            current_node.alternative_node = alternative_node
+            current_node = alternative_node
+
+        return root
+
 
 def backtrack_rule(
         states: Sequence[AgentState],

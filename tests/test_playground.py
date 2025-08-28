@@ -169,3 +169,26 @@ class PlaygroundTestCase(TestCase):
         # Ensure all agents are processed and the playground does not terminate early
         self.assertEqual(5, len(steps))  # Two steps per agent and one final step
         self.assertFalse(model.active)  # Ensure all agents are inactive
+
+    def test_from_rules(self):
+        rules = [
+            OutOfGridRule(grid_size=(10, 10), terminate_on_grid_leave=True),
+            CollisionConditionRule(conditions=[(False, "none")], direction_rule=identity_direction)
+        ]
+
+        node = RuleNode.from_rules(rules)
+        agent = Agent(
+            position=PointSet([(0, 0)]),
+            direction="right",
+            charge=4,
+            node=node,
+            colors=cycle([1]),
+            label="agent",
+        )
+
+        grid = np.zeros((10, 10), dtype=int)
+        playground = Playground(grid, [agent], execution_mode="parallel")
+        steps = list(playground)
+
+        self.assertEqual(5, len(steps))
+        self.assertEqual(1, steps[-1][0, 3].item())
