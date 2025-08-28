@@ -259,11 +259,19 @@ class CollisionConditionRule(Rule):
 
 class OutOfGridRule(Rule):
     """
-    A rule that removes the agent if the next step is out of grid, by setting its charge to 0.
+    A rule that is activated if the agent's next step is out of grid.
+    The default behaviour is to terminate the agent, but an optional direction rule can be applied to rescue the agent.
     """
 
-    def __init__(self, grid_size: Point) -> None:
+    def __init__(
+            self,
+            grid_size: Point,
+            terminate_on_grid_leave: bool = True,
+            direction_rule: Optional[DirectionTransformer] = None,
+    ) -> None:
         self.grid_size = grid_size
+        self.terminate_on_grid_leave = terminate_on_grid_leave
+        self.direction_rule = direction_rule
 
     def __call__(
             self,
@@ -284,12 +292,24 @@ class OutOfGridRule(Rule):
         next_position = states[-1].position.shift(direction_to_unit_vector(states[-1].direction))
 
         if not all(in_grid(point, self.grid_size) for point in next_position):
-            return AgentState(
-                position=states[-1].position,
-                direction=states[-1].direction,
-                color=next(colors),
-                charge=0,  # Set charge to 0 to indicate removal
-            ), colors, []
+            if self.terminate_on_grid_leave:
+                return AgentState(
+                    position=states[-1].position,
+                    direction=states[-1].direction,
+                    color=next(colors),
+                    charge=0,  # Set charge to 0 to indicate removal
+                ), colors, []
+            elif not self.terminate_on_grid_leave and self.direction_rule is not None:
+                alternative_direction = self.direction_rule(states[-1].direction)
+                alternative_position = states[-1].position.shift(direction_to_unit_vector(alternative_direction))
+
+                if all(in_grid(point, self.grid_size) for point in alternative_position):
+                    return AgentState(
+                        position=alternative_position,
+                        direction=alternative_direction,
+                        color=next(colors),
+                        charge=states[-1].charge - 1 if states[-1].charge > 0 else states[-1].charge,
+                    ), colors, []
 
         return None
 
