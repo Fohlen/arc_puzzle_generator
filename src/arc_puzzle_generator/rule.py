@@ -257,45 +257,6 @@ class CollisionConditionRule(Rule):
         return None
 
 
-class CollisionFillRule(Rule):
-    def __init__(
-            self,
-            fill_color: int,
-    ):
-        self.fill_color = fill_color
-
-    def __call__(
-            self,
-            states: Sequence[AgentState],
-            colors: ColorIterator,
-            collision: PointSet,
-            collision_mapping: AgentStateMapping
-    ) -> RuleResult:
-        """
-        Fill the collision area with the fill color.
-
-        :param states: The current states of the agent.
-        :param colors: An iterator over the agent's colors.
-        :param collision: The set of points that are in collision with the agent.
-        :param collision_mapping: The mapping between collision points and the agent's colors.
-        :return: A new state with the fill color applied to the collision area.
-        """
-
-        if len(collision) > 0 and states[-1].color == self.fill_color:
-            collision_colors = [collision_mapping[point].color for point in collision]
-            if any(color != self.fill_color for color in collision_colors):
-                new_colors = chain([self.fill_color], colors)
-
-                return AgentState(
-                    position=PointSet(states[-1].position | collision),
-                    direction=states[-1].direction,
-                    color=next(new_colors),
-                    charge=states[-1].charge,
-                ), new_colors, []
-
-        return None
-
-
 class OutOfGridRule(Rule):
     """
     A rule that removes the agent if the next step is out of grid, by setting its charge to 0.
