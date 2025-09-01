@@ -15,7 +15,7 @@ license = "MIT"
 license-files = ["LICEN[CS]E*"]
 
 dependencies = [
-    "numpy~=2.2.5"
+    "numpy~=2.3.2"
 ]
 
 [project.optional-dependencies]
@@ -24,7 +24,7 @@ vis = [
 ]
 
 dev = [
-    "mypy==1.15.0"
+    "mypy==1.17.1"
 ]
 
 [project.scripts]
