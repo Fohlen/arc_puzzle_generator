@@ -58,7 +58,7 @@ def puzzle_thirty(
     for outer_box, inner_box in target_boxes:
         output_grid[labels[inner_box]] = background_color
         direction: Direction = next(directions)
-        charge = (np.count_nonzero(labels[inner_box]) + 1).item()   # +1 for the extreme point (the agent itself)
+        charge = (np.count_nonzero(labels[inner_box]) + 1)   # +1 for the extreme point (the agent itself)
         colors = [box_colors[outer_box]] + [box_colors[inner_box]] * charge
 
         agents.append(Agent(
