@@ -1,6 +1,6 @@
 [project]
 name = "arc_puzzle_generator"
-version = "0.0.1"
+version = "0.0.3"
 authors = [
     { name = "Lennard Berger", email = "3730888+Fohlen@users.noreply.github.com" },
 ]
