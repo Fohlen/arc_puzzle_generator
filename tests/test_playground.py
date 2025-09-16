@@ -192,3 +192,21 @@ class PlaygroundTestCase(TestCase):
 
         self.assertEqual(5, len(steps))
         self.assertEqual(1, steps[-1][0, 3].item())
+
+    def test_max_steps(self):
+        agent = Agent(
+            position=PointSet([(0, 0)]),
+            direction="right",
+            label='A',
+            node=RuleNode(CollisionConditionRule(
+                direction_rule=identity_direction,
+                conditions=[(False, "none")]
+            )),
+            colors=cycle([1]),
+            charge=10
+        )
+        grid = np.zeros((1, 10), dtype=int)
+        max_steps = 5
+        playground = Playground(grid, [agent], max_steps=max_steps)
+        steps = list(playground)
+        self.assertEqual(max_steps, len(steps))
