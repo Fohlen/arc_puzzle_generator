@@ -31,6 +31,7 @@ class Playground(Iterator[np.ndarray], Iterable[np.ndarray]):
             execution_mode: ExecutionMode = "parallel",
             collision_mode: CollisionMode = "current",
             backfill_color: Optional[int] = None,
+            max_steps: Optional[int] = None,
     ):
         """
         The playground constructor accepts a grid and a list of agents, initializing the simulation environment.
@@ -41,6 +42,7 @@ class Playground(Iterator[np.ndarray], Iterable[np.ndarray]):
         :param execution_mode: In which order agents are processed. Options are "sequential" or "parallel".
         :param collision_mode: Whether collisions are processed based on the current state of agents or their history.
         :param backfill_color: If supplied, this color will be used to fill the grid where agents previously used to be.
+        :param max_steps: If supplied, this number will be used to determine the maximum number of steps performed.
         """
         self.output_grid = output_grid.copy()
         self.agents: list[Agent] = []
@@ -49,6 +51,7 @@ class Playground(Iterator[np.ndarray], Iterable[np.ndarray]):
         self.execution_mode = execution_mode
         self.collision_mode = collision_mode
         self.backfill_color = backfill_color
+        self.max_steps = max_steps
 
         # initialize internal properties
         self.current_agent_idx = 0
@@ -56,6 +59,7 @@ class Playground(Iterator[np.ndarray], Iterable[np.ndarray]):
         self.labels: set[str] = set()
         self.steps = [output_grid.copy()]
         self.step_iterator = iter(self.steps)
+        self.step_idx = 0
 
         for agent in agents:
             self.add_agent(agent)
@@ -79,9 +83,13 @@ class Playground(Iterator[np.ndarray], Iterable[np.ndarray]):
         return self
 
     def __next__(self) -> np.ndarray:
+        if self.max_steps is not None and self.step_idx >= self.max_steps:
+            raise StopIteration
+
         if self.active:
             self.step()
 
+        self.step_idx += 1
         return next(self.step_iterator)
 
     def _process_agent(self, agent: Agent) -> None:
