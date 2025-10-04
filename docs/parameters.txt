@@ -1,0 +1,31 @@
+conditions: Optional[Sequence[Condition]] = None
+condition_mode: ConditionMode = "AND"
+direction_rule: Optional[DirectionTransformer] = None
+border_color: Optional[int] = None
+fill_color: Optional[int] = None
+update_position: bool = True
+update_agent_color_on_collision: bool = False
+entity_redirect: bool = False
+resize_entity_to_exit: bool = False
+grid_size: Point
+terminate_on_grid_leave: bool = True
+direction_rule: Optional[DirectionTransformer] = None
+direction_rule: DirectionTransformer
+select_direction: bool = False
+num_directions: int = 1
+target: PointSet
+direction_rule: DirectionTransformer
+grid_size: Point
+target: PointSet
+points: PointSet
+grid_size: Point
+directions: Sequence[Direction]
+target: PointSet
+denylist: Optional[PointSet] = None
+gamma: float = 0.1
+positive_reward: float = 1.0
+negative_reward: float = 0.00001
+directions: Sequence[Direction]
+grid_size: Point
+select_direction: bool = False
+denylist: Optional[PointSet] = None
