@@ -1,6 +1,6 @@
 [project]
 name = "arc_puzzle_generator"
-version = "0.0.4"
+version = "0.0.5"
 authors = [
     { name = "Lennard Berger", email = "3730888+Fohlen@users.noreply.github.com" },
 ]
@@ -37,3 +37,6 @@ arc-visualize = "arc_puzzle_generator.visualization:main"
 [build-system]
 requires = ["setuptools >= 77.0.3"]
 build-backend = "setuptools.build_meta"
+
+[tool.setuptools.package-data]
+"arc_puzzle_generator" = ["py.typed"]
