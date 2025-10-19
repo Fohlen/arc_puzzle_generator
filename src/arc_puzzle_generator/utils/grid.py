@@ -4,6 +4,7 @@ The grid_utils module contains functionality of useful grid operations, such as 
 import math
 
 import numpy as np
+import numpy.typing
 
 from arc_puzzle_generator.geometry import PointSet
 

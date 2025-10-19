@@ -1,11 +1,11 @@
 from itertools import permutations, cycle
-from typing import Iterator
+from typing import Iterator, cast
 
 import numpy as np
 
 from arc_puzzle_generator.agent import Agent
 from arc_puzzle_generator.direction import identity_direction
-from arc_puzzle_generator.geometry import PointSet, Direction
+from arc_puzzle_generator.geometry import PointSet, Direction, Point
 from arc_puzzle_generator.neighbourhood import moore_neighbours
 from arc_puzzle_generator.playground import Playground
 from arc_puzzle_generator.rule import RuleNode, OutOfGridRule, CollisionConditionRule
@@ -66,7 +66,7 @@ def puzzle_thirty(
             direction=direction,
             label=f"agent_{outer_box}",
             node=RuleNode(
-                OutOfGridRule(grid_size=input_grid.shape),
+                OutOfGridRule(grid_size=cast(Point, input_grid.shape)),
                 alternative_node=RuleNode(
                     CollisionConditionRule(
                         direction_rule=identity_direction,

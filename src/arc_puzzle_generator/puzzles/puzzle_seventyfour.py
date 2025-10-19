@@ -1,9 +1,11 @@
 from itertools import cycle
+from typing import cast
 
 import numpy as np
 
 from arc_puzzle_generator.agent import Agent
 from arc_puzzle_generator.direction import identity_direction, counterclockwise_direction_90, clockwise_direction_90
+from arc_puzzle_generator.geometry import Point
 from arc_puzzle_generator.neighbourhood import moore_neighbours
 from arc_puzzle_generator.physics import direction_to_unit_vector
 from arc_puzzle_generator.playground import Playground
@@ -36,7 +38,7 @@ def puzzle_seventyfour(input_grid: np.ndarray) -> Playground:
             TerminateAtPointRule(target=start_point, direction_rule=identity_direction),
             alternative_node=RuleNode(
                 OutOfGridRule(
-                    grid_size=input_grid.shape,
+                    grid_size=cast(Point, input_grid.shape),
                     terminate_on_grid_leave=False,
                     direction_rule=counterclockwise_direction_90
                 ),

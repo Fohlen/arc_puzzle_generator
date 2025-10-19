@@ -1,10 +1,11 @@
 from itertools import cycle
+from typing import cast
 
 import numpy as np
 
 from arc_puzzle_generator.agent import Agent
 from arc_puzzle_generator.direction import identity_direction
-from arc_puzzle_generator.geometry import PointSet, in_grid
+from arc_puzzle_generator.geometry import PointSet, in_grid, Point
 from arc_puzzle_generator.neighbourhood import moore_neighbours
 from arc_puzzle_generator.physics import direction_to_unit_vector, shift
 from arc_puzzle_generator.playground import Playground
@@ -44,15 +45,15 @@ def puzzle_fiftyfive(
             diagonal = False
             hit = False
 
-            while not hit and in_grid(next_point, input_grid.shape):
+            while not hit and in_grid(next_point, cast(Point, input_grid.shape)):
                 right_point = shift(next_point, direction_to_unit_vector("right"))
                 bottom_point = shift(next_point, direction_to_unit_vector("down"))
 
                 if input_grid[next_point[0], next_point[1]] == border_color:
                     hit = True
-                elif in_grid(bottom_point, input_grid.shape) and input_grid[
+                elif in_grid(bottom_point, cast(Point, input_grid.shape)) and input_grid[
                     bottom_point[0], bottom_point[1]] == border_color and \
-                        in_grid(right_point, input_grid.shape) and input_grid[
+                        in_grid(right_point, cast(Point, input_grid.shape)) and input_grid[
                     right_point[0], right_point[1]] == border_color:
                     hit = True
                     diagonal = True

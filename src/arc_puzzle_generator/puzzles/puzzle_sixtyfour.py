@@ -1,10 +1,11 @@
 from itertools import cycle
+from typing import cast
 
 import numpy as np
 
 from arc_puzzle_generator.agent import Agent
 from arc_puzzle_generator.direction import clockwise_direction_90, identity_direction
-from arc_puzzle_generator.geometry import PointSet, in_grid, Direction
+from arc_puzzle_generator.geometry import PointSet, in_grid, Direction, Point
 from arc_puzzle_generator.neighbourhood import moore_neighbours
 from arc_puzzle_generator.physics import direction_to_unit_vector
 from arc_puzzle_generator.playground import Playground
@@ -48,7 +49,7 @@ def puzzle_sixtyfour(input_grid: np.ndarray) -> Playground:
 
             for direction in DIAGONAL_DIRECTIONS:
                 shifted_points = beam_points.shift(direction_to_unit_vector(direction))
-                if all(in_grid(point, input_grid.shape) and box_labels[point[0], point[1]] for point in shifted_points):  # type: ignore[call-overload]
+                if all(in_grid(point, cast(Point, input_grid.shape)) and box_labels[point[0], point[1]] for point in shifted_points):  # type: ignore[call-overload]
                     agent_direction = clockwise_direction_90(clockwise_direction_90(direction))
                     agents.extend([
                         Agent(
@@ -57,7 +58,7 @@ def puzzle_sixtyfour(input_grid: np.ndarray) -> Playground:
                             label=f"{beam_color}_{agent_direction}_start",
                             colors=cycle([beam_color]),
                             node=RuleNode(
-                                OutOfGridRule(grid_size=input_grid.shape),
+                                OutOfGridRule(grid_size=cast(Point, input_grid.shape)),
                                 alternative_node=RuleNode(
                                     CollisionConditionRule(
                                         direction_rule=identity_direction,
@@ -73,7 +74,7 @@ def puzzle_sixtyfour(input_grid: np.ndarray) -> Playground:
                             label=f"{beam_color}_{agent_direction}_end",
                             colors=cycle([beam_color]),
                             node=RuleNode(
-                                OutOfGridRule(grid_size=input_grid.shape),
+                                OutOfGridRule(grid_size=cast(Point, input_grid.shape)),
                                 alternative_node=RuleNode(
                                     CollisionConditionRule(
                                         direction_rule=identity_direction,

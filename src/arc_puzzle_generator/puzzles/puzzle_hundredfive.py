@@ -1,4 +1,5 @@
 from itertools import combinations, cycle
+from typing import cast
 
 import numpy as np
 
@@ -77,7 +78,7 @@ def puzzle_hundredfive(input_grid: np.ndarray) -> Playground:
                     label="purple",
                     colors=cycle([6]),
                     node=RuleNode(
-                        OutOfGridRule(grid_size=input_grid.shape),
+                        OutOfGridRule(grid_size=cast(Point, input_grid.shape)),
                         alternative_node=RuleNode(
                             CollisionConditionRule(
                                 direction_rule=identity_direction,
@@ -95,7 +96,7 @@ def puzzle_hundredfive(input_grid: np.ndarray) -> Playground:
                     label="purple",
                     colors=cycle([6]),
                     node=RuleNode(
-                        OutOfGridRule(grid_size=input_grid.shape),
+                        OutOfGridRule(grid_size=cast(Point, input_grid.shape)),
                         alternative_node=RuleNode(
                             CollisionConditionRule(
                                 direction_rule=identity_direction,

@@ -1,10 +1,11 @@
 from itertools import cycle
+from typing import cast
 
 import numpy as np
 
 from arc_puzzle_generator.agent import Agent
 from arc_puzzle_generator.direction import identity_direction
-from arc_puzzle_generator.geometry import PointSet
+from arc_puzzle_generator.geometry import PointSet, Point
 from arc_puzzle_generator.neighbourhood import von_neumann_neighbours
 from arc_puzzle_generator.playground import Playground
 from arc_puzzle_generator.rule import RuleNode, OutOfGridRule, TrappedCollisionRule, CollisionConditionRule
@@ -23,7 +24,7 @@ def puzzle_ninety(input_grid: np.ndarray) -> Playground:
     background_color = sorted_colors[0][0]
 
     node = RuleNode(
-        OutOfGridRule(grid_size=input_grid.shape),
+        OutOfGridRule(grid_size=cast(Point, input_grid.shape)),
         alternative_node=RuleNode(
             TrappedCollisionRule(direction_rule=identity_direction, select_direction=True),
             alternative_node=RuleNode(

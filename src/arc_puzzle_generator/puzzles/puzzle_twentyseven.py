@@ -1,12 +1,12 @@
 import random
 from itertools import cycle
-from typing import Sequence
+from typing import Sequence, cast
 
 import numpy as np
 
 from arc_puzzle_generator.agent import Agent
 from arc_puzzle_generator.direction import identity_direction
-from arc_puzzle_generator.geometry import PointSet, Direction
+from arc_puzzle_generator.geometry import PointSet, Direction, Point
 from arc_puzzle_generator.neighbourhood import moore_neighbours
 from arc_puzzle_generator.playground import Playground
 from arc_puzzle_generator.rule import RuleNode, OutOfGridRule, TrappedCollisionRule, GravityRule, AgentSpawnRule
@@ -44,7 +44,7 @@ def puzzle_twentyseven(input_grid: np.ndarray) -> Playground:
 
     agent_spawn_rule = AgentSpawnRule(
         directions=directions,
-        grid_size=input_grid.shape,
+        grid_size=cast(Point, input_grid.shape),
         denylist=PointSet([(input_grid.shape[0] - 1, y) for y in range(0, input_grid.shape[1])]),
         select_direction=True
     )
@@ -58,13 +58,13 @@ def puzzle_twentyseven(input_grid: np.ndarray) -> Playground:
             direction="down",
             label="agent",
             node=RuleNode(
-                OutOfGridRule(grid_size=input_grid.shape),
+                OutOfGridRule(grid_size=cast(Point, input_grid.shape)),
                 next_node=RuleNode(agent_spawn_rule),
                 alternative_node=RuleNode(
                     TrappedCollisionRule(select_direction=True, direction_rule=identity_direction),
                     next_node=RuleNode(agent_spawn_rule),
                     alternative_node=RuleNode(
-                        GravityRule(grid_size=input_grid.shape),
+                        GravityRule(grid_size=cast(Point, input_grid.shape)),
                     )
                 )
             ),

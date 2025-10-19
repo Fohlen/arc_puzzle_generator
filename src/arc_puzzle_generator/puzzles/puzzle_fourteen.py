@@ -5,7 +5,7 @@ import numpy as np
 
 from arc_puzzle_generator.agent import Agent
 from arc_puzzle_generator.direction import identity_direction
-from arc_puzzle_generator.geometry import Direction
+from arc_puzzle_generator.geometry import Direction, Point
 from arc_puzzle_generator.neighbourhood import AxisNeighbourhood
 from arc_puzzle_generator.playground import Playground
 from arc_puzzle_generator.rule import RuleNode, OutOfGridRule, backtrack_rule, Rule, \
@@ -56,7 +56,7 @@ def puzzle_fourteen(input_grid: np.ndarray) -> Playground:
         direction=direction,
         label="cloud_shooter",
         node=RuleNode(
-            OutOfGridRule(grid_size=input_grid.shape),
+            OutOfGridRule(grid_size=cast(Point, input_grid.shape)),
             alternative_node=RuleNode(
                 CollisionConditionRule(fill_color=fill_color),
                 next_node=RuleNode(cast(Rule, backtrack_rule)),
@@ -78,7 +78,7 @@ def puzzle_fourteen(input_grid: np.ndarray) -> Playground:
         output_grid=input_grid,
         agents=agents,
         neighbourhood=AxisNeighbourhood(
-            grid_size=input_grid.shape,
+            grid_size=cast(Point, input_grid.shape),
             axis="vertical" if direction in ["up", "down"] else "horizontal"
         ),
         topology=FixedGroupTopology(group={"foreground"}),
