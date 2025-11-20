@@ -1,5 +1,5 @@
 from itertools import cycle
-from typing import cast
+from typing import cast, Optional
 
 import numpy as np
 
@@ -14,11 +14,12 @@ from arc_puzzle_generator.utils.entities import find_connected_objects, relative
 from arc_puzzle_generator.utils.grid import unmask
 
 
-def puzzle_fourtyfour(input_grid: np.ndarray) -> Playground:
+def puzzle_fourtyfour(input_grid: np.ndarray, max_steps: Optional[int] = None) -> Playground:
     """
     Implements the 44th puzzle in the ARC dataset.
     In this puzzle a shooter follows a path of balloons.
     :param input_grid: The input grid for the puzzle.
+    :param max_steps: The maximum number of steps to run the puzzle.
     :return: A Playground object representing the puzzle.
     """
 
@@ -92,4 +93,5 @@ def puzzle_fourtyfour(input_grid: np.ndarray) -> Playground:
         neighbourhood=moore_neighbours,
         topology=all_topology,
         collision_mode="current",
+        max_steps=max_steps,
     )

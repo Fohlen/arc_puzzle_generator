@@ -1,4 +1,5 @@
 from collections import OrderedDict
+from typing import Optional
 
 import numpy as np
 
@@ -13,10 +14,11 @@ from arc_puzzle_generator.utils.color_sequence_iterator import ColorSequenceIter
 from arc_puzzle_generator.utils.entities import colour_count, find_connected_objects
 
 
-def puzzle_one(input_grid: np.ndarray) -> Playground:
+def puzzle_one(input_grid: np.ndarray, max_steps: Optional[int] = None) -> Playground:
     """
     The color iteration puzzle.
     :param input_grid: The input grid for the puzzle.
+    :param max_steps: The maximum number of steps to run the puzzle.
     :return: A Model object containing the simulation setup for the color iteration puzzle.
     """
     output_grid = input_grid.copy()
@@ -76,4 +78,5 @@ def puzzle_one(input_grid: np.ndarray) -> Playground:
         ) for row, color_sequence in color_sequences],
         neighbourhood=zero_neighbours,
         topology=identity_topology,
+        max_steps=max_steps,
     )

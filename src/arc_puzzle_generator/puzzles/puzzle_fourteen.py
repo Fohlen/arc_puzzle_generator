@@ -1,5 +1,5 @@
 from itertools import cycle
-from typing import cast
+from typing import cast, Optional
 
 import numpy as np
 
@@ -15,10 +15,11 @@ from arc_puzzle_generator.utils.entities import find_connected_objects
 from arc_puzzle_generator.utils.grid import unmask
 
 
-def puzzle_fourteen(input_grid: np.ndarray) -> Playground:
+def puzzle_fourteen(input_grid: np.ndarray, max_steps: Optional[int] = None) -> Playground:
     """
     Puzzle 14: The cloud shooter puzzle.
     :param input_grid: A 2D numpy array representing the input grid.
+    :param max_steps: The maximum number of steps to perform.
     :return: A Model object containing the simulation setup for the cloud shooter puzzle.
     """
 
@@ -82,4 +83,5 @@ def puzzle_fourteen(input_grid: np.ndarray) -> Playground:
             axis="vertical" if direction in ["up", "down"] else "horizontal"
         ),
         topology=FixedGroupTopology(group={"foreground"}),
+        max_steps=max_steps,
     )

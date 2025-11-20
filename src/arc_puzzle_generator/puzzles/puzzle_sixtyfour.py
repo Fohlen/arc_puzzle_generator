@@ -1,5 +1,5 @@
 from itertools import cycle
-from typing import cast
+from typing import cast, Optional
 
 import numpy as np
 
@@ -16,11 +16,12 @@ from arc_puzzle_generator.utils.grid import unmask
 DIAGONAL_DIRECTIONS: list[Direction] = ["top_left", "top_right", "bottom_right", "bottom_left"]
 
 
-def puzzle_sixtyfour(input_grid: np.ndarray) -> Playground:
+def puzzle_sixtyfour(input_grid: np.ndarray, max_steps: Optional[int] = None) -> Playground:
     """
     Generates a playground for the 64th puzzle in the ARC dataset.
     This puzzle involves rectangle spawners that spawn agents in a specific direction.
     :param input_grid: The input grid representing the puzzle state.
+    :param max_steps: The maximum number of steps that the agent can take.
     :return: A Playground instance that simulates the puzzle.
     """
 
@@ -90,4 +91,5 @@ def puzzle_sixtyfour(input_grid: np.ndarray) -> Playground:
     return Playground(
         output_grid=input_grid.copy(),
         agents=agents,
+        max_steps=max_steps,
     )

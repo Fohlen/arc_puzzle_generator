@@ -1,5 +1,5 @@
 from itertools import cycle
-from typing import cast
+from typing import cast, Optional
 
 import numpy as np
 
@@ -13,10 +13,11 @@ from arc_puzzle_generator.topology import identity_topology
 from arc_puzzle_generator.utils.entities import colour_count, find_5x5_grids_with_border
 
 
-def puzzle_ninety(input_grid: np.ndarray) -> Playground:
+def puzzle_ninety(input_grid: np.ndarray, max_steps: Optional[int] = None) -> Playground:
     """
     Puzzle ninety is a puzzle in which all red grids move to the right and all blue grids move left.
     :param input_grid: The input grid for the puzzle, represented as a 2D numpy array.
+    :param max_steps: The maximum number of steps to run the puzzle for.
     :return: A Playground instance that simulates the puzzle.
     """
 
@@ -91,4 +92,5 @@ def puzzle_ninety(input_grid: np.ndarray) -> Playground:
         backfill_color=background_color,
         topology=identity_topology,
         neighbourhood=von_neumann_neighbours,
+        max_steps=max_steps,
     )

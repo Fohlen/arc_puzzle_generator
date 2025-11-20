@@ -1,6 +1,6 @@
 from collections import defaultdict
 from itertools import cycle
-from typing import Mapping, cast
+from typing import Mapping, cast, Optional
 
 import numpy as np
 
@@ -16,7 +16,7 @@ from arc_puzzle_generator.utils.entities import colour_count, find_colors, find_
 from arc_puzzle_generator.utils.grid import unmask
 
 
-def puzzle_ten(input_grid: np.ndarray) -> Playground:
+def puzzle_ten(input_grid: np.ndarray, max_steps: Optional[int] = None) -> Playground:
     """
     Puzzle 10: The Snake
     :param input_grid: The input grid for the puzzle.
@@ -106,4 +106,5 @@ def puzzle_ten(input_grid: np.ndarray) -> Playground:
         agents=agents,
         neighbourhood=von_neumann_neighbours,
         topology=topology,
+        max_steps=max_steps,
     )

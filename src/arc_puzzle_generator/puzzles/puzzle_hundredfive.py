@@ -1,5 +1,5 @@
 from itertools import combinations, cycle
-from typing import cast
+from typing import cast, Optional
 
 import numpy as np
 
@@ -18,7 +18,7 @@ def same_diagonal(point1: Point, point2: Point) -> bool:
     return abs(x1 - x2) == abs(y1 - y2)
 
 
-def puzzle_hundredfive(input_grid: np.ndarray) -> Playground:
+def puzzle_hundredfive(input_grid: np.ndarray, max_steps: Optional[int] = None) -> Playground:
     points_blue = unmask(input_grid == 1)
     points_purple = unmask(input_grid == 6)
 
@@ -110,4 +110,5 @@ def puzzle_hundredfive(input_grid: np.ndarray) -> Playground:
     return Playground(
         output_grid=input_grid,
         agents=agents,
+        max_steps=max_steps,
     )

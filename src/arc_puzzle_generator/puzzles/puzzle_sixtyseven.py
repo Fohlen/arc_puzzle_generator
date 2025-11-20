@@ -1,5 +1,5 @@
 from itertools import cycle
-from typing import Iterator
+from typing import Iterator, Optional
 
 import numpy as np
 
@@ -16,7 +16,8 @@ from arc_puzzle_generator.utils.grid import unmask
 
 def puzzle_sixtyseven(
         input_grid: np.ndarray,
-        directions: Iterator[Direction] = cycle(["left"])
+        directions: Iterator[Direction] = cycle(["left"]),
+        max_steps: Optional[int] = None
 ) -> Playground:
     """
     Generates a playground for puzzle sixty-seven based on the provided input grid.
@@ -24,6 +25,7 @@ def puzzle_sixtyseven(
     The instructions are supplied as a separate argument to this generator function.
     :param input_grid: The input grid representing the initial state of the puzzle.
     :param directions: Sequence of directions for the agents
+    :param max_steps: The maximum number of steps the agent can take.
     :return: A Playground instance configured for puzzle sixty-seven.
     """
 
@@ -73,11 +75,11 @@ def puzzle_sixtyseven(
             charge=-1,
         ))
 
-
     return Playground(
         output_grid=input_grid.copy(),
         agents=agents,
         neighbourhood=moore_neighbours,
         topology=all_topology,
         backfill_color=0,
+        max_steps=max_steps,
     )

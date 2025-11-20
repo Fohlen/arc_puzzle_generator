@@ -1,4 +1,5 @@
 from itertools import cycle
+from typing import Optional
 
 import numpy as np
 
@@ -14,10 +15,11 @@ from arc_puzzle_generator.utils.entities import find_connected_objects, extreme_
 from arc_puzzle_generator.utils.grid import unmask
 
 
-def puzzle_eightysix(input_grid: np.ndarray) -> Playground:
+def puzzle_eightysix(input_grid: np.ndarray, max_steps: Optional[int] = None) -> Playground:
     """
     Puzzle 86 is a puzzle that requires agents to frame polygon shapes.
     :param input_grid: The input grid for the puzzle, represented as a 2D numpy array.
+    :param max_steps: The maximum number of steps to run the simulation for.
     :return: A Playground instance configured for puzzle 86.
     """
 
@@ -98,4 +100,5 @@ def puzzle_eightysix(input_grid: np.ndarray) -> Playground:
         neighbourhood=moore_neighbours,
         topology=all_topology,
         collision_mode="history",
+        max_steps=max_steps,
     )

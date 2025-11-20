@@ -1,6 +1,6 @@
 import random
 from itertools import cycle
-from typing import Sequence, cast
+from typing import Sequence, cast, Optional
 
 import numpy as np
 
@@ -15,11 +15,12 @@ from arc_puzzle_generator.utils.entities import find_connected_objects
 from arc_puzzle_generator.utils.grid import unmask
 
 
-def puzzle_twentyseven(input_grid: np.ndarray) -> Playground:
+def puzzle_twentyseven(input_grid: np.ndarray, max_steps: Optional[int] = None) -> Playground:
     """
     Generates a playground for puzzle 27 based on the input grid.
     Puzzle 27 is a simple puzzle where agents drop down, and new agents are spawned left and right of the existing agents.
     :param input_grid: The input grid representing the puzzle layout.
+    :param max_steps: The maximum number of steps that the agent can take.
     :return: The generated playground for puzzle 27.
     """
 
@@ -78,4 +79,5 @@ def puzzle_twentyseven(input_grid: np.ndarray) -> Playground:
         neighbourhood=moore_neighbours,
         topology=all_topology,
         collision_mode="history",
+        max_steps=max_steps,
     )

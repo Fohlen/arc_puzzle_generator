@@ -1,4 +1,5 @@
 from itertools import cycle
+from typing import Optional
 
 import numpy as np
 
@@ -13,10 +14,11 @@ from arc_puzzle_generator.utils.entities import find_colors, find_connected_obje
 from arc_puzzle_generator.utils.grid import make_smallest_square_from_mask
 
 
-def puzzle_four(input_grid: np.ndarray) -> Playground:
+def puzzle_four(input_grid: np.ndarray, max_steps: Optional[int] = None) -> Playground:
     """
     The laser shooter puzzle.
     :param input_grid: The input grid for the puzzle.
+    :param max_steps: The maximum number of steps to run the laser shooter.
     :return: A Model object containing the simulation setup for the laser shooter puzzle.
     """
 
@@ -90,5 +92,6 @@ def puzzle_four(input_grid: np.ndarray) -> Playground:
         output_grid=input_grid.copy(),
         agents=agents,
         neighbourhood=moore_neighbours,
-        topology=FixedGroupTopology(group={"bbox"})
+        topology=FixedGroupTopology(group={"bbox"}),
+        max_steps=max_steps,
     )

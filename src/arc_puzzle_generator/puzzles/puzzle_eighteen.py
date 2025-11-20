@@ -1,6 +1,6 @@
 import random
 from itertools import cycle
-from typing import cast
+from typing import cast, Optional
 
 import numpy as np
 
@@ -13,7 +13,7 @@ from arc_puzzle_generator.topology import all_topology
 from arc_puzzle_generator.utils.grid import unmask
 
 
-def puzzle_eighteen(input_grid: np.ndarray) -> Playground:
+def puzzle_eighteen(input_grid: np.ndarray, max_steps: Optional[int] = None) -> Playground:
     """
     Generate the output grid for puzzle eighteen simulating water flow.
 
@@ -61,5 +61,6 @@ def puzzle_eighteen(input_grid: np.ndarray) -> Playground:
         neighbourhood=moore_neighbours,
         topology=all_topology,
         execution_mode="parallel",
-        backfill_color=0
+        backfill_color=0,
+        max_steps=max_steps,
     )

@@ -1,5 +1,5 @@
 from itertools import cycle
-from typing import cast
+from typing import cast, Optional
 
 import numpy as np
 
@@ -14,10 +14,11 @@ from arc_puzzle_generator.utils.entities import find_connected_objects
 from arc_puzzle_generator.utils.grid import unmask
 
 
-def puzzle_ninetyeight(input_grid: np.ndarray) -> Playground:
+def puzzle_ninetyeight(input_grid: np.ndarray, max_steps: Optional[int] = None) -> Playground:
     """
     In puzzle 98 a snake has to avoid obstacles and reach the other side of the grid.
     :param input_grid: The input grid for the puzzle, represented as a 2D numpy array.
+    :param max_steps: The maximum number of steps to run the algorithm for.
     :return: A playground instance that simulates the puzzle environment.
     """
 
@@ -102,4 +103,5 @@ def puzzle_ninetyeight(input_grid: np.ndarray) -> Playground:
         neighbourhood=von_neumann_neighbours,
         topology=all_topology,
         collision_mode="history",
+        max_steps=max_steps,
     )

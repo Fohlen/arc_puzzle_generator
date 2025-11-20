@@ -1,5 +1,5 @@
 from itertools import cycle
-from typing import cast
+from typing import cast, Optional
 
 import numpy as np
 
@@ -15,10 +15,12 @@ from arc_puzzle_generator.utils.entities import colour_count, find_connected_obj
 
 def puzzle_fiftyfive(
         input_grid: np.ndarray,
+        max_steps: Optional[int] = None
 ) -> Playground:
     """
     Implementation of puzzle fiftyfive, a grid filling agent-based puzzle.
     :param input_grid: The input grid for the puzzle.
+    :param max_steps: The maximum number of steps to run the agent for.
     :return: A Playground instance representing the puzzle.
     """
 
@@ -99,4 +101,5 @@ def puzzle_fiftyfive(
     return Playground(
         output_grid=input_grid.copy(),
         agents=agents,
+        max_steps=max_steps,
     )

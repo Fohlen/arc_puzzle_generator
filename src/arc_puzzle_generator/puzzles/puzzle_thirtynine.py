@@ -1,5 +1,5 @@
 from itertools import cycle
-from typing import cast
+from typing import cast, Optional
 
 import numpy as np
 
@@ -16,10 +16,12 @@ from arc_puzzle_generator.utils.grid import unmask
 
 def puzzle_thirtynine(
         input_grid: np.ndarray,
+        max_steps: Optional[int] = None
 ) -> Playground:
     """
     Generates a playground for puzzle thirty-nine based on the provided input grid.
     :param input_grid: The input grid representing the initial state of the puzzle.
+    :param max_steps: The maximum number of steps to run the algorithm for.
     :return: A Playground instance configured for puzzle thirty-nine.
     """
 
@@ -86,4 +88,5 @@ def puzzle_thirtynine(
     return Playground(
         output_grid=input_grid,
         agents=agents,
+        max_steps=max_steps,
     )

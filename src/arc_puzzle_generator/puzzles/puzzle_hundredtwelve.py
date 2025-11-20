@@ -1,4 +1,5 @@
 from itertools import cycle
+from typing import Optional
 
 import numpy as np
 
@@ -14,11 +15,13 @@ from arc_puzzle_generator.utils.entities import find_connected_objects
 def puzzle_hundredtwelve(
         input_grid: np.ndarray,
         orientation: Direction = "top_right",
+        max_steps: Optional[int] = None
 ) -> Playground:
     """
     Puzzle 112 is a puzzle in which the middle strand determines the length of all other strands.
     :param input_grid: The input grid.
     :param orientation: The orientation of the puzzle.
+    :param max_steps: The maximum number of steps to perform.
     :return: A Playground instance.
     """
 
@@ -30,8 +33,6 @@ def puzzle_hundredtwelve(
         input_grid != background_color,
         neighbourhood=moore_neighbours
     )
-
-
 
     middle = (1 + num_objects + 1) // 2
     charge = np.sum(labels == middle)
@@ -66,4 +67,5 @@ def puzzle_hundredtwelve(
     return Playground(
         output_grid=output_grid,
         agents=agents,
+        max_steps=max_steps,
     )

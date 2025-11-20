@@ -1,4 +1,5 @@
 from itertools import cycle
+from typing import Optional
 
 import numpy as np
 
@@ -12,10 +13,11 @@ from arc_puzzle_generator.topology import all_topology
 from arc_puzzle_generator.utils.grid import unmask
 
 
-def puzzle_twentyfive(input_grid: np.ndarray) -> Playground:
+def puzzle_twentyfive(input_grid: np.ndarray, max_steps: Optional[int] = None) -> Playground:
     """
     Generates a puzzle for the 25th puzzle, which is a classic reward learning task.
     :param input_grid: A 2D numpy array representing the input grid for the puzzle.
+    :param max_steps: The maximum number of steps to run the algorithm for.
     :return: A Playground object representing the generated puzzle.
     """
 
@@ -73,4 +75,5 @@ def puzzle_twentyfive(input_grid: np.ndarray) -> Playground:
         topology=all_topology,
         backfill_color=foreground_color,
         collision_mode="history",
+        max_steps=max_steps,
     )

@@ -1,5 +1,6 @@
 from collections import defaultdict
 from math import ceil
+from typing import Optional
 
 import numpy as np
 
@@ -15,11 +16,12 @@ from arc_puzzle_generator.utils.entities import colour_count, find_connected_obj
     relative_box_direction, box_distance
 
 
-def puzzle_two(input_grid: np.ndarray) -> Playground:
+def puzzle_two(input_grid: np.ndarray, max_steps: Optional[int] = None) -> Playground:
     """
     The rectangle iteration order puzzle.
 
     :param input_grid: The input grid for the puzzle.
+    :param max_steps: The maximum number of steps to run the puzzle.
     :return: A Model object containing the simulation setup for the rectangle iteration order puzzle.
     """
 
@@ -117,4 +119,5 @@ def puzzle_two(input_grid: np.ndarray) -> Playground:
         ],
         neighbourhood=zero_neighbours,
         topology=identity_topology,
+        max_steps=max_steps,
     )

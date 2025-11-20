@@ -1,5 +1,5 @@
 from itertools import cycle
-from typing import cast
+from typing import cast, Optional
 
 import numpy as np
 
@@ -15,10 +15,11 @@ from arc_puzzle_generator.topology import all_topology
 from arc_puzzle_generator.utils.grid import unmask
 
 
-def puzzle_seventyfour(input_grid: np.ndarray) -> Playground:
+def puzzle_seventyfour(input_grid: np.ndarray, max_steps: Optional[int] = None) -> Playground:
     """
     Implements puzzle 74 in which the snake borders the grid and the snake is a single line that does not intersect itself.
     :param input_grid: The input grid as a 2D NumPy array.
+    :param max_steps: The maximum number of steps to consider in the puzzle.
     :return: The Playground object representing the puzzle.
     """
 
@@ -79,4 +80,5 @@ def puzzle_seventyfour(input_grid: np.ndarray) -> Playground:
         neighbourhood=moore_neighbours,
         topology=all_topology,
         collision_mode="history",
+        max_steps=max_steps,
     )

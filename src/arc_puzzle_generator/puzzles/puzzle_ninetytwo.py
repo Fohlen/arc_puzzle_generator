@@ -1,3 +1,5 @@
+from typing import Optional
+
 import numpy as np
 
 from arc_puzzle_generator.agent import Agent
@@ -8,11 +10,16 @@ from arc_puzzle_generator.rule import RuleNode, CollisionConditionRule
 from arc_puzzle_generator.utils.color_sequence_iterator import ColorSequenceIterator
 
 
-def puzzle_ninetytwo(input_grid: np.ndarray, orientation: Direction = "right") -> Playground:
+def puzzle_ninetytwo(
+        input_grid: np.ndarray,
+        orientation: Direction = "right",
+        max_steps: Optional[int] = None
+) -> Playground:
     """
     In puzzle 92 one needs to figure out a repeat pattern problem by row / column.
     :param input_grid: The input grid.
     :param orientation: The direction that the input grid is facing.
+    :param max_steps: The maximum number of steps to perform.
     :return: A Playground instance.
     """
 
@@ -96,5 +103,6 @@ def puzzle_ninetytwo(input_grid: np.ndarray, orientation: Direction = "right") -
 
     return Playground(
         output_grid=input_grid,
-        agents=agents
+        agents=agents,
+        max_steps=max_steps,
     )
